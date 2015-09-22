@@ -18,7 +18,7 @@ class Index(FormView):
         context = super(Index, self).get_context_data(**kwargs)
         context['message'] = "Search for bikes to rent all over the world"
         context['button'] = "Search"
-        context['website_name'] = 'bike aggregator'
+        context['website_name'] = 'YouVelo.com'
         return context
 
 
@@ -36,7 +36,7 @@ class SignUp(FormView):
         context = super(SignUp, self).get_context_data(**kwargs)
         context['message'] = "Sign your store up"
         context['button'] = "Sign Up"
-        context['website_name'] = 'Bike Aggregator'
+        context['website_name'] = 'YouVelo.com'
         return context
 
 class ContactView(FormView):
@@ -58,7 +58,7 @@ class SorryNoBikesAvalibleView(TemplateView):
         context = super(SorryNoBikesAvalibleView, self).get_context_data(**kwargs)
         context['message'] = "Sorry we do not have any bikes  currently available in the area you are searching"
         context['button'] = "Home"
-        context['website_name'] = 'Bike Aggregator'
+        context['website_name'] = 'YouVelo.com'
         return context
 
 class StoreSignUp(TemplateView):
@@ -68,7 +68,7 @@ class StoreSignUp(TemplateView):
         context = super(StoreSignUp, self).get_context_data(**kwargs)
         context['message'] = "Thanks for sigining up, we will be in contact shortly"
         context['button'] = "Home"
-        context['website_name'] = 'Bike Aggregator'
+        context['website_name'] = 'YouVelo.com'
         return context
 
 
