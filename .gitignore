@@ -24,7 +24,6 @@ var/
 *.egg
 
 .vagrant
-static
 
 #AWS keys
 keys.py
