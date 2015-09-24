@@ -15,7 +15,11 @@ class SignUpForm(ModelForm):
         super(SignUpForm, self).save(commit)
 
 class BikeRentalForm(ModelForm):
-
+    location = forms.CharField(
+        max_length=200,
+        widget=forms.TextInput(attrs={'placeholder': 'Where do you want to go?'}),
+        label="Location:"
+    )
     class Meta:
         model = BikeSearch
         exclude = ('pk',)

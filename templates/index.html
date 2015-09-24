@@ -3,16 +3,7 @@
 {% block content %}
     <form action="/" method="post">
     {% csrf_token %}
-    <tr>
-        <th><label for="id_location">Location:</label></th>
-        <td><input id="id_location" maxlength="225" name="location" type="text" placeholder="Where do you want to go?"/></td></tr>
-        <tr><th><label for="id_bike_type">Bike type:</label></th>
-        <td><select id="id_bike_type" name="bike_type">\n<option value="" selected="selected">---------</option>\n<option value="road_bike">road bike</option>\n<option value="mountain_bike">mountain bike</option>\n<option value="hybrid_bike">hybrid bike</option>\n<option value="touring_bike">touring bike</option>\n<option value="electric_bike">electric bike</option>\n</select></td>
-        </tr><tr><th><label for="id_no_of_bikes">No of bikes:</label></th><td><input id="id_no_of_bikes" name="no_of_bikes" type="number" /></td></tr>
-        <tr><th><label for="id_email">Email:</label></th><td><input id="id_email" maxlength="254" name="email" type="email" /></td></tr>
-        <tr><th><label for="id_phone_number">Phone number:</label></th><td><input id="id_phone_number" maxlength="15" name="phone_number" type="text" />
-        </td>
-        </tr>
+    {{ form.as_p }}
         <br>
     <input type="submit" value="Submit" />
 </form>
