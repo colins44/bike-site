@@ -34,7 +34,7 @@ class SignUp(FormView):
 
     def get_context_data(self, **kwargs):
         context = super(SignUp, self).get_context_data(**kwargs)
-        context['message'] = "Sign your store up"
+        context['message'] = "Sign your store up and start renting your bikes out to users of our website"
         context['button'] = "Sign Up"
         context['website_name'] = 'YouVelo.com'
         return context
@@ -45,10 +45,7 @@ class ContactView(FormView):
     success_url = '/thanks/'
 
     def form_valid(self, form):
-        # This method is called when valid form data has been POSTed.
-        # It should return an HttpResponse.
         form.send_email()
-        print 'asdasdsadasd'
         return super(ContactView, self).form_valid(form)
 
 class SorryNoBikesAvalibleView(TemplateView):
