@@ -77,3 +77,6 @@ testing_site/mysite.log
 celerybeat-schedule.bak
 celerybeat-schedule.dat
 celerybeat-schedule.dir
+
+my_project/db.sqlite3
+
