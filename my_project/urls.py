@@ -21,6 +21,8 @@ from bike_aggregator.views import Index, SignUp, ContactView, SorryNoBikesAvalib
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', Index.as_view(), name='index'),
+    url(r'^bikes-to-rent/', Index.as_view(), name='index'),
+    url(r'^bicycles-to-rent/', Index.as_view(), name='index'),
     url(r'^contact/', ContactView.as_view(), name='contact'),
     url(r'^sign-up/', SignUp.as_view(), name='index'),
     url(r'^sorry-no-bikes-available/',
