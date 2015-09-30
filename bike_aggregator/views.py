@@ -10,7 +10,7 @@ def index(request):
 
 
 class Index(FormView):
-    template_name = 'index.html'
+    template_name = 'bikes-to-rent.html'
     form_class = BikeRentalForm
     success_url = '/sorry-no-bikes-available/'
 
@@ -27,7 +27,7 @@ class Index(FormView):
         return context
 
 class BikeHire(FormView):
-    template_name = 'index.html'
+    template_name = 'bicycles-to-rent.html'
     form_class = BikeRentalFormOne
     success_url = '/sorry-no-bikes-available/'
 

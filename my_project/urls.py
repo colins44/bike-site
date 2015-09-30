@@ -16,6 +16,12 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from bike_aggregator.views import Index, SignUp, ContactView, SorryNoBikesAvalibleView, StoreSignUp, BikeHire, index
+from bike_aggregator.sitemaps import StaticSiteMap
+from django.contrib.sitemaps.views import sitemap
+
+sitemaps ={
+    'mysitemap':StaticSiteMap
+}
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
@@ -23,13 +29,16 @@ urlpatterns = [
     url(r'^bikes-to-rent/', Index.as_view(), name='ab-page-one'),
     url(r'^bicycles-to-rent/', BikeHire.as_view(), name='ab-page-two'),
     url(r'^contact/', ContactView.as_view(), name='contact'),
-    url(r'^sign-up/', SignUp.as_view(), name='index'),
+    url(r'^sign-up/', SignUp.as_view(), name='sign-up'),
     url(r'^sorry-no-bikes-available/',
         SorryNoBikesAvalibleView.as_view(),
         name='sorry-no-bikes-available'),
     url(r'^thanks/',
         StoreSignUp.as_view(),
         name='thanks'),
+    url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps},
+        name='django.contrib.sitemaps.views.sitemap'),
+    url(r'^robots\.txt', include('robots.urls')),
 
 
 ]
