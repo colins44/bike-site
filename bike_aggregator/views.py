@@ -1,8 +1,12 @@
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import redirect
 from django.views.generic import TemplateView
-from django.views.generic.edit import FormView, ProcessFormView
-from .forms import BikeRentalForm, SignUpForm, ContactForm
+from django.views.generic.edit import FormView
+from .forms import BikeRentalForm, SignUpForm, ContactForm, BikeRentalFormOne, MotoBikeHireForm
+import random
+
+def index(request):
+    urls = ('ab-page-one', 'ab-page-two')
+    return redirect(random.choice(urls), permanent=True)
 
 
 class Index(FormView):
@@ -19,8 +23,25 @@ class Index(FormView):
         context['message'] = "Search for bikes to rent all over the world"
         context['button'] = "Search"
         context['website_name'] = 'YouVelo.com'
+        context['submit_url'] = '/bikes-to-rent/'
         return context
 
+class BikeHire(FormView):
+    template_name = 'index.html'
+    form_class = BikeRentalFormOne
+    success_url = '/sorry-no-bikes-available/'
+
+    def form_valid(self, form):
+        form.save()
+        return super(BikeHire, self).form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super(BikeHire, self).get_context_data(**kwargs)
+        context['message'] = "Search for bikes to rent all over the world"
+        context['button'] = "Search"
+        context['website_name'] = 'YouVelo.com'
+        context['submit_url'] = '/bicycles-to-rent/'
+        return context
 
 class SignUp(FormView):
     template_name = 'sign-up.html'
@@ -68,16 +89,3 @@ class StoreSignUp(TemplateView):
         context['website_name'] = 'YouVelo.com'
         return context
 
-
-# def handler404(request):
-#     response = render_to_response('404.html', {},
-#                                   context_instance=RequestContext(request))
-#     response.status_code = 404
-#     return response
-#
-#
-# def handler500(request):
-#     response = render_to_response('500.html', {},
-#                                   context_instance=RequestContext(request))
-#     response.status_code = 500
-#     return response
