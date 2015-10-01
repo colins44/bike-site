@@ -70,20 +70,11 @@
 					</header>
 
 				<!-- Banner -->
-					<section id="banner">
+					<section id="banner" class="wrapper style4 special">
 						<div class="inner">
 							<h2>{{ website_name }}</h2>
-							<p>{{ message }}</p>
-							<ul class="actions">
-								<li><a href="#one" class="button special">{{ button }}</a></li>
-							</ul>
-						</div>
-					</section>
-
-				<!-- One -->
-					<section id="one" class="wrapper style1 special">
-						<div class="inner">
-                            <form action="{{ submit_url }}" method="post">
+                            <p>{{ message }}</p>
+							<form action="{{ submit_url }}" method="post">
                                 {% csrf_token %}
                                 {{ form.as_p }}
                                     <br>
