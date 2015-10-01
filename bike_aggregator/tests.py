@@ -12,8 +12,7 @@ class TestForms(TestCase):
 
     def test_bike_search_form(self):
         bike_rental_form_data = {
-            'town_or_region': 'paris',
-            'country': 'France',
+            'location': 'paris',
             'bike_type': 'road_bike',
             'no_of_bikes': 10,
             'email':'email@example.com'
@@ -34,8 +33,7 @@ class TestForms(TestCase):
 
     def test_post_to_home_page(self):
         bike_rental_form_data = {
-            'town_or_region': 'paris',
-            'country': 'France',
+            'location': 'paris',
             'bike_type': 'road_bike',
             'no_of_bikes': 10,
             'email':'email@example.com'
