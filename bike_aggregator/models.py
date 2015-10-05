@@ -23,11 +23,16 @@ class BikeSearch(models.Model):
         return u'%s' % self.pk
 
 class BikeShop(models.Model):
-    town_or_region = models.CharField(max_length=225)
+    street = models.CharField(max_length=225, null=True, blank=True)
+    town = models.CharField(max_length=225, null=True, blank=True)
     country = models.CharField(max_length=225)
     shop_name = models.CharField(max_length=225)
     website = models.URLField(null=True, blank=True)
     email = models.EmailField()
+    phone_regex = RegexValidator(
+        regex=r'^\+?1?\d{9,15}$',
+        message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
+    phone_number = models.CharField(validators=[phone_regex], blank=True, max_length=15)
 
     def __unicode__(self):
         return self.shop_name

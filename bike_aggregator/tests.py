@@ -51,11 +51,13 @@ class TestForms(TestCase):
 
     def test_post_to_signup_page(self):
         signup_form_data={
-            'town_or_region': 'paris',
+            'street': '44 aberdeen rd',
+            'town': 'paris',
             'country': 'France',
             'shop_name': 'road_bike',
             'website': 'https://google.com',
-            'email':'email@example.com'
+            'email':'email@example.com',
+            'phone_number': '+447470142526',
         }
         resp = self.client.post(
             path='/sign-up/',
