@@ -18,6 +18,7 @@ from django.contrib import admin
 from bike_aggregator.views import Index, SignUp, ContactView, SorryNoBikesAvalibleView, StoreSignUp, BikeHire, index
 from bike_aggregator.sitemaps import StaticSiteMap
 from django.contrib.sitemaps.views import sitemap
+from django.views.generic import TemplateView
 
 sitemaps ={
     'mysitemap':StaticSiteMap
@@ -39,6 +40,7 @@ urlpatterns = [
     url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps},
         name='django.contrib.sitemaps.views.sitemap'),
     url(r'^robots\.txt', include('robots.urls')),
+    url(r'^about/', TemplateView.as_view(template_name="about.html")),
 
 
 ]

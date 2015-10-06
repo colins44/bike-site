@@ -1,0 +1,117 @@
+<!DOCTYPE HTML>
+<!--
+	Spectral by HTML5 UP
+	html5up.net | @n33co
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+        {% load staticfiles %}
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>Bicycle rental - youvelo.com</title>
+        <meta name="description" content="Find bicycles to rent. Search by bicycle type and location. Rent bicycles worldwide" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        {# Global stylesheets #}
+        <link rel="stylesheet" type="text/css" href="{% static 'css/myprojectname.css' %}">
+        <link rel="stylesheet" href={%  static "css/main.css" %} />
+
+        {% block extra_css %}
+            {# Override this in templates to add extra stylesheets #}
+        {% endblock %}
+        <script>
+          (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+          ga('create', 'UA-67978073-1', 'auto');
+          ga('send', 'pageview');
+
+        </script>
+    </head>
+	<body>
+
+		<!-- Page Wrapper -->
+			<div id="page-wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<h1><a href="/">{{ website_name }}</a></h1>
+						<nav id="nav">
+							<ul>
+								<li class="special">
+									<a href="#menu" class="menuToggle"><span>Menu</span></a>
+									<div id="menu">
+										<ul>
+											<li><a href="/">Home</a></li>
+											<li><a href="/sign-up">Sign Up</a></li>
+                                            <li><a href="/">Rent Bikes</a></li>
+										</ul>
+									</div>
+								</li>
+							</ul>
+						</nav>
+					</header>
+
+				<!-- Main -->
+					<article id="main">
+						<header>
+							<h2>About us</h2>
+						</header>
+						<section class="wrapper style5">
+							<div class="inner">
+
+								<h3>Hi and welcome to Youvelo.com</h3>
+
+                                <p>Col & Dan here; recreational cyclists, travel  enthusiasts, slightly geeky brothers to name a few.
+                                    Sitting around has never really been our thing, whether it on the weekend or on a holiday, we love to go out and explore.</p>
+
+                                <p>Renting out a bike isn’t as easy as it should be; there are many things to worry about, location, quality, and price.
+                                    On top of that dealers generally ask for large deposits which can make the rental impossible.</p>
+
+                                <p>This is a problem that we hope to solve for all cyclists.
+                                    If you are on a comfy cruiser through Burgundy, or a serious racer through the mountains of Majorca we hope to make your bike rental smooth, easy, and stress free.</p>
+
+							</div>
+						</section>
+					</article>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<ul class="icons">
+
+						</ul>
+						<ul class="copyright">
+							<li>&copy; Youvelo.com</li><li><a href="http://html5up.net">Youvelo.com Bicycles to rent</a></li>
+                                <p hidden>Bicycle Rental<a href="http://html5up.net">Youvelo.com Bicycles to rent</a></p>
+                                <p hidden>Bicycle Rental France<a href="http://html5up.net">Youvelo.com Bicycles to rent</a></p>
+                                <p hidden>Bicycle Rental Italy<a href="http://html5up.net">Youvelo.com Bicycles to rent</a></p>
+                                <p hidden>Bicycle Rental Spain<a href="http://html5up.net">Youvelo.com Bicycles to rent</a></p>
+                                <p hidden>Bicycle Rental WorldWide<a href="http://html5up.net">Youvelo.com Bicycles to rent</a></p>
+                                <p hidden>Bicycle Rental Europe<a href="http://html5up.net">Youvelo.com Bicycles to rent</a></p>
+                                <p hidden>Bike Rental<a href="http://html5up.net">Youvelo.com Bicycles to rent</a></p>
+                                <p hidden>Bike Rental France<a href="http://html5up.net">Youvelo.com Bicycles to rent</a></p>
+                                <p hidden>Bike Rental Spain<a href="http://html5up.net">Youvelo.com Bicycles to rent</a></p>
+                                <p hidden>Bike Rental Italy<a href="http://html5up.net">Youvelo.com Bicycles to rent</a></p>
+                                <p hidden>Bike Rental Europe<a href="http://html5up.net">Youvelo.com Bicycles to rent</a></p>
+						</ul>
+					</footer>
+
+			</div>
+
+		<!-- Scripts -->
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBGlg8YhNcZJP-Pfd1WskAlHcbsjxUPncQ&libraries=places&callback=initAutocomplete"></script>
+        <script src="{% static  "js/jquery.min.js" %}"></script>
+        <script type="text/javascript" src="{% static 'js/myprojectname.js' %}"></script>
+        <script src="{% static  "js/places_autocomplete.js" %}"></script>
+		<script src={% static "js/jquery.scrollex.min.js"%}></script>
+		<script src={% static "js/jquery.scrolly.min.js"%}></script>
+		<script src={% static "js/skel.min.js" %}></script>
+		<script src={% static "js/util.js" %}></script>
+		<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
+		<script src={% static "js/main.js" %}></script>
+
+	</body>
+</html>
