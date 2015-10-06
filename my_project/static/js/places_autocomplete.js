@@ -8,7 +8,7 @@ function initMap() {
 }
 
 var initAutocomplete = function(){
-    var autocomplete = new google.maps.places.Autocomplete($('input[name="location"]')[1], {types: ['geocode']});
+    var autocomplete = new google.maps.places.Autocomplete($('input[name="location"]')[0], {types: ['geocode']});
 
     google.maps.event.addListener(autocomplete, 'place_changed', function() {
         var place = autocomplete.getPlace();

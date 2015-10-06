@@ -56,7 +56,7 @@ class BikeRentalFormOne(forms.Form):
 
     def save(self):
         data = self.cleaned_data
-        bs =BikeSearch.objects.create(
+        bs = BikeSearch.objects.create(
             location=data.get('location'),
             no_of_bikes=data.get('no_of_bikes'),
             bike_type=data.get('bike_type'),

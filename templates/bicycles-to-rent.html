@@ -8,21 +8,4 @@
     <input type="submit" value="Submit" />
 </form>
 
-    <form action="{{ submit_url }}" method="post">
-    {% csrf_token %}
-    <div class="control-group">
-   <label class="control-label">Location</label>
-   <div class="controls">
-     <input name="location" type="text" placeholder="City, State, Country" value="">
-     <input name="location_city" type="hidden" value="">
-     <input name="location_state" type="hidden" value="">
-     <input name="location_country" type="hidden" value="">
-     <input name="location_lat" type="hidden">
-     <input name="location_lng" type="hidden">
-    </div>
-</div>
-        <br>
-    <input type="submit" value="Submit" />
-</form>
-
 {% endblock %}
