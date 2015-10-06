@@ -4,6 +4,7 @@ from django import forms
 from django.core.mail import send_mail
 
 bike_types = (
+    ('scooter', 'scooter'),
     ('road_bike', 'road bike'),
     ('mountain_bike', 'mountain bike'),
     ('hybrid_bike', 'hybrid bike'),

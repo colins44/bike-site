@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import RegexValidator
 
 bike_types = (
+    ('scooter', 'scooter'),
     ('road_bike', 'road bike'),
     ('mountain_bike', 'mountain bike'),
     ('hybrid_bike', 'hybrid bike'),
