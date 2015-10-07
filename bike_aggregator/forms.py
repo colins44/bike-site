@@ -20,6 +20,7 @@ moto_bike_types = (
     ('offroad', 'offroad'),
 )
 
+
 class SignUpForm(ModelForm):
 
     class Meta:
