@@ -1,42 +1,42 @@
 from django.shortcuts import redirect
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
-from .forms import BikeRentalForm, SignUpForm, ContactForm, BikeRentalFormOne, MotoBikeHireForm
+from .forms import BikeRentalForm, SignUpForm, ContactForm
 import random
 
 def index(request):
-    urls = ('ab-page-one', 'ab-page-two')
+    urls = ('test', 'control')
     return redirect(random.choice(urls), permanent=True)
 
 
-class Index(FormView):
+class Control(FormView):
     template_name = 'bikes-to-rent.html'
     form_class = BikeRentalForm
     success_url = '/sorry-no-bikes-available/'
 
     def form_valid(self, form):
         form.save()
-        return super(Index, self).form_valid(form)
+        return super(Control, self).form_valid(form)
 
     def get_context_data(self, **kwargs):
-        context = super(Index, self).get_context_data(**kwargs)
+        context = super(Control, self).get_context_data(**kwargs)
         context['message'] = "Search for bikes to rent all over the world"
         context['button'] = "Search"
         context['website_name'] = 'YouVelo.com'
         context['submit_url'] = '/bikes-to-rent/'
         return context
 
-class BikeHire(FormView):
+class Test(FormView):
     template_name = 'bicycles-to-rent.html'
-    form_class = BikeRentalFormOne
+    form_class = BikeRentalForm
     success_url = '/sorry-no-bikes-available/'
 
     def form_valid(self, form):
         form.save()
-        return super(BikeHire, self).form_valid(form)
+        return super(Test, self).form_valid(form)
 
     def get_context_data(self, **kwargs):
-        context = super(BikeHire, self).get_context_data(**kwargs)
+        context = super(Test, self).get_context_data(**kwargs)
         context['message'] = "Search for bikes to rent all over the world"
         context['button'] = "Search"
         context['website_name'] = 'YouVelo.com'
