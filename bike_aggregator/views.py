@@ -1,8 +1,30 @@
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import FormView
+from bike_aggregator.models import BikeShop
 from .forms import BikeRentalForm, SignUpForm, ContactForm
 import random
+
+
+class BikesShops(ListView):
+    model = BikeShop
+    paginate_by = 10
+    template_name = "bike-shop-list.html"
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object(queryset=BikeShop.objects.all())
+        return super(BikesShops, self).get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(BikesShops, self).get_context_data(**kwargs)
+        context['publisher'] = self.object
+        return context
+
+    def get_queryset(self):
+        return self.objects.all()
+
 
 def index(request):
     urls = ('test', 'control')
@@ -16,7 +38,11 @@ class Control(FormView):
 
     def form_valid(self, form):
         form.save()
-        return super(Control, self).form_valid(form)
+        super(Control, self).form_valid(form)
+        testing_dict = {'name':'colin', 'age':31}
+        redirect_url = "/bike-shops/?{}={}".format((testing_dict.keys()), (testing_dict.values()))
+        print redirect_url
+        return HttpResponseRedirect(reverse(BikesShops))
 
     def get_context_data(self, **kwargs):
         context = super(Control, self).get_context_data(**kwargs)
@@ -33,7 +59,11 @@ class Test(FormView):
 
     def form_valid(self, form):
         form.save()
-        return super(Test, self).form_valid(form)
+        super(Test, self).form_valid(form)
+        testing_dict = {'name':'colin', 'age':31}
+        redirect_url = "/bike-shops/?{}={}".format((testing_dict.keys()), (testing_dict.values()))
+        print redirect_url
+        return HttpResponseRedirect(reverse(BikesShops))
 
     def get_context_data(self, **kwargs):
         context = super(Test, self).get_context_data(**kwargs)

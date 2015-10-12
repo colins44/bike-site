@@ -15,7 +15,8 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from bike_aggregator.views import Control, SignUp, ContactView, SorryNoBikesAvalibleView, StoreSignUp, Test, index
+from bike_aggregator.views import Control, SignUp, ContactView, SorryNoBikesAvalibleView, StoreSignUp, Test, index, \
+    BikesShops
 from bike_aggregator.sitemaps import StaticSiteMap
 from django.contrib.sitemaps.views import sitemap
 from django.views.generic import TemplateView
@@ -31,6 +32,7 @@ urlpatterns = [
     url(r'^bicycles-to-rent/', Test.as_view(), name='test'),
     url(r'^contact/', ContactView.as_view(), name='contact'),
     url(r'^sign-up/', SignUp.as_view(), name='sign-up'),
+    url(r'^bike-shops/', BikesShops.as_view(), name='bike-shops'),
     url(r'^sorry-no-bikes-available/', SorryNoBikesAvalibleView.as_view(), name='sorry-no-bikes-available'),
     url(r'^thanks/', StoreSignUp.as_view(), name='thanks'),
     url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
