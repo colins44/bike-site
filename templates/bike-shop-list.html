@@ -1,13 +1,33 @@
+{% extends "base.html" %}
+
 {% block content %}
+    {% if form %}
     <form action="{{ submit_url }}" method="post">
     {% csrf_token %}
     {{ form.as_p }}
         <br>
     <input type="submit" value="Submit" />
 </form>
+    {% endif %}
 
-    <p>{{ bikeshop }}</p>
+    <div class="table-wrapper"></div>
+    <table>
+            <tr>
+                <td>Shop Name</td>
+                <td>Shop location</td>
+                <td>Shop Contact detail</td>
+            </tr>
+        {%  for bikeshop in bikeshop_list %}
+            <tr>
+                <td>{{ bikeshop.shop_name }}</td>
+                <td>{{ bikeshop.location }}</td>
+                <td>{{ bikeshop.email }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    </div>
 
 {%  endblock %}
+
 
 

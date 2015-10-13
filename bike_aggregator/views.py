@@ -1,6 +1,4 @@
-from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, Http404
-from django.shortcuts import redirect, render_to_response
+from django.shortcuts import redirect
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import FormView
 from bike_aggregator.models import BikeShop
@@ -8,32 +6,60 @@ from django.views.generic.edit import FormMixin
 from .forms import BikeRentalForm, SignUpForm, ContactForm
 import random
 
-def index(request):
-    urls = ('test', 'control')
-    return redirect(random.choice(urls), permanent=True)
-
 
 class BikeShopsView(FormMixin, ListView):
     model = BikeShop
-    # paginate_by = 10
+    paginate_by = 10
     template_name = "bike-shop-list.html"
     form_class = BikeRentalForm
+    success_url = "/bike-shops/"
 
-    def get_context_data(self, **kwargs):
-        context = super(BikeShopsView, self).get_context_data(**kwargs)
-        context['form'] = self.form_class
-        context['bikeshop'] = 'testing'
-        return context
+    def get_queryset(self):
+        return self.model.objects.all()
 
     def get(self, request, *args, **kwargs):
-        self.object_list = self.get_queryset()
         self.form = self.form_class()
-        context = self.get_context_data(object_list=self.object_list, form=self.form)
+
+        if kwargs.get('search_instance'):
+            bikesearch = kwargs['search_instance']
+            self.object_list = self.get_queryset().filter(city=bikesearch.city)
+            context = self.get_context_data(object_list=self.object_list)
+            if self.object_list.count() > 0:
+                context = self.get_context_data(object_list=self.object_list)
+                context['website_name'] = 'YouVelo.com'
+                context['message'] = "your results"
+                context['button'] = "Search Again"
+                context['button_action'] = "/bike-shops/"
+
+            else:
+                self.object_list = self.get_queryset().filter(country=bikesearch.country)
+                context['message'] = "Looks like we can not find any bike rentals in the town you were looking at" \
+                                     "here is a list of bike rental shops in the same country, ordered by distance" \
+                                     "from the point that you were looking at"
+                context['button'] = "Search Again"
+                context['website_name'] = 'YouVelo.com'
+                context['button_action'] = "/bike-shops/"
+
+        else:
+            self.object_list = self.model.objects.none()
+            context = self.get_context_data(object_list=self.object_list, form=self.form)
+            context['website_name'] = 'YouVelo.com'
+            context['message'] = "Search for bikes to rent all over the world"
+            context['button'] = "Search"
+
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
-        return self.get(request, *args, **kwargs)
+        form = self.get_form()
+        if form.is_valid():
+            kwargs['search_instance'] = form.save()
+            return self.get(request, *args, **kwargs)
+        else:
+            return self.form_invalid(form)
 
+def index(request):
+    urls = ('test', 'control')
+    return redirect(random.choice(urls), permanent=True)
 
 class Control(FormView):
     template_name = 'bikes-to-rent.html'
@@ -43,9 +69,6 @@ class Control(FormView):
     def form_valid(self, form):
         form.save()
         super(Control, self).form_valid(form)
-
-    def post(self, request, *args, **kwargs):
-        import ipdb; ipdb.set_trace()
 
     def get_context_data(self, **kwargs):
         context = super(Control, self).get_context_data(**kwargs)
@@ -63,10 +86,6 @@ class Test(FormView):
     def form_valid(self, form):
         form.save()
         super(Test, self).form_valid(form)
-        return HttpResponseRedirect(reverse('bike-shops'))
-
-    def post(self, request, *args, **kwargs):
-        import ipdb; ipdb.set_trace()
 
     def get_context_data(self, **kwargs):
         context = super(Test, self).get_context_data(**kwargs)
