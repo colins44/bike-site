@@ -1,25 +1,13 @@
 {% block content %}
-    <h2>Publisher</h2>
+    <form action="{{ submit_url }}" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+        <br>
+    <input type="submit" value="Submit" />
+</form>
 
-    <ol>
-      {% for bikeshop in page_obj %}
-        <li>{{ bikeshop.shop_name }}</li>
-      {% endfor %}
-    </ol>
+    <p>{{ bikeshop }}</p>
 
-    <div class="pagination">
-        <span class="step-links">
-            {% if page_obj.has_previous %}
-                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
-            {% endif %}
+{%  endblock %}
 
-            <span class="current">
-                Page {{ page_obj.number }} of {{ paginator.num_pages }}.
-            </span>
 
-            {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}">next</a>
-            {% endif %}
-        </span>
-    </div>
-{% endblock %}

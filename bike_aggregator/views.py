@@ -1,34 +1,38 @@
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
-from django.shortcuts import redirect
+from django.http import HttpResponseRedirect, Http404
+from django.shortcuts import redirect, render_to_response
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import FormView
 from bike_aggregator.models import BikeShop
+from django.views.generic.edit import FormMixin
 from .forms import BikeRentalForm, SignUpForm, ContactForm
 import random
-
-
-class BikesShops(ListView):
-    model = BikeShop
-    paginate_by = 10
-    template_name = "bike-shop-list.html"
-
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object(queryset=BikeShop.objects.all())
-        return super(BikesShops, self).get(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        context = super(BikesShops, self).get_context_data(**kwargs)
-        context['publisher'] = self.object
-        return context
-
-    def get_queryset(self):
-        return self.objects.all()
-
 
 def index(request):
     urls = ('test', 'control')
     return redirect(random.choice(urls), permanent=True)
+
+
+class BikeShopsView(FormMixin, ListView):
+    model = BikeShop
+    # paginate_by = 10
+    template_name = "bike-shop-list.html"
+    form_class = BikeRentalForm
+
+    def get_context_data(self, **kwargs):
+        context = super(BikeShopsView, self).get_context_data(**kwargs)
+        context['form'] = self.form_class
+        context['bikeshop'] = 'testing'
+        return context
+
+    def get(self, request, *args, **kwargs):
+        self.object_list = self.get_queryset()
+        self.form = self.form_class()
+        context = self.get_context_data(object_list=self.object_list, form=self.form)
+        return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        return self.get(request, *args, **kwargs)
 
 
 class Control(FormView):
@@ -39,10 +43,9 @@ class Control(FormView):
     def form_valid(self, form):
         form.save()
         super(Control, self).form_valid(form)
-        testing_dict = {'name':'colin', 'age':31}
-        redirect_url = "/bike-shops/?{}={}".format((testing_dict.keys()), (testing_dict.values()))
-        print redirect_url
-        return HttpResponseRedirect(reverse(BikesShops))
+
+    def post(self, request, *args, **kwargs):
+        import ipdb; ipdb.set_trace()
 
     def get_context_data(self, **kwargs):
         context = super(Control, self).get_context_data(**kwargs)
@@ -60,10 +63,10 @@ class Test(FormView):
     def form_valid(self, form):
         form.save()
         super(Test, self).form_valid(form)
-        testing_dict = {'name':'colin', 'age':31}
-        redirect_url = "/bike-shops/?{}={}".format((testing_dict.keys()), (testing_dict.values()))
-        print redirect_url
-        return HttpResponseRedirect(reverse(BikesShops))
+        return HttpResponseRedirect(reverse('bike-shops'))
+
+    def post(self, request, *args, **kwargs):
+        import ipdb; ipdb.set_trace()
 
     def get_context_data(self, **kwargs):
         context = super(Test, self).get_context_data(**kwargs)
