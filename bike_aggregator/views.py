@@ -4,6 +4,7 @@ from django.views.generic.edit import FormView
 from bike_aggregator.models import BikeShop
 from django.views.generic.edit import FormMixin
 from .forms import BikeRentalForm, SignUpForm, ContactForm
+from django.shortcuts import get_object_or_404
 import random
 
 
@@ -57,9 +58,26 @@ class BikeShopsView(FormMixin, ListView):
         else:
             return self.form_invalid(form)
 
+
+class BikeShopContact(FormView):
+    template_name = 'contact.html'
+    form_class = ContactForm
+    success_url = "/thanks/"
+
+    def form_valid(self, form):
+        form.send_email()
+        super(BikeShopContact, self).form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super(BikeShopContact, self).get_context_data(**kwargs)
+        context['bikeshop'] = get_object_or_404(BikeShop, pk=self.kwargs['pk'])
+        return context
+
+
 def index(request):
     urls = ('test', 'control')
     return redirect(random.choice(urls), permanent=True)
+
 
 class Control(FormView):
     template_name = 'bikes-to-rent.html'
@@ -78,6 +96,7 @@ class Control(FormView):
         context['submit_url'] = '/bikes-to-rent/'
         return context
 
+
 class Test(FormView):
     template_name = 'bicycles-to-rent.html'
     form_class = BikeRentalForm
@@ -95,6 +114,7 @@ class Test(FormView):
         context['submit_url'] = '/bicycles-to-rent/'
         return context
 
+
 class SignUp(FormView):
     template_name = 'sign-up.html'
     form_class = SignUpForm
@@ -104,13 +124,13 @@ class SignUp(FormView):
         form.save()
         return super(SignUp, self).form_valid(form)
 
-
     def get_context_data(self, **kwargs):
         context = super(SignUp, self).get_context_data(**kwargs)
         context['message'] = "Sign your store up and start renting your bikes out to users of our website"
         context['button'] = "Sign Up"
         context['website_name'] = 'YouVelo.com'
         return context
+
 
 class ContactView(FormView):
     template_name = 'contact.html'
@@ -120,6 +140,7 @@ class ContactView(FormView):
     def form_valid(self, form):
         form.send_email()
         return super(ContactView, self).form_valid(form)
+
 
 class SorryNoBikesAvalibleView(TemplateView):
     template_name = "sorry-no-bikes-available.html"

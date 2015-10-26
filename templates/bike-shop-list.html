@@ -10,22 +10,26 @@
 </form>
     {% endif %}
 
-    <div class="table-wrapper"></div>
-    <table>
-            <tr>
-                <td>Shop Name</td>
-                <td>Shop location</td>
-                <td>Shop Contact detail</td>
-            </tr>
-        {%  for bikeshop in bikeshop_list %}
-            <tr>
-                <td>{{ bikeshop.shop_name }}</td>
-                <td>{{ bikeshop.location }}</td>
-                <td>{{ bikeshop.email }}</td>
-            </tr>
+    {% if bikeshop_list %}
+    <section id="three" class="wrapper style3 special">
+        {% for bikeshop in bikeshop_list %}
+        <div class="inner">
+            <header class="major">
+                <h2>{{ bikeshop.shop_name}}</h2>
+                <p>Address: {{ bikeshop.street_number}}, {{ bikeshop.street }}, {{ bikeshop.city }}, {{ bikeshop.post_code}}</p>
+                <p>Rental Equipment:
+                {% for equipment in bikeshop.rental_options.all %}
+                {{ equipment.name }}
+                {% if not forloop.last %}, {% endif %}
+                {% endfor %}</p>
+                <a href="/contact-bikeshop/{{ bikeshop.pk }}">contact the bikeshop</a>
+            </header>
+        </div>
+        <hr>
         {% endfor %}
-    </table>
-    </div>
+    </section>
+    {% endif %}
+
 
 {%  endblock %}
 

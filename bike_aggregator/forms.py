@@ -48,12 +48,13 @@ class BikeRentalForm(ModelForm):
 
 class ContactForm(forms.Form):
 
-    name = forms.CharField()
-    message = forms.CharField(widget=forms.Textarea)
-    email = forms.EmailField()
+    name = forms.CharField(required=True)
+    email = forms.EmailField(required=True)
+    message = forms.CharField(widget=forms.Textarea, required=True)
 
     def send_email(self):
-        send_mail('Contact from the bike site', self.cleaned_data['message'], self.cleaned_data['email'],
-            ['colin.pringlewood@gmail.com'], fail_silently=False)
+        print 'asdsahjdkjahsdkjahs'
+        # send_mail('Contact from the bike site', self.cleaned_data['message'], self.cleaned_data['email'],
+        #     ['colin.pringlewood@gmail.com'], fail_silently=False)
 
 

@@ -58,6 +58,22 @@
 					</header>
 
 				<!-- Main -->
+                {% if bikeshop %}
+                <article id="main">
+						<header>
+							<h2>Contact {{ bikeshop.shop_name }}</h2>
+						</header>
+						<section class="wrapper style5">
+							<div class="inner">
+                                <form action="" method="post">{% csrf_token %}
+                                    {{ form.as_p }}
+                                    <br>
+                                <input type="submit" value="Submit" />
+                            </form>
+							</div>
+						</section>
+					</article>
+                {% else %}
 					<article id="main">
 						<header>
 							<h2>Contact Us</h2>
@@ -72,6 +88,7 @@
 							</div>
 						</section>
 					</article>
+                {% endif %}
 
 				<!-- Footer -->
 					<footer id="footer">
