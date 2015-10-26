@@ -53,8 +53,7 @@ class ContactForm(forms.Form):
     message = forms.CharField(widget=forms.Textarea, required=True)
 
     def send_email(self):
-        print 'asdsahjdkjahsdkjahs'
-        # send_mail('Contact from the bike site', self.cleaned_data['message'], self.cleaned_data['email'],
-        #     ['colin.pringlewood@gmail.com'], fail_silently=False)
+        send_mail('Contact from the bike site', self.cleaned_data['message'], self.cleaned_data['email'],
+            ['colin.pringlewood@gmail.com'], fail_silently=False)
 
 

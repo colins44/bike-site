@@ -66,7 +66,7 @@ class BikeShopContact(FormView):
 
     def form_valid(self, form):
         form.send_email()
-        super(BikeShopContact, self).form_valid(form)
+        return super(BikeShopContact, self).form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super(BikeShopContact, self).get_context_data(**kwargs)
@@ -86,7 +86,7 @@ class Control(FormView):
 
     def form_valid(self, form):
         form.save()
-        super(Control, self).form_valid(form)
+        return super(Control, self).form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super(Control, self).get_context_data(**kwargs)
@@ -104,7 +104,7 @@ class Test(FormView):
 
     def form_valid(self, form):
         form.save()
-        super(Test, self).form_valid(form)
+        return super(Test, self).form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super(Test, self).get_context_data(**kwargs)
