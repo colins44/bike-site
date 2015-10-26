@@ -63,7 +63,11 @@
 							<h2>{{ website_name }}</h2>
 							<p>{{ message }}</p>
 							<ul class="actions">
-								<li><a href="#one" class="button special">{{ button }}</a></li>
+                                {% if button_action %}
+                                    <li><a href="{{ button_action }}" class="button special">{{ button }}</a></li>
+                                {% else %}
+                                    <li><a href="#one" class="button special">{{ button }}</a></li>
+                                {% endif %}
 							</ul>
 						</div>
 					</section>

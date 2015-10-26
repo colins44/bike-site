@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if form %}
+    <form action="{{ submit_url }}" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+        <br>
+    <input type="submit" value="Submit" />
+</form>
+    {% endif %}
+
+    {% if bikeshop_list %}
+    <section id="three" class="wrapper style3 special">
+        {% for bikeshop in bikeshop_list %}
+        <div class="inner">
+            <header class="major">
+                <h2>{{ bikeshop.shop_name}}</h2>
+                <p>Address: {{ bikeshop.street_number}}, {{ bikeshop.street }}, {{ bikeshop.city }}, {{ bikeshop.post_code}}</p>
+                <p>Rental Equipment:
+                {% for equipment in bikeshop.rental_options.all %}
+                {{ equipment.name }}
+                {% if not forloop.last %}, {% endif %}
+                {% endfor %}</p>
+                <a href="/contact-bikeshop/{{ bikeshop.pk }}">contact the bikeshop</a>
+            </header>
+        </div>
+        <hr>
+        {% endfor %}
+    </section>
+    {% endif %}
+
+
+{%  endblock %}
+
+
+

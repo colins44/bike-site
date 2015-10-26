@@ -12,6 +12,14 @@ bike_types = (
 
 class BikeSearch(models.Model):
     location = models.CharField(max_length=225)
+    street_number = models.CharField(max_length=225, blank=True, null=True)
+    street = models.CharField(max_length=225, blank=True, null=True)
+    post_code = models.CharField(max_length=225, blank=True, null=True)
+    state = models.CharField(max_length=225, null=True, blank=True)
+    city = models.CharField(max_length=225, null=True, blank=True)
+    country = models.CharField(max_length=225, null=True, blank=True)
+    latitude = models.DecimalField(max_digits=8, decimal_places=4, null=True)
+    longitude = models.DecimalField(max_digits=8, decimal_places=4, null=True)
     bike_type = models.CharField(max_length=225, choices=bike_types)
     no_of_bikes = models.IntegerField()
 

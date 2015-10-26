@@ -15,7 +15,8 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from bike_aggregator.views import Control, SignUp, ContactView, SorryNoBikesAvalibleView, StoreSignUp, Test, index
+from bike_aggregator.views import Control, SignUp, ContactView, SorryNoBikesAvalibleView, StoreSignUp, Test, index, \
+    BikeShopsView, BikeShopContact
 from bike_aggregator.sitemaps import StaticSiteMap
 from django.contrib.sitemaps.views import sitemap
 from django.views.generic import TemplateView
@@ -26,11 +27,13 @@ sitemaps ={
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^$', index, name='index'),
+    url(r'^$', BikeShopsView.as_view(), name='index'),
     url(r'^bikes-to-rent/', Control.as_view(), name='control'),
     url(r'^bicycles-to-rent/', Test.as_view(), name='test'),
     url(r'^contact/', ContactView.as_view(), name='contact'),
     url(r'^sign-up/', SignUp.as_view(), name='sign-up'),
+    url(r'^bike-shops/', BikeShopsView.as_view(), name='bike-shops'),
+    url(r'^contact-bikeshop/(?P<pk>[0-9]+)/', BikeShopContact.as_view(), name='bikeshop-contact'),
     url(r'^sorry-no-bikes-available/', SorryNoBikesAvalibleView.as_view(), name='sorry-no-bikes-available'),
     url(r'^thanks/', StoreSignUp.as_view(), name='thanks'),
     url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),

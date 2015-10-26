@@ -32,11 +32,15 @@ class SignUpForm(ModelForm):
 
 
 class BikeRentalForm(ModelForm):
-    location = forms.CharField(
-        max_length=200,
-        widget=forms.TextInput(attrs={'placeholder': 'Where do you want to go?'}),
-        label="Location:"
-    )
+    street_number = forms.CharField(max_length=225, required=False, widget=forms.HiddenInput())
+    street = forms.CharField(max_length=225, required=False, widget=forms.HiddenInput())
+    post_code = forms.CharField(max_length=225, required=False, widget=forms.HiddenInput())
+    city = forms.CharField(max_length=225, required=False, widget=forms.HiddenInput())
+    country = forms.CharField(max_length=225, required=False, widget=forms.HiddenInput())
+    state = forms.CharField(max_length=225, required=False, widget=forms.HiddenInput())
+    latitude = forms.FloatField(required=False, widget=forms.HiddenInput())
+    longitude = forms.FloatField(required=False, widget=forms.HiddenInput())
+
     class Meta:
         model = BikeSearch
         exclude = ('pk',)
@@ -44,9 +48,9 @@ class BikeRentalForm(ModelForm):
 
 class ContactForm(forms.Form):
 
-    name = forms.CharField()
-    message = forms.CharField(widget=forms.Textarea)
-    email = forms.EmailField()
+    name = forms.CharField(required=True)
+    email = forms.EmailField(required=True)
+    message = forms.CharField(widget=forms.Textarea, required=True)
 
     def send_email(self):
         send_mail('Contact from the bike site', self.cleaned_data['message'], self.cleaned_data['email'],
