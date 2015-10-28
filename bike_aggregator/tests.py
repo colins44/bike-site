@@ -1,7 +1,7 @@
 from django.forms import model_to_dict
 from django.test import TestCase
 from bike_aggregator.models import BikeSearch, BikeShop, RentalEquipment
-from .forms import BikeRentalForm, SignUpForm
+from .forms import BikeRentalForm, SignUpForm, ContactForm
 
 
 class TestForms(TestCase):
@@ -99,6 +99,9 @@ class TestForms(TestCase):
         signup_form_data.pop('longitude')
         self.assertDictContainsSubset(signup_form_data, bike_shop)
         self.assertEqual(BikeShop.objects.all().count(), 1)
+
+    def test_sending_equiry_email(self):
+        self.assertTrue(ContactForm.send_mail('testing', ['admin@email.com', {}]))
 
 
 # Create your tests here.
