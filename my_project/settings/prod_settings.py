@@ -12,7 +12,7 @@ EMAIL_ADDRESS = os.environ.get('EMAIL_ADDRESS', 'enquiry@youvelo.com')
 EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD', 'this_is_not_the_password')
 
 
-EMAIL_USE_TLS = True
+EMAIL_USE_TLS = False
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'enquiry@youvelo.com'
