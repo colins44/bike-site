@@ -21,13 +21,25 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY', 'this_is_not_the_key')
-
-# SECURITY WARNING: don't run with debug turned on in production!
+# EMAIL_ADDRESS = os.environ.get('EMAIL_ADDRESS', 'enquiry@youvelo.com')
+# EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD', 'this_is_not_the_password')
+#
+# # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
+#
 ALLOWED_HOSTS = []
+#
+# EMAIL_USE_TLS = True
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_HOST_USER = 'enquiry@youvelo.com'
+# EMAIL_HOST_PASSWORD = EMAIL_PASSWORD
+# DEFAULT_FROM_EMAIL = EMAIL_ADDRESS
+# DEFAULT_TO_EMAIL = EMAIL_ADDRESS
 
-EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # Application definition
 
 INSTALLED_APPS = (

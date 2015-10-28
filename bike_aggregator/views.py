@@ -65,7 +65,15 @@ class BikeShopContact(FormView):
     success_url = "/thanks/"
 
     def form_valid(self, form):
-        form.send_email()
+        context = {
+            'bikeshop': get_object_or_404(BikeShop, pk=self.kwargs['pk']),
+            'user': form.cleaned_data
+        }
+        form.send_mail(
+            subject='Rental Enquiry',
+            to_addresses=['colin.pringlewood@gmail.com', 'dpringlewood@gmail.com'],
+            context=context
+        )
         return super(BikeShopContact, self).form_valid(form)
 
     def get_context_data(self, **kwargs):

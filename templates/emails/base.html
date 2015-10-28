@@ -1,0 +1,19 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><body><table width="100%" cellpadding="20" style="font-family: Helvetica, sans-serif;">
+<tr>
+<td bgcolor="#21b2a6" align="center">
+    {% load staticfiles %}
+      <img src="{%  static "images/youvelo_logo.png" %} alt="Youvelo">
+</td>
+  </tr>
+<tr>
+    <td>
+        {% block content %}{% endblock %}
+    </td>
+  </tr>
+<tr>
+<td bgcolor="#182231" style="color: white;">
+      © 2015 Youvelo.com Ltd. All rights reserved.
+    </td>
+  </tr>
+</table></body></html>
