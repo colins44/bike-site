@@ -71,7 +71,7 @@ class BikeShopContact(FormView):
         }
         form.send_mail(
             subject='Rental Enquiry',
-            to_addresses=['colin.pringlewood@gmail.com', 'dpringlewood@gmail.com'],
+            to_addresses=['colin.pringlewood@gmail.com'],
             context=context
         )
         return super(BikeShopContact, self).form_valid(form)
