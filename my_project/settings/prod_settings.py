@@ -1,7 +1,7 @@
 from my_project.settings.settings import *
 
 # DEBUG = False
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['localhost', 'http://youvelo.com', 'http://www.youvelo.com']
 DEBUG = False
 
 #THIS IS WHERE ALL THE STATIC FILES ARE COPIED TO WHEN COLLECT STATIC IS RUN
