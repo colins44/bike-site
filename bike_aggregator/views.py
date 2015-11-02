@@ -3,6 +3,7 @@ from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import FormView
 from bike_aggregator.models import BikeShop
 from django.views.generic.edit import FormMixin
+from bike_aggregator.utils import Email
 from .forms import BikeRentalForm, SignUpForm, ContactForm
 from django.shortcuts import get_object_or_404
 import random
@@ -69,11 +70,10 @@ class BikeShopContact(FormView):
             'bikeshop': get_object_or_404(BikeShop, pk=self.kwargs['pk']),
             'user': form.cleaned_data
         }
-        form.send_mail(
-            subject='Rental Enquiry',
-            to_addresses=['colin.pringlewood@gmail.com'],
-            context=context
-        )
+        email = Email(to='colin.pringlewood@gmail.com', subject='Bike Hire Enquiry')
+        email._text = ('emails/enquiry.txt', context)
+        email._html = ('emails/enquiry.html', context)
+        email.send()
         return super(BikeShopContact, self).form_valid(form)
 
     def get_context_data(self, **kwargs):

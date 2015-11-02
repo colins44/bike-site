@@ -3,7 +3,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 
 
-class EMail(object):
+class Email(object):
     """
     A wrapper around Django's EmailMultiAlternatives
     that renders txt and html templates.
@@ -15,11 +15,12 @@ class EMail(object):
     >>> email.send()
     >>>
     """
-    def __init__(self, to, subject):
+    def __init__(self, to, subject, fail_silently=True):
         self.to = to
         self.subject = subject
         self._html = None
         self._text = None
+        self.fail_silently = fail_silently
 
     def _render(self, template, context):
         return render_to_string(template, context)
@@ -30,7 +31,7 @@ class EMail(object):
     def text(self, template, context):
         self._text = self._render(template, context)
 
-    def send(self, from_addr=None, fail_silently=False):
+    def send(self, from_addr=None, fail_silently=self.fail_silently):
         if isinstance(self.to, basestring):
             self.to = [self.to]
         if not from_addr:
