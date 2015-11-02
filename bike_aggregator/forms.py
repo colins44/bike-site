@@ -1,10 +1,6 @@
 from django.forms import ModelForm
 from bike_aggregator.models import BikeShop, BikeSearch
 from django import forms
-from django.core.mail import send_mail
-from django.template import Context
-from django.template.loader import render_to_string, get_template
-from django.core.mail import EmailMessage
 
 bike_types = (
     ('scooter', 'scooter'),
@@ -55,13 +51,5 @@ class ContactForm(forms.Form):
     email = forms.EmailField(required=True)
     message = forms.CharField(widget=forms.Textarea, required=True)
 
-    def send_mail(self, subject, to_addresses,  context):
-        subject = subject
-        to = to_addresses
-        from_email = 'enquiry@youvelo.com'
-        message = get_template('emails/enquiry.html').render(Context(context))
-        msg = EmailMessage(subject, message, to=to, from_email=from_email)
-        msg.content_subtype = 'html'
-        msg.send()
 
 
