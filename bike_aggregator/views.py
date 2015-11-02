@@ -31,16 +31,15 @@ class BikeShopsView(FormMixin, ListView):
                 context['website_name'] = 'YouVelo.com'
                 context['message'] = "your results"
                 context['button'] = "Search Again"
-                context['button_action'] = "/bike-shops/"
+                context['button_action'] = "/"
 
             else:
                 self.object_list = self.get_queryset().filter(country=bikesearch.country)
-                context['message'] = "Looks like we can not find any bike rentals in the town you were looking at" \
-                                     "here is a list of bike rental shops in the same country, ordered by distance" \
-                                     "from the point that you were looking at"
+                context['message'] = "Looks like we cant find any bike shops in the area you are looking for"
                 context['button'] = "Search Again"
                 context['website_name'] = 'YouVelo.com'
-                context['button_action'] = "/bike-shops/"
+                context['button_action'] = "/#one"
+                context['form'] = self.form
 
         else:
             self.object_list = self.model.objects.none()
@@ -63,7 +62,7 @@ class BikeShopsView(FormMixin, ListView):
 class BikeShopContact(FormView):
     template_name = 'contact.html'
     form_class = ContactForm
-    success_url = "/thanks/"
+    success_url = "/enquiry-email-sent/"
 
     def form_valid(self, form):
         context = {
@@ -159,6 +158,7 @@ class SorryNoBikesAvalibleView(TemplateView):
         context['website_name'] = 'YouVelo.com'
         return context
 
+
 class StoreSignUp(TemplateView):
     template_name = 'thanks.html'
 
@@ -167,5 +167,17 @@ class StoreSignUp(TemplateView):
         context['message'] = "Thanks for sigining up, we will be in contact shortly"
         context['button'] = "Home"
         context['website_name'] = 'YouVelo.com'
+        return context
+
+
+class EnquiryEmailSent(TemplateView):
+    template_name = 'thanks.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(EnquiryEmailSent, self).get_context_data(**kwargs)
+        context['message'] = "Thanks, we have contacted the bike store and hope to hear from them soon"
+        context['button'] = "Search Again"
+        context['website_name'] = 'YouVelo.com'
+        context['button_action'] = "/"
         return context
 

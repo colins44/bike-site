@@ -29,13 +29,14 @@ DEBUG = True
 #
 ALLOWED_HOSTS = []
 #
-# EMAIL_USE_TLS = True
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 587
-# EMAIL_HOST_USER = 'enquiry@youvelo.com'
-# EMAIL_HOST_PASSWORD = EMAIL_PASSWORD
-# DEFAULT_FROM_EMAIL = EMAIL_ADDRESS
-# DEFAULT_TO_EMAIL = EMAIL_ADDRESS
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'enquiry@youvelo.com'
+EMAIL_HOST_PASSWORD = 'TESTING'
+DEFAULT_FROM_EMAIL = 'enquiry@youvelo.com'
+DEFAULT_TO_EMAIL = 'enquiry@youvelo.com'
+EMAIL_FROM_ADDR = 'enquiry@youvelo.com'
 
 # EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
