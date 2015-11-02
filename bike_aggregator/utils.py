@@ -3,7 +3,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 
 
-class Email(object):
+class EMail(object):
     """
     A wrapper around Django's EmailMultiAlternatives
     that renders txt and html templates.

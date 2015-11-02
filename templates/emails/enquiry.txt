@@ -1,0 +1,15 @@
+{% block content %}
+
+<h3>Hello {{ bikeshop.shop_name }}</h3>
+
+    <h3>{{ user.name }} would like to enquire about the following:</h3>
+
+    <p>{{ user.message }}</p>
+
+    <p>To reply to {{ user.name }} contact them on {{ user.email }}</p>
+
+    <a href="http://youvelo.com">Find out more about Youvelo.com</a>
+
+<p>Best regards,<br>
+{{ email_from_name }}</p>
+{% endblock %}
