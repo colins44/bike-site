@@ -15,12 +15,11 @@ class Email(object):
     >>> email.send()
     >>>
     """
-    def __init__(self, to, subject, fail_silently=True):
+    def __init__(self, to, subject):
         self.to = to
         self.subject = subject
         self._html = None
         self._text = None
-        self.fail_silently = fail_silently
 
     def _render(self, template, context):
         return render_to_string(template, context)
@@ -31,7 +30,7 @@ class Email(object):
     def text(self, template, context):
         self._text = self._render(template, context)
 
-    def send(self, from_addr=None, fail_silently=self.fail_silently):
+    def send(self, from_addr=None, fail_silently=False):
         if isinstance(self.to, basestring):
             self.to = [self.to]
         if not from_addr:
