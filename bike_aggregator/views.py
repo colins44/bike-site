@@ -71,8 +71,8 @@ class BikeShopContact(FormView):
             'user': form.cleaned_data
         }
         email = EMail(to='colin.pringlewood@gmail.com', subject='Bike Hire Enquiry')
-        email._text = ('emails/enquiry.txt', context)
-        email._html = ('emails/enquiry.html', context)
+        email.text('emails/enquiry.txt', context)
+        email.html('emails/enquiry.html', context)
         email.send()
         return super(BikeShopContact, self).form_valid(form)
 
