@@ -7,7 +7,26 @@ from bike_aggregator.utils import EMail
 from .forms import BikeRentalForm, SignUpForm, ContactForm
 from django.shortcuts import get_object_or_404
 import random
+from django.db.models import Q
 
+
+def distance_filter(search_object, distance, number_to_return):
+    """
+    lets try return all items that are within 10 miles
+    :param queryset:
+    :param distance:
+    :param number_to_return:
+    :return:
+    """
+    queryset = BikeShop.objects.all()
+    queryset.filter(latitude__lte=(search_object.latitude+2))
+    queryset.filter(latitude__gte=(search_object.latitude-2))
+    queryset.filter(longitude__lte=(search_object.longitude+2))
+    queryset.filter(longitude__gte=(search_object.longitude-2))
+
+    #now we can hit the db
+    for bike_shop in queryset:
+        #h2=s2+c2
 
 class BikeShopsView(FormMixin, ListView):
     model = BikeShop
