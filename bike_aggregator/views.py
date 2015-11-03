@@ -7,7 +7,17 @@ from bike_aggregator.utils import EMail
 from .forms import BikeRentalForm, SignUpForm, ContactForm
 from django.shortcuts import get_object_or_404
 import random
-from django.db.models import Q
+import logging
+logger = logging.getLogger(__name__)
+
+# def func1():
+#     logger.debug("this is a debug message!")
+#
+# def func2():
+#     logger.error("this is an error message!!")
+#
+# def func3():
+#     logger.info("this is an info message!!")
 
 
 class BikeShopsView(FormMixin, ListView):
