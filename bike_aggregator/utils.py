@@ -18,7 +18,7 @@ class EMail(object):
     >>> email.send()
     >>>
     """
-    def __init__(self, to, subject, fail_silently=True):
+    def __init__(self, to, subject, fail_silently=False):
         self.to = to
         self.subject = subject
         self.fail_sliently = fail_silently
