@@ -3,7 +3,7 @@ from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import FormView
 from bike_aggregator.models import BikeShop
 from django.views.generic.edit import FormMixin
-from bike_aggregator.utils import EMail
+from bike_aggregator.utils import EMail, distance_filter
 from .forms import BikeRentalForm, SignUpForm, ContactForm
 from django.shortcuts import get_object_or_404
 import random
@@ -35,9 +35,9 @@ class BikeShopsView(FormMixin, ListView):
 
         if kwargs.get('search_instance'):
             bikesearch = kwargs['search_instance']
-            self.object_list = self.get_queryset().filter(city=bikesearch.city)
+            self.object_list = distance_filter(bikesearch, self.get_queryset())
             context = self.get_context_data(object_list=self.object_list)
-            if self.object_list.count() > 0:
+            if len(self.object_list) > 0:
                 context = self.get_context_data(object_list=self.object_list)
                 context['website_name'] = 'YouVelo.com'
                 context['message'] = "your results"

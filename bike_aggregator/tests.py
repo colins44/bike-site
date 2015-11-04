@@ -110,15 +110,15 @@ class TestPythagorus(TestCase):
 
     def test_with_positive_numbers(self):
         distance = pythagoris(longs=(20,30), lats=(20,30))
-        self.assertEqual(distance, 14.14)
+        self.assertEqual(distance, 14.142136)
 
     def test_with_negative_numbers(self):
         distance = pythagoris(longs=(-20,-30), lats=(-20,-30))
-        self.assertEqual(distance, 14.14)
+        self.assertEqual(distance, 14.142136)
 
     def test_with_postive_and_negative_numbers(self):
         distance = pythagoris(longs=(5,-5), lats=(-5,5))
-        self.assertEqual(distance, 14.14)
+        self.assertEqual(distance, 14.142136)
 
 
 class TestSendingEmail(TestCase):

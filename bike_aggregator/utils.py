@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
@@ -64,27 +65,37 @@ def pythagoris(longs, lats):
     cos = lats[0]-lats[1]
     sin = longs[0]-longs[1]
     distance_squared = math.pow(cos, 2)+math.pow(sin, 2)
-    distance = round(math.sqrt(distance_squared), 2)
+    distance = round(math.sqrt(distance_squared), 6)
     return distance
 
-def distance_filter(bike_search, bike_shop_queryset, distance=5, number_to_return=10):
+def expand_search_area(bike_search, queryset, distance=Decimal(0.025), amount_of_results=10):
+    """Expand the search area until the amount of results are reached.
+        Default search area expands at a radius rate of 2.5 km each time"""
+
+    if queryset.count() < amount_of_results and distance < 0.2:
+        queryset.filter(latitude__lte=(bike_search.latitude+distance))
+        queryset.filter(latitude__gte=(bike_search.latitude-distance))
+        queryset.filter(longitude__lte=(bike_search.longitude+distance))
+        queryset.filter(longitude__gte=(bike_search.longitude-distance))
+        distance = distance+distance
+
+    return queryset
+
+def distance_filter(bike_search, bike_shop_queryset, distance=Decimal(0.025), amount_of_results=10):
     """
-    lets try return all items that are within 10 miles
-    :param queryset:
-    :param distance:
-    :param number_to_return:
-    :return:
+    default is to return items within a 20km radius of the search point
     """
-    queryset = bike_shop_queryset
-    queryset.filter(latitude__lte=(bike_search.latitude+distance))
-    queryset.filter(latitude__gte=(bike_search.latitude-distance))
-    queryset.filter(longitude__lte=(bike_search.longitude+distance))
-    queryset.filter(longitude__gte=(bike_search.longitude-distance))
+    conversion = float(0.009)
+    queryset = expand_search_area(bike_search, bike_shop_queryset, distance=distance)
 
     #now we can hit the db
+    bike_shops = []
     for bike_shop in queryset:
-        distance = pythagoris((bike_search.latitude, bike_shop.latitude),
-                              (bike_search.longitude, bike_shop.longitude))
-        bike_shop.distance_to_search = distance
+        if bike_shop.latitude and bike_shop.longitude:
+            distance = pythagoris((bike_search.latitude, bike_shop.latitude),
+                                  (bike_search.longitude, bike_shop.longitude))
+            #change the distance from radians back to Km
+            bike_shop.distance_to_search = round(distance/conversion, 2)
+            bike_shops.append(bike_shop)
 
-    return sorted(queryset, key=lambda x: x.distance_to_search)
+    return sorted(bike_shops, key=lambda x: x.distance_to_search)

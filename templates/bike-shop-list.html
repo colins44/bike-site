@@ -10,9 +10,9 @@
 </form>
     {% endif %}
 
-    {% if bikeshop_list %}
+    {% if object_list %}
     <section id="three" class="wrapper style3 special">
-        {% for bikeshop in bikeshop_list %}
+        {% for bikeshop in object_list %}
         <div class="inner">
             <header class="major">
                 <h2>{{ bikeshop.shop_name}}</h2>
@@ -22,6 +22,7 @@
                 {{ equipment.name }}
                 {% if not forloop.last %}, {% endif %}
                 {% endfor %}</p>
+                <p>Distance to Bike Shop: {{ bikeshop.distance_to_search }} Km</p>
                 <a href="/contact-bikeshop/{{ bikeshop.pk }}">contact the bikeshop</a>
             </header>
         </div>
