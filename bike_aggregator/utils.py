@@ -72,11 +72,11 @@ def expand_search_area(bike_search, queryset, distance=Decimal(0.025), amount_of
     """Expand the search area until the amount of results are reached.
         Default search area expands at a radius rate of 2.5 km each time"""
 
-    if queryset.count() < amount_of_results and distance < 0.2:
-        queryset.filter(latitude__lte=(bike_search.latitude+distance))
-        queryset.filter(latitude__gte=(bike_search.latitude-distance))
-        queryset.filter(longitude__lte=(bike_search.longitude+distance))
-        queryset.filter(longitude__gte=(bike_search.longitude-distance))
+    while distance < 0.026 and queryset.count() < amount_of_results:
+        queryset = queryset.filter(latitude__lte=(bike_search.latitude+distance))
+        queryset = queryset.filter(latitude__gte=(bike_search.latitude-distance))
+        queryset = queryset.filter(longitude__lte=(bike_search.longitude+distance))
+        queryset = queryset.filter(longitude__gte=(bike_search.longitude-distance))
         distance = distance+distance
 
     return queryset

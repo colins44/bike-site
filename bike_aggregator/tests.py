@@ -3,7 +3,7 @@ from django.forms import model_to_dict
 from django.test import TestCase
 from bike_aggregator.models import BikeSearch, BikeShop, RentalEquipment
 from .forms import BikeRentalForm, SignUpForm, ContactForm
-from bike_aggregator.utils import pythagoris, EMail, distance_filter
+from bike_aggregator.utils import pythagoris, EMail, distance_filter, expand_search_area
 
 #
 # class TestForms(TestCase):
@@ -180,3 +180,12 @@ class TestDistanceFilter(TestCase):
         filtered_result = distance_filter(self.bike_search, BikeShop.objects.all(), distance=20)
         self.assertEqual(filtered_result[0].location, self.bike_shop_sicily.location)
         self.assertEqual(filtered_result[2].location, self.bike_shop_amsterdam.location)
+
+    def test_expand_search_area(self):
+        """
+        Expand search area should only expand a certain amount then stop
+        """
+        self.bike_search.latitude = Decimal(52.3465)
+        self.bike_search.longitude = Decimal(4.9177)
+        returned_queryset = expand_search_area(self.bike_search, BikeShop.objects.all())
+        self.assertEqual(len(returned_queryset), 1)
