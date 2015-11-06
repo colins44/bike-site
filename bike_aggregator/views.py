@@ -203,7 +203,7 @@ def map(request):
         if bikeshop.latitude and bikeshop.longitude:
             array_to_js["features"].append(
                 { "type": "Feature",
-            "geometry": {"type": "Point", "coordinates": [float(bikeshop.latitude), float(bikeshop.longitude)]},
+            "geometry": {"type": "Point", "coordinates": [float(bikeshop.longitude), float(bikeshop.latitude)]},
             "properties": {"name": bikeshop.shop_name}
              },
             )
