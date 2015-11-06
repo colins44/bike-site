@@ -1,4 +1,4 @@
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import FormView
 from bike_aggregator.models import BikeShop
@@ -6,6 +6,7 @@ from django.views.generic.edit import FormMixin
 from bike_aggregator.utils import EMail, distance_filter
 from .forms import BikeRentalForm, SignUpForm, ContactForm
 from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
 import random
 import logging
 logger = logging.getLogger(__name__)
@@ -192,3 +193,18 @@ class EnquiryEmailSent(TemplateView):
         context['button_action'] = "/"
         return context
 
+
+def map(request):
+    array_to_js = {
+        "type": "FeatureCollection",
+        "features": [],
+    }
+    for bikeshop in BikeShop.objects.all():
+        if bikeshop.latitude and bikeshop.longitude:
+            array_to_js["features"].append(
+                { "type": "Feature",
+            "geometry": {"type": "Point", "coordinates": [float(bikeshop.latitude), float(bikeshop.longitude)]},
+            "properties": {"name": bikeshop.shop_name}
+             },
+            )
+    return JsonResponse(array_to_js, safe=False)
