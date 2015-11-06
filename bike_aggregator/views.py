@@ -199,7 +199,7 @@ def map(request):
         "type": "FeatureCollection",
         "features": [],
     }
-    for bikeshop in BikeShop.objects.all():
+    for bikeshop in BikeShop.objects.all()[:1]:
         if bikeshop.latitude and bikeshop.longitude:
             array_to_js["features"].append(
                 { "type": "Feature",
