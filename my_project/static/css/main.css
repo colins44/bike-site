@@ -1876,6 +1876,14 @@
 			padding: 0;
 		}
 
+/* SearchBox */
+
+	.searchbox {
+		margin: auto;
+    	width: 60%;
+		opacity: 1;
+	}
+
 /* Icon */
 
 	.icon {

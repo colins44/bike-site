@@ -56,6 +56,8 @@
 						</nav>
 					</header>
 
+            {% block content %}
+
 				<!-- Banner -->
 					<section id="banner">
 						<div class="inner">
@@ -74,11 +76,10 @@
 				<!-- One -->
 					<section id="one" class="wrapper style1 special">
 						<div class="inner">
-                            {% block content %}
-                            {% endblock %}
+
 						</div>
 					</section>
-
+            {% endblock %}
 				<!-- Footer -->
 					<footer id="footer">
 						<ul class="icons">

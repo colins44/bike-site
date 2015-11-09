@@ -2,7 +2,7 @@ from decimal import Decimal
 from django.forms import model_to_dict
 from django.test import TestCase
 from bike_aggregator.models import BikeSearch, BikeShop, RentalEquipment
-from .forms import BikeRentalForm, SignUpForm, ContactForm
+from .forms import BikeSearchForm, SignUpForm, ContactForm
 from bike_aggregator.utils import pythagoris, EMail, distance_filter, expand_search_area
 
 #
@@ -19,7 +19,7 @@ from bike_aggregator.utils import pythagoris, EMail, distance_filter, expand_sea
 #             'no_of_bikes': 10,
 #             'email': 'email@example.com'
 #         }
-#         form = BikeRentalForm(data=bike_rental_form_data)
+#         form = BikeSearchForm(data=bike_rental_form_data)
 #         self.assertTrue(form.is_valid())
 #
 #     def test_bike_shop_form(self):
@@ -155,28 +155,26 @@ class TestDistanceFilter(TestCase):
             latitude=52.3465,
             longitude=4.9177,
         )
-        self.bike_search = BikeSearch.objects.create(
-            location='dosent_matter_it_will all change',
-            no_of_bikes=1
-        )
+
+        self.bike_search = {}
 
     def test_bike_search_paris(self):
-        self.bike_search.latitude = Decimal(49.8567)
-        self.bike_search.longitude = Decimal(2.5908)
+        self.bike_search['latitude'] = Decimal(49.8567)
+        self.bike_search['longitude'] = Decimal(2.5908)
         filtered_result = distance_filter(self.bike_search, BikeShop.objects.all(), distance=20)
         self.assertEqual(filtered_result[0].location, self.bike_shop_paris.location)
         self.assertEqual(filtered_result[2].location, self.bike_shop_sicily.location)
 
     def test_bike_search_amsterdam(self):
-        self.bike_search.latitude = Decimal(52.3465)
-        self.bike_search.longitude = Decimal(4.9177)
+        self.bike_search['latitude'] = Decimal(52.3465)
+        self.bike_search['longitude'] = Decimal(4.9177)
         filtered_result = distance_filter(self.bike_search, BikeShop.objects.all(), distance=20)
         self.assertEqual(filtered_result[0].location, self.bike_shop_amsterdam.location)
         self.assertEqual(filtered_result[2].location, self.bike_shop_sicily.location)
 
     def test_bike_search_rome(self):
-        self.bike_search.latitude = Decimal(41.9000)
-        self.bike_search.longitude = Decimal(12.5000)
+        self.bike_search['latitude'] = Decimal(41.9000)
+        self.bike_search['longitude'] = Decimal(12.5000)
         filtered_result = distance_filter(self.bike_search, BikeShop.objects.all(), distance=20)
         self.assertEqual(filtered_result[0].location, self.bike_shop_sicily.location)
         self.assertEqual(filtered_result[2].location, self.bike_shop_amsterdam.location)
@@ -185,7 +183,7 @@ class TestDistanceFilter(TestCase):
         """
         Expand search area should only expand a certain amount then stop
         """
-        self.bike_search.latitude = Decimal(52.3465)
-        self.bike_search.longitude = Decimal(4.9177)
+        self.bike_search['latitude'] = Decimal(52.3465)
+        self.bike_search['longitude'] = Decimal(4.9177)
         returned_queryset = expand_search_area(self.bike_search, BikeShop.objects.all())
         self.assertEqual(len(returned_queryset), 1)

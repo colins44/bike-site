@@ -1,10 +1,11 @@
+from decimal import Decimal
 from django.shortcuts import redirect, render
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import FormView
 from bike_aggregator.models import BikeShop
 from django.views.generic.edit import FormMixin
 from bike_aggregator.utils import EMail, distance_filter
-from .forms import BikeRentalForm, SignUpForm, ContactForm
+from .forms import BikeSearchForm, SignUpForm, ContactForm
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 import random
@@ -21,54 +22,66 @@ logger = logging.getLogger(__name__)
 #     logger.info("this is an info message!!")
 
 
-class BikeShopsView(FormMixin, ListView):
+class Index(FormView):
+    form_class = BikeSearchForm
+    success_url = 'bike-shops/'
+    template_name = 'home.html'
+
+    def form_valid(self, form):
+        super(Index, self).form_valid(form)
+        form.save()
+        #here we redirect to the actuall list view with the kwargs
+        return redirect('bike-shop-search-results',
+                        latitude=form.cleaned_data['latitude'],
+                        longitude=form.cleaned_data['longitude'])
+
+
+class BikeSearchResults(ListView):
     model = BikeShop
     paginate_by = 10
     template_name = "bike-shop-list.html"
-    form_class = BikeRentalForm
-    success_url = "/bike-shops/"
 
-    def get_queryset(self):
-        return self.model.objects.all()
+    def get_context_data(self, **kwargs):
+        #here we get the lat and long kwargs and make them work for us
+        context = super(BikeSearchResults, self).get_context_data(**kwargs)
+        bikesearch = {}
+        try:
+            bikesearch['latitude'] = Decimal(self.kwargs['latitude'])
+            bikesearch['longitude'] = Decimal(self.kwargs['longitude'])
+        except Exception as e:
+            #some sort of error so we log it
+            logger.error("Error changing Strings to Decimals: {},  {}".format(e.message, e.args))
+        context['bikeshops'] = distance_filter(bikesearch, self.model.objects.all())
+        context['message'] = "your results"
+        context['bikesearch'] = bikesearch
+        return context
 
-    def get(self, request, *args, **kwargs):
-        self.form = self.form_class()
+class BikeSearchResultsMapView(ListView):
+    model = BikeShop
+    paginate_by = 10
+    template_name = "map-view.html"
 
-        if kwargs.get('search_instance'):
-            bikesearch = kwargs['search_instance']
-            self.object_list = distance_filter(bikesearch, self.get_queryset())
-            context = self.get_context_data(object_list=self.object_list)
-            if len(self.object_list) > 0:
-                context = self.get_context_data(object_list=self.object_list)
-                context['website_name'] = 'YouVelo.com'
-                context['message'] = "your results"
-                context['button'] = "Search Again"
-                context['button_action'] = "/"
-
-            else:
-                self.object_list = self.get_queryset().filter(country=bikesearch.country)
-                context['message'] = "Looks like we cant find any bike shops in the area you are looking for"
-                context['button'] = "Search Again"
-                context['website_name'] = 'YouVelo.com'
-                context['button_action'] = "/#one"
-                context['form'] = self.form
-
-        else:
-            self.object_list = self.model.objects.none()
-            context = self.get_context_data(object_list=self.object_list, form=self.form)
-            context['website_name'] = 'YouVelo.com'
-            context['message'] = "Search for bikes to rent all over the world"
-            context['button'] = "Search"
-
-        return self.render_to_response(context)
-
-    def post(self, request, *args, **kwargs):
-        form = self.get_form()
-        if form.is_valid():
-            kwargs['search_instance'] = form.save()
-            return self.get(request, *args, **kwargs)
-        else:
-            return self.form_invalid(form)
+    def get_context_data(self, **kwargs):
+        #here we get the lat and long kwargs and make them work for us
+        context = super(BikeSearchResultsMapView, self).get_context_data(**kwargs)
+        bikesearch = {}
+        try:
+            bikesearch['latitude'] = Decimal(self.kwargs['latitude'])
+            bikesearch['longitude'] = Decimal(self.kwargs['longitude'])
+        except Exception as e:
+            #some sort of error so we log it
+            logger.error("Error changing Strings to Decimals: {},  {}".format(e.message, e.args))
+        context['bikeshops'] = distance_filter(bikesearch, self.model.objects.all())
+        context['message'] = "your results"
+        try:
+            bikesearch['latitude'] = float(self.kwargs['latitude'])
+            bikesearch['longitude'] = float(self.kwargs['longitude'])
+        except Exception as e:
+            #some sort of error so we log it
+            logger.error("Error changing Decimals to floats: {},  {}".format(e.message, e.args))
+        context['bikesearch'] = bikesearch
+        context['zoom'] = 13
+        return context
 
 
 class BikeShopContact(FormView):
@@ -92,46 +105,6 @@ class BikeShopContact(FormView):
         context['bikeshop'] = get_object_or_404(BikeShop, pk=self.kwargs['pk'])
         return context
 
-
-def index(request):
-    urls = ('test', 'control')
-    return redirect(random.choice(urls), permanent=True)
-
-
-class Control(FormView):
-    template_name = 'bikes-to-rent.html'
-    form_class = BikeRentalForm
-    success_url = '/sorry-no-bikes-available/'
-
-    def form_valid(self, form):
-        form.save()
-        return super(Control, self).form_valid(form)
-
-    def get_context_data(self, **kwargs):
-        context = super(Control, self).get_context_data(**kwargs)
-        context['message'] = "Search for bikes to rent all over the world"
-        context['button'] = "Search"
-        context['website_name'] = 'YouVelo.com'
-        context['submit_url'] = '/bikes-to-rent/'
-        return context
-
-
-class Test(FormView):
-    template_name = 'bicycles-to-rent.html'
-    form_class = BikeRentalForm
-    success_url = '/sorry-no-bikes-available/'
-
-    def form_valid(self, form):
-        form.save()
-        return super(Test, self).form_valid(form)
-
-    def get_context_data(self, **kwargs):
-        context = super(Test, self).get_context_data(**kwargs)
-        context['message'] = "Search for bikes to rent all over the world"
-        context['button'] = "Search"
-        context['website_name'] = 'YouVelo.com'
-        context['submit_url'] = '/bicycles-to-rent/'
-        return context
 
 
 class SignUp(FormView):

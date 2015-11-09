@@ -73,10 +73,10 @@ def expand_search_area(bike_search, queryset, distance=Decimal(0.025), amount_of
         Default search area expands at a radius rate of 2.5 km each time"""
 
     while distance < 0.1 and queryset.count() < amount_of_results:
-        queryset = queryset.filter(latitude__lte=(bike_search.latitude+distance))
-        queryset = queryset.filter(latitude__gte=(bike_search.latitude-distance))
-        queryset = queryset.filter(longitude__lte=(bike_search.longitude+distance))
-        queryset = queryset.filter(longitude__gte=(bike_search.longitude-distance))
+        queryset = queryset.filter(latitude__lte=(bike_search['latitude']+distance))
+        queryset = queryset.filter(latitude__gte=(bike_search['latitude']-distance))
+        queryset = queryset.filter(longitude__lte=(bike_search['longitude']+distance))
+        queryset = queryset.filter(longitude__gte=(bike_search['longitude']-distance))
         distance = distance+distance
 
     return queryset
@@ -92,8 +92,8 @@ def distance_filter(bike_search, bike_shop_queryset, distance=Decimal(0.025), am
     bike_shops = []
     for bike_shop in queryset:
         if bike_shop.latitude and bike_shop.longitude:
-            distance = pythagoris((bike_search.latitude, bike_shop.latitude),
-                                  (bike_search.longitude, bike_shop.longitude))
+            distance = pythagoris((bike_search['latitude'], bike_shop.latitude),
+                                  (bike_search['longitude'], bike_shop.longitude))
             #change the distance from radians back to Km
             bike_shop.distance_to_search = round(distance/conversion, 2)
             bike_shops.append(bike_shop)

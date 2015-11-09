@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <!-- Banner -->
+					<section id="banner">
+						<div class="inner">
+							<h2>YouVelo</h2>
+							<p>Search for bikes to rent all over the world</p>
+                            <div class="searchbox">
+                                <form action="{{ submit_url }}" method="post">
+                                {% csrf_token %}
+                                {{ form.as_p }}<br>
+                                <input type="submit" value="Submit" class="button special" />
+                                </form>
+                            </div>
+
+						</div>
+					</section>
+
+    <!-- section #one -->
+    <section id="one" class="wrapper style1 special">
+        <div class="inner">
+            {% if form %}
+                <form action="{{ submit_url }}" method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                    <br>
+                <input type="submit" value="Submit" />
+            </form>
+    {% endif %}
+        </div>
+    </section>
+
+
+{%  endblock %}

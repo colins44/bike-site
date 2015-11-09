@@ -1,17 +1,17 @@
 {% extends "base.html" %}
-
 {% block content %}
-    {% if form %}
-    <form action="{{ submit_url }}" method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-        <br>
-    <input type="submit" value="Submit" />
-</form>
-    {% endif %}
+
+                <section id="banner">
+						<div class="inner">
+							<h2>YouVelo</h2>
+							<p>your results</p>
+                            <a href="/bike-shop-search-results-map-view/{{ bikesearch.latitude }}/{{ bikesearch.longitude }}" class="button special">Show results on map</a>
+						</div>
+					</section>
 
     {% if object_list %}
-    <section id="three" class="wrapper style3 special">
+
+    <section id="one" class="wrapper style5">
         {% for bikeshop in object_list %}
         <div class="inner">
             <header class="major">
