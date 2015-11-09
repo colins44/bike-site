@@ -97,5 +97,4 @@ def distance_filter(bike_search, bike_shop_queryset, distance=Decimal(0.025), am
             #change the distance from radians back to Km
             bike_shop.distance_to_search = round(distance/conversion, 2)
             bike_shops.append(bike_shop)
-
     return sorted(bike_shops, key=lambda x: x.distance_to_search)
