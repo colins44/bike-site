@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
   <head>
@@ -31,12 +30,22 @@ function initMap() {
     });
 
     {% for bikeshop in bikeshops %}
-        var marker = new google.maps.Marker({
+
+      var infowindow{{ bikeshop.pk }} = new google.maps.InfoWindow({
+        content: "{{ bikeshop.content_string }}"
+      });
+
+        var marker{{ bikeshop.pk}} = new google.maps.Marker({
         position: {lat: {{ bikeshop.latitude }}, lng: {{ bikeshop.longitude }}},
         map: map,
         title: '{{ bikeshop.shop_name }}',
         icon: '/static/images/bike_marker.png'
         });
+
+        marker{{ bikeshop.pk }}.addListener('click', function() {
+        infowindow{{ bikeshop.pk }}.open(map, marker{{ bikeshop.pk }});
+        });
+
     {%  endfor %}
 }
 
