@@ -1,26 +1,14 @@
 from decimal import Decimal
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import FormView
 from bike_aggregator.models import BikeShop
-from django.views.generic.edit import FormMixin
 from bike_aggregator.utils import EMail, distance_filter
 from .forms import BikeSearchForm, SignUpForm, ContactForm
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
-import random
 import logging
 logger = logging.getLogger(__name__)
-
-# def func1():
-#     logger.debug("this is a debug message!")
-#
-# def func2():
-#     logger.error("this is an error message!!")
-#
-# def func3():
-#     logger.info("this is an info message!!")
-
 
 class Index(FormView):
     form_class = BikeSearchForm
@@ -71,7 +59,7 @@ class BikeSearchResultsMapView(ListView):
         except Exception as e:
             #some sort of error so we log it
             logger.error("Error changing Strings to Decimals: {},  {}".format(e.message, e.args))
-        context['bikeshops'] = self.model.objects.all()
+        context['bikeshops'] = distance_filter(bikesearch, self.model.objects.all())
         context['message'] = "your results"
         try:
             bikesearch['latitude'] = float(self.kwargs['latitude'])
@@ -104,7 +92,6 @@ class BikeShopContact(FormView):
         context = super(BikeShopContact, self).get_context_data(**kwargs)
         context['bikeshop'] = get_object_or_404(BikeShop, pk=self.kwargs['pk'])
         return context
-
 
 
 class SignUp(FormView):
