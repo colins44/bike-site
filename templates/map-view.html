@@ -32,7 +32,7 @@ function initMap() {
     {% for bikeshop in bikeshops %}
 
       var infowindow{{ bikeshop.pk }} = new google.maps.InfoWindow({
-        content: "{{ bikeshop.shop_name }}"
+        content: "{{ bikeshop.content_string }}"
       });
 
         var marker{{ bikeshop.pk}} = new google.maps.Marker({

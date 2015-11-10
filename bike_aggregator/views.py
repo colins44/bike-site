@@ -3,7 +3,7 @@ from django.shortcuts import redirect
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import FormView
 from bike_aggregator.models import BikeShop
-from bike_aggregator.utils import EMail, distance_filter
+from bike_aggregator.utils import EMail, distance_filter, bikeshop_content_string
 from .forms import BikeSearchForm, SignUpForm, ContactForm
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
@@ -59,7 +59,7 @@ class BikeSearchResultsMapView(ListView):
         except Exception as e:
             #some sort of error so we log it
             logger.error("Error changing Strings to Decimals: {},  {}".format(e.message, e.args))
-        context['bikeshops'] = distance_filter(bikesearch, self.model.objects.all())
+        context['bikeshops'] = bikeshop_content_string(distance_filter(bikesearch, self.model.objects.all()))
         context['message'] = "your results"
         try:
             bikesearch['latitude'] = float(self.kwargs['latitude'])

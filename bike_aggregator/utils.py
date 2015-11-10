@@ -1,8 +1,10 @@
 from decimal import Decimal
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
+from django.template import Template, Context
 from django.template.loader import render_to_string
 import math
+from bike_aggregator.models import BikeShop
 
 
 class EMail(object):
@@ -97,3 +99,20 @@ def distance_filter(bike_search, bike_shop_queryset, distance=Decimal(0.025), am
             bike_shop.distance_to_search = round(distance/conversion, 2)
             bike_shops.append(bike_shop)
     return sorted(bike_shops, key=lambda x: x.distance_to_search)
+
+
+def bikeshop_content_string(bikeshops):
+    """Build the content string for the bike shop markers on the google map"""
+
+    template = Template("<a href=/contact-bikeshop/{{ bikeshop.pk }}/>Contact {{ bikeshop.shop_name }}</a>")
+
+    for bikeshop in bikeshops:
+        model_dict = {
+            "shop_name": bikeshop.shop_name,
+            "pk": str(bikeshop.pk)
+        }
+        context = Context({"bikeshop":model_dict})
+        bikeshop.content_string = template.render(context)
+
+
+    return bikeshops
