@@ -54,3 +54,11 @@ class BikeShop(models.Model):
     def __unicode__(self):
         return self.shop_name
 
+class NewsLetterSubscibers(models.Model):
+    name = models.CharField(max_length=225, null=True, blank=True)
+    email_address = models.EmailField()
+    subscribed = models.BooleanField(default=True)
+
+    def __unicode__(self):
+        return self.email_address
+

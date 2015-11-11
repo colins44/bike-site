@@ -4,7 +4,7 @@ from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import FormView
 from bike_aggregator.models import BikeShop
 from bike_aggregator.utils import EMail, distance_filter, bikeshop_content_string
-from .forms import BikeSearchForm, SignUpForm, ContactForm
+from .forms import BikeSearchForm, SignUpForm, ContactForm, NewsLetterSignUpForm
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 import logging
@@ -168,3 +168,14 @@ def map(request):
              },
             )
     return JsonResponse(array_to_js, safe=False)
+
+class NewsLetterSignUp(FormView):
+    form_class = NewsLetterSignUpForm
+    success_url = '/thanks/'
+    template_name = 'find-out-more.html'
+
+    def form_valid(self, form):
+        form.save()
+        return super(NewsLetterSignUp, self).form_valid(form)
+
+

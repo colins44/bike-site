@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django.utils import timezone
-from bike_aggregator.models import BikeShop, BikeSearch
+from bike_aggregator.models import BikeShop, BikeSearch, NewsLetterSubscibers
 from django import forms
 
 bike_types = (
@@ -57,6 +57,13 @@ class ContactForm(forms.Form):
     name = forms.CharField(required=True)
     email = forms.EmailField(required=True)
     message = forms.CharField(widget=forms.Textarea, required=True)
+
+
+class NewsLetterSignUpForm(ModelForm):
+
+    class Meta:
+        model = NewsLetterSubscibers
+        exclude = ('pk', 'subscribed',)
 
 
 

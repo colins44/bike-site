@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from bike_aggregator.views import SignUp, ContactView, SorryNoBikesAvalibleView, StoreSignUp, \
-    BikeShopContact, EnquiryEmailSent, map, Index, BikeSearchResults, BikeSearchResultsMapView
+    BikeShopContact, EnquiryEmailSent, map, Index, BikeSearchResults, BikeSearchResultsMapView, NewsLetterSignUp
 from bike_aggregator.sitemaps import StaticSiteMap
 from django.contrib.sitemaps.views import sitemap
 from django.views.generic import TemplateView
@@ -37,6 +37,7 @@ urlpatterns = [
     url(r'^contact-bikeshop/(?P<pk>[0-9]+)/', BikeShopContact.as_view(), name='bikeshop-contact'),
     url(r'^sorry-no-bikes-available/', SorryNoBikesAvalibleView.as_view(), name='sorry-no-bikes-available'),
     url(r'^thanks/', StoreSignUp.as_view(), name='thanks'),
+    url(r'^find-out-more/', NewsLetterSignUp.as_view(), name='find-out-more'),
     url(r'^enquiry-email-sent/', EnquiryEmailSent.as_view(), name='enquiry-email-sent'),
     url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
     url(r'^robots\.txt', include('robots.urls'), name='robots'),

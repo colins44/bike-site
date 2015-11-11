@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import BikeSearch, BikeShop, RentalEquipment
+from .models import BikeSearch, BikeShop, RentalEquipment, NewsLetterSubscibers
 
 
 class BikeSearchAdmin(admin.ModelAdmin):
@@ -8,4 +8,5 @@ class BikeSearchAdmin(admin.ModelAdmin):
 
 admin.site.register(BikeShop)
 admin.site.register(RentalEquipment)
+admin.site.register(NewsLetterSubscibers)
 admin.site.register(BikeSearch, BikeSearchAdmin)
