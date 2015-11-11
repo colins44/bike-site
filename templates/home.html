@@ -16,20 +16,5 @@
 
 						</div>
 					</section>
-
-    <!-- section #one -->
-    <section id="one" class="wrapper style1 special">
-        <div class="inner">
-            {% if form %}
-                <form action="{{ submit_url }}" method="post">
-                {% csrf_token %}
-                {{ form.as_p }}
-                    <br>
-                <input type="submit" value="Submit" />
-            </form>
-    {% endif %}
-        </div>
-    </section>
-
-
+    
 {%  endblock %}
