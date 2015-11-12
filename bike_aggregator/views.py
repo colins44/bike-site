@@ -82,7 +82,7 @@ class BikeShopContact(FormView):
             'bikeshop': get_object_or_404(BikeShop, pk=self.kwargs['pk']),
             'user': form.cleaned_data
         }
-        email = EMail(to='colin.pringlewood@gmail.com', subject='Bike Hire Enquiry')
+        email = EMail(to=context['bikeshop'].email, subject='Bike Hire Enquiry')
         email.text('emails/enquiry.txt', context)
         email.html('emails/enquiry.html', context)
         email.send()
