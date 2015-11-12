@@ -1,8 +1,9 @@
 from decimal import Decimal
+from django.db.models import Count
 from django.shortcuts import redirect
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import FormView
-from bike_aggregator.models import BikeShop
+from bike_aggregator.models import BikeShop, BikeSearch
 from bike_aggregator.utils import EMail, distance_filter, bikeshop_content_string
 from .forms import BikeSearchForm, SignUpForm, ContactForm, NewsLetterSignUpForm
 from django.shortcuts import get_object_or_404
@@ -178,4 +179,33 @@ class NewsLetterSignUp(FormView):
         form.save()
         return super(NewsLetterSignUp, self).form_valid(form)
 
+class SearchPopularityChart(ListView):
+    model = BikeSearch
+    template_name = 'geo-chart.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(SearchPopularityChart, self).get_context_data(**kwargs)
+        bikesearches = self.model.objects.values('country').annotate(count=Count('country'))
+        context['objects'] = [x for x in bikesearches if x['country']]
+        return context
+
+class BikeShopGeoChart(ListView):
+    model = BikeShop
+    template_name = 'geo-chart.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(BikeShopGeoChart, self).get_context_data(**kwargs)
+        bikeshops = self.model.objects.values('country').annotate(count=Count('country'))
+        context['objects'] = [x for x in bikeshops if x['country']]
+        return context
+
+class SearchesOverTimeChart(ListView):
+    model = BikeSearch
+    template_name = 'line-chart.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(SearchesOverTimeChart, self).get_context_data(**kwargs)
+        searchers = self.model.objects.values('search_time').annotate(count=Count('search_time'))
+        context['objects'] = [x for x in searchers if x['search_time']]
+        return context
 
