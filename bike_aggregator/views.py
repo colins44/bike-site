@@ -3,6 +3,7 @@ from django.db.models import Count
 from django.shortcuts import redirect
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import FormView
+import itertools
 from bike_aggregator.models import BikeShop, BikeSearch
 from bike_aggregator.utils import EMail, distance_filter, bikeshop_content_string
 from .forms import BikeSearchForm, SignUpForm, ContactForm, NewsLetterSignUpForm
@@ -205,7 +206,15 @@ class SearchesOverTimeChart(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(SearchesOverTimeChart, self).get_context_data(**kwargs)
-        searchers = self.model.objects.values('search_time').annotate(count=Count('search_time'))
-        context['objects'] = [x for x in searchers if x['search_time']]
+        searchers = BikeSearch.objects.filter(search_time__isnull=False)
+        searchers = itertools.groupby(searchers, lambda x: x.search_time.date())
+        data = []
+        for x in searchers:
+            we = {}
+            we['date'] = x[0]
+            we['count'] = len(list(x[1]))
+            data.append(we)
+
+        context['objects'] = data
         return context
 

@@ -10,29 +10,34 @@
           }"></script>
 
     <script type="text/javascript">
-      google.setOnLoadCallback(drawChart);
+      google.load('visualization', '1.1', {packages: ['bar']});
+    google.setOnLoadCallback(drawChart);
 
-      function drawChart() {
-        var data = google.visualization.arrayToDataTable([
-          ['date', 'Count',],
-          {% for object in objects %}
-            [new Date({{ object.search_time|date:"Y m d" }}), {{ object.count }}],
-          {% endfor %}
-        ]);
+    function drawChart() {
 
-        var options = {
-          title: 'Company Performance',
-          curveType: 'function',
-          legend: { position: 'bottom' }
-        };
+      var data = new google.visualization.DataTable();
+      data.addColumn('date', 'Date');
+      data.addColumn('number', 'Searches Made');
 
-        var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+      data.addRows([
+              {% for object in objects %}
+            [new Date({{ object.date|date:"Y, m, d" }}), {{ object.count }}],
+            {% endfor %}
+      ]);
 
-        chart.draw(data, options);
-      }
+      var options = google.charts.Bar.convertOptions({
+        title: 'Searchers over time',
+        height: 450
+      });
+
+      var chart = new google.charts.Bar(document.getElementById('chart_div'));
+
+      chart.draw(data, options);
+    }
+
     </script>
   </head>
   <body>
-    <div id="curve_chart" style="width: 900px; height: 500px"></div>
+    <div id="chart_div" style="width: 900px; height: 500px"></div>
   </body>
 </html>
