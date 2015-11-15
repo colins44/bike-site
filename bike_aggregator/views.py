@@ -12,6 +12,7 @@ from django.http import JsonResponse
 import logging
 logger = logging.getLogger(__name__)
 
+
 class Index(FormView):
     form_class = BikeSearchForm
     success_url = 'bike-shops/'
