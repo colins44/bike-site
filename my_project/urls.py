@@ -15,7 +15,6 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from django.views.decorators.cache import cache_page
 from bike_aggregator.views import SignUp, ContactView, SorryNoBikesAvalibleView, StoreSignUp, \
     BikeShopContact, EnquiryEmailSent, map, Index, BikeSearchResults, BikeSearchResultsMapView, NewsLetterSignUp, \
     SearchPopularityChart, BikeShopGeoChart, SearchesOverTimeChart
@@ -29,7 +28,7 @@ sitemaps ={
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^$', cache_page(60*60)(Index.as_view()), name='index'),
+    url(r'^$', Index.as_view(), name='index'),
     url(r'^bike-shop-search-results/(?P<latitude>[-\S]+)/(?P<longitude>[-\S]+)/$',
         BikeSearchResults.as_view(), name='bike-shop-search-results'),
     url(r'^bike-shop-search-results-map-view/(?P<latitude>[-\S]+)/(?P<longitude>[-\S]+)/$',

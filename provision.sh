@@ -4,6 +4,4 @@ apt-get install -y nginx
 apt-get install -y python-pip
 apt-get install -y git
 sudo pip install -r requirements.txt
-apt-get install -y memcached
-apt-get install -y python-memcache
 
