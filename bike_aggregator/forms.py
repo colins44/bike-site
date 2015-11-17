@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django.utils import timezone
-from bike_aggregator.models import BikeShop, BikeSearch, NewsLetterSubscibers
+from bike_aggregator.models import BikeShop, BikeSearch, NewsLetterSubscibers, EnquiryEmail
 from django import forms
 
 bike_types = (
@@ -64,6 +64,13 @@ class NewsLetterSignUpForm(ModelForm):
     class Meta:
         model = NewsLetterSubscibers
         exclude = ('pk', 'subscribed',)
+
+
+class EnquiryEmailForm(ModelForm):
+
+    class Meta:
+        model = EnquiryEmail
+        exclude = ('pk',)
 
 
 

@@ -6,7 +6,7 @@ from django.views.generic.edit import FormView
 import itertools
 from bike_aggregator.models import BikeShop, BikeSearch
 from bike_aggregator.utils import EMail, distance_filter, bikeshop_content_string
-from .forms import BikeSearchForm, SignUpForm, ContactForm, NewsLetterSignUpForm
+from .forms import BikeSearchForm, SignUpForm, ContactForm, NewsLetterSignUpForm, EnquiryEmailForm
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 import logging
@@ -89,6 +89,17 @@ class BikeShopContact(FormView):
         email.text('emails/enquiry.txt', context)
         email.html('emails/enquiry.html', context)
         email.send()
+        #now save the equiry email
+        enquiry_form = EnquiryEmailForm(
+            {
+                'body': form.cleaned_data.get('message'),
+                "bike_shop": context['bikeshop'].pk,
+                "from_address": form.cleaned_data.get('email'),
+             })
+        if enquiry_form.is_valid():
+            enquiry_form.save()
+        else:
+            logging.error("error saving enquiry form")
         return super(BikeShopContact, self).form_valid(form)
 
     def get_context_data(self, **kwargs):

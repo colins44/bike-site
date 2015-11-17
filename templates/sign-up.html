@@ -1,25 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Sign up your store and let the users that brows our website rent your bikes</h1>
     <form action="/sign-up/" method="post">
-    {% csrf_token %}
-        {{ form.as_p }}
-{#        <p><label for="id_shop_name">Shop name:</label> <input id="id_shop_name" maxlength="225" name="shop_name" type="text" /></p>#}
-{#        <p><label for="id_location">Location:</label> <input id="id_location" maxlength="225" name="location" type="text" /></p>#}
-{#        <p><label for="id_street_number">Street number:</label> <input id="id_street_number" maxlength="225" name="street_number" type="text" /></p>#}
-{#        <p><label for="id_street">Street:</label> <input id="id_street" maxlength="225" name="street" type="text" /></p>#}
-{#        <p><label for="id_post_code">Post code:</label> <input id="id_post_code" maxlength="225" name="post_code" type="text" /></p>#}
-{#        <p><label for="id_state">State:</label> <input id="id_state" maxlength="225" name="state" type="text" /></p>#}
-{#        <p><label for="id_city">City:</label> <input id="id_city" maxlength="225" name="city" type="text" /></p>#}
-{#        <p><label for="id_country">Country:</label> <input id="id_country" maxlength="225" name="country" type="text" /></p>#}
-{#        <p><label for="id_latitude">Latitude:</label> <input id="id_latitude" name="latitude" step="0.0001" type="number" /></p>#}
-{#        <p><label for="id_longitude">Longitude:</label> <input id="id_longitude" name="longitude" step="0.0001" type="number" /></p>#}
-{#        <p><label for="id_website">Website:</label> <input id="id_website" maxlength="200" name="website" type="url" /></p>#}
-{#        <p><label for="id_email">Email:</label> <input id="id_email" maxlength="254" name="email" type="email" /></p>#}
-{#        <p><label for="id_phone_number">Phone number:</label> <input id="id_phone_number" maxlength="15" name="phone_number" type="text" /></p>#}
-{#        <p><label for="id_rental_options">Rental options:</label> <select multiple="multiple" id="id_rental_options" name="rental_options"></select></p>#}
-    <input type="submit" value="Submit" />
-</form>
+    <!-- Banner -->
+					<section id="banner">
+						<div class="inner">
+							<h2>YouVelo</h2>
+							<p>Sign up your store and let the users that brows our website rent your bikes</p>
+                            <a href="#one" class="button special">Sign up</a>
+						</div>
+					</section>
 
+                    <section id="one" class="wrapper style2 special">
+                            <div class="searchbox">
+                                <form action="{{ submit_url }}" method="post">
+                                {% csrf_token %}
+                                {{ form.as_p }}<br>
+                                <input type="submit" value="Submit" class="button special" />
+                                </form>
+                            </div>
+                    </section>
 {% endblock %}

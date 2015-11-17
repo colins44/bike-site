@@ -62,3 +62,12 @@ class NewsLetterSubscibers(models.Model):
     def __unicode__(self):
         return self.email_address
 
+
+class EnquiryEmail(models.Model):
+    from_address = models.EmailField(null=True, blank=True)
+    bike_shop = models.ForeignKey(BikeShop, blank=True)
+    body = models.TextField(blank=True, null=True)
+
+    def __unicode__(self):
+        return "enquiry email from {} to bikeshop: {}".format(self.from_address, self.bike_shop.email)
+
