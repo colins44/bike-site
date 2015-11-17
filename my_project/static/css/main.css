@@ -1884,6 +1884,12 @@
 		opacity: 1;
 	}
 
+    @media screen and (max-width: 736px) {
+
+        .searchbox {
+            width: 90%;
+        }
+    }
 /* Icon */
 
 	.icon {
