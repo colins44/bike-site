@@ -47,5 +47,6 @@ urlpatterns = [
     url(r'^geo-shop-chart/', BikeShopGeoChart.as_view(), name='geo-shop-chart'),
     url(r'^search-over-time-chart/', SearchesOverTimeChart.as_view(), name='geo-shop-chart'),
     url(r'^map/', TemplateView.as_view(template_name="bike-shop-list-map-view.html")),
+    url(r'^route-plot/', TemplateView.as_view(template_name="route-plot.html")),
     url(r'^map-points.json', map, name='map'),
 ]
