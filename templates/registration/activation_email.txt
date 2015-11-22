@@ -1,0 +1,11 @@
+<p>Thankyou for registering with youvelo.com we just need to confirm your email address.</p>
+
+<p>Please click on the link below to activate your account<p>
+
+<a href="{{ site }}/accounts/activate/{{ activation_key }}">Activate my Account</a>
+
+<p>You have {{ expiration_days }} days to activate your account<p>
+
+<p>Kind Regards<p>
+
+<p>Youvelo.com<p>

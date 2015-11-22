@@ -39,7 +39,7 @@ class EMail(object):
         if isinstance(self.to, basestring):
             self.to = [self.to]
         if not from_addr:
-            from_addr = getattr(settings, 'EMAIL_FROM_ADDR')
+            from_addr = getattr(settings, 'EMAIL_ENQUIRY_ADDRESS')
         msg = EmailMultiAlternatives(
             self.subject,
             self._text,

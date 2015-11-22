@@ -34,9 +34,10 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'enquiry@youvelo.com'
 EMAIL_HOST_PASSWORD = 'TESTING'
-DEFAULT_FROM_EMAIL = 'enquiry@youvelo.com'
+DEFAULT_FROM_EMAIL = 'welcome@youvelo.com'
 DEFAULT_TO_EMAIL = 'enquiry@youvelo.com'
 EMAIL_FROM_ADDR = 'enquiry@youvelo.com'
+EMAIL_ENQUIRY_ADDRESS = 'enquiry@youvelo.com'
 
 # EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -92,12 +93,17 @@ WSGI_APPLICATION = 'my_project.wsgi.application'
 
 STATIC_URL = '/static/'
 
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/profile/'
+
+
+
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
 
-SITE_ID=1
-
+SITE_ID = 1
+ACCOUNT_ACTIVATION_DAYS = 7 # One-week activation window; you may, of course, use a different value.
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases

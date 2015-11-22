@@ -1,109 +1,9 @@
 from decimal import Decimal
-from django.forms import model_to_dict
+from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.test import TestCase
-from bike_aggregator.models import BikeSearch, BikeShop, RentalEquipment
-from .forms import BikeSearchForm, SignUpForm, ContactForm
+from bike_aggregator.models import BikeShop, Stock
 from bike_aggregator.utils import pythagoris, EMail, distance_filter, expand_search_area
-
-#
-# class TestForms(TestCase):
-#
-#     def test_get_home_page(self):
-#         resp = self.client.get('/bikes-to-rent/')
-#         self.assertEqual(resp.status_code, 200)
-#
-#     def test_bike_search_form(self):
-#         bike_rental_form_data = {
-#             'location': 'paris',
-#             'bike_type': 'road_bike',
-#             'no_of_bikes': 10,
-#             'email': 'email@example.com'
-#         }
-#         form = BikeSearchForm(data=bike_rental_form_data)
-#         self.assertTrue(form.is_valid())
-#
-#     def test_bike_shop_form(self):
-#         bike = RentalEquipment.objects.create(name='bike')
-#         signup_form_data = {
-#             'location': 'paris',
-#             'country': 'France',
-#             'city': 'Paris',
-#             'latitude': -123.1234,
-#             'longitude': 123.1234,
-#             'post_code': 'w1 3ce',
-#             'state': 'North Korea',
-#             'street': 'charring cross',
-#             'street_number': '77A',
-#             'shop_name': 'road_bike',
-#             'website': 'https://google.com',
-#             'email': 'admin@example.com',
-#             'rental_options': [bike.pk,]
-#         }
-#         form = SignUpForm(data=signup_form_data)
-#         self.assertTrue(form.is_valid())
-#         form.save()
-#
-#         bikeshop = BikeShop.objects.get(email=signup_form_data['email'])
-#         self.assertEquals(signup_form_data['latitude'], float(bikeshop.latitude))
-#         self.assertEquals(signup_form_data['longitude'], float(bikeshop.longitude))
-#         bikeshop = model_to_dict(bikeshop)
-#         bikeshop.pop('longitude')
-#         bikeshop.pop('latitude')
-#         signup_form_data.pop('latitude')
-#         signup_form_data.pop('longitude')
-#         self.assertDictContainsSubset(signup_form_data, bikeshop)
-#
-#     def test_post_to_home_page(self):
-#         bike_rental_form_data = {
-#             'location': 'harare',
-#             'bike_type': 'road_bike',
-#             'no_of_bikes': 10,
-#             'email': 'admin@example.com'
-#         }
-#         resp = self.client.post(
-#             path='/bicycles-to-rent/',
-#             data=bike_rental_form_data
-#         )
-#         self.assertEqual(resp.status_code, 302)
-#         bike_search = BikeSearch.objects.get(location=bike_rental_form_data['location'])
-#         bike_search = model_to_dict(bike_search)
-#         self.assertDictContainsSubset(bike_rental_form_data, bike_search)
-#         self.assertEqual(BikeSearch.objects.all().count(), 1)
-#
-#
-#     def test_post_to_signup_page(self):
-#         bike = RentalEquipment.objects.create(name='bike')
-#         signup_form_data = {
-#             'location': 'harare',
-#             'country': 'zimbabwe',
-#             'city': 'harare',
-#             'latitude': -180.1234,
-#             'longitude': 180.1234,
-#             'post_code': 'w1 3ce',
-#             'state': 'North Korea',
-#             'street': 'charring cross',
-#             'street_number': '77A',
-#             'shop_name': 'road_bike',
-#             'website': 'https://google.com/?news=bbc',
-#             'email': 'admin@example.com',
-#             'rental_options': [bike.pk,]
-#         }
-#         resp = self.client.post(
-#             path='/sign-up/',
-#             data=signup_form_data
-#         )
-#         self.assertEqual(resp.status_code, 302)
-#         bike_shop = BikeShop.objects.get(website=signup_form_data['website'])
-#         bike_shop = model_to_dict(bike_shop)
-#         bike_shop.pop('longitude')
-#         bike_shop.pop('latitude')
-#         signup_form_data.pop('latitude')
-#         signup_form_data.pop('longitude')
-#         self.assertDictContainsSubset(signup_form_data, bike_shop)
-#         self.assertEqual(BikeShop.objects.all().count(), 1)
-#
-#     def test_sending_equiry_email(self):
-#         self.assertTrue(ContactForm.send_mail('testing', ['admin@email.com', {}]))
 
 
 class TestPythagorus(TestCase):
@@ -187,3 +87,156 @@ class TestDistanceFilter(TestCase):
         self.bike_search['longitude'] = Decimal(4.9177)
         returned_queryset = expand_search_area(self.bike_search, BikeShop.objects.all())
         self.assertEqual(len(returned_queryset), 1)
+
+
+class TestAuthenticationNeeded(TestCase):
+
+
+    def setUp(self):
+        self.views = [
+            ['stock-list', {}],
+            ['stock-create', {}],
+            ['stock-update', {'pk': 1}],
+            ['stock-delete', {'pk': 1}]
+        ]
+
+    def test_call_view_denies_anonymous(self):
+
+        for view in self.views:
+            response = self.client.get(reverse(view[0], kwargs=view[1]), follow=True)
+            self.assertRedirects(response, '/accounts/login/?next={}'.format(reverse(view[0], kwargs=view[1])))
+
+
+class TestStockCrud(TestCase):
+
+    def setUp(self):
+
+        self.user = User.objects.create_user(
+            username='testing',
+            email='email@example.com',
+            password='testing'
+        )
+
+        self.user2 = User.objects.create_user(
+            username='user2',
+            email='email@example2.com',
+            password='testing1'
+        )
+
+        self.data = {
+            'name': 'testing'
+
+        }
+        self.stock = Stock.objects.create(
+            name='road_bike',
+            owned_by= self.user
+        )
+        self.client.login(username=self.user.username, password='testing')
+
+    def test_create(self):
+        '''
+        Create an item of stock and then check the list view to see it
+        '''
+        resp = self.client.post('/stock/create/', data=self.data)
+        self.assertEqual(resp.status_code, 302)
+        resp = self.client.get(reverse('stock-list'))
+        self.assertEquals(len(resp.context['object_list']), 2)
+
+    def test_update_stock(self):
+        resp = self.client.post('/stock/update/{}/'.format(self.stock.pk), data={'name': 'new_name'})
+        self.assertRedirects(resp, reverse('stock-list'))
+        self.stock.name = 'new_name'
+
+    def test_other_user_cannot_update(self):
+        self.client.logout()
+        self.client.login(username=self.user2.username, password='testing1')
+        resp = self.client.post('/stock/update/{}/'.format(self.stock.pk), data={'name': 'old_name'})
+        self.assertEquals(resp.status_code, 404)
+        self.stock.name = 'new_name'
+
+    def test_other_user_sees_nothing(self):
+        self.client.logout()
+        self.client.login(username=self.user2.username, password='testing1')
+        response = self.client.get(reverse('stock-list'))
+        self.assertEquals(len(response.context['object_list']), 0)
+
+    def test_delete_stock_diffrent_user(self):
+        self.client.logout()
+        self.client.login(username=self.user2.username, password='testing1')
+        response = self.client.post('/stock/delete/{}/'.format(self.stock.pk))
+        self.assertEquals(response.status_code, 404)
+        self.assertEquals(Stock.objects.count(), 1)
+
+    def test_delete_stock(self):
+        self.client.login(username=self.user.username, password='testing')
+        response = self.client.post('/stock/delete/{}/'.format(self.stock.pk))
+        self.assertRedirects(response, reverse('stock-list'))
+        self.assertEquals(Stock.objects.count(), 0)
+
+class TestShopCrud(TestCase):
+
+    def setUp(self):
+
+        self.user = User.objects.create_user(
+            username='testing',
+            email='email@example.com',
+            password='testing'
+        )
+
+        self.user2 = User.objects.create_user(
+            username='user2',
+            email='email@example2.com',
+            password='testing1'
+        )
+
+        self.data = {
+            'shop_name': 'testing',
+            'location': 'locations',
+            'email': 'email@example.com',
+            'telephone': '+12313213213123'
+        }
+        self.client.login(username=self.user.username, password='testing')
+
+        self.bikeshop = BikeShop.objects.create(
+            shop_name='the shop',
+            email='shop@email.com',
+            location='harare',
+            phone_number=+123123123123,
+            owned_by=self.user2,
+        )
+
+    def test_get_empty_profile(self):
+        resp = self.client.get('/profile/')
+        self.assertEquals(resp.status_code, 200)
+        self.assertEquals(len(resp.context['object_list']), 0)
+
+    def test_get_profile_when_not_logged_in(self):
+        self.client.logout()
+        resp = self.client.get('/profile/')
+        self.assertRedirects(resp, '/accounts/login/?next={}'.format('/profile/'))
+
+    def test_create_profile(self):
+        self.client.login(username=self.user.username, password='testing')
+        resp = self.client.post(reverse('shop-create'), data=self.data)
+        self.assertEquals(resp.status_code, 302)
+        resp = self.client.get('/profile/')
+        self.assertEquals(len(resp.context['object_list']), 1)
+
+        #now update your profile
+        self.data['email'] = 'new@email.com'
+        self.client.post(reverse('shop-update', kwargs={'pk': 2}), data=self.data)
+        resp = self.client.get('/profile/')
+        self.assertEquals(len(resp.context['object_list']), 1)
+        self.assertEquals(resp.context['object_list'][0].email, 'new@email.com')
+
+    def test_delete_shop(self):
+        self.client.login(username=self.user2.username, password='testing1')
+        resp = self.client.get(reverse('shop-detail'))
+        self.assertEquals(len(resp.context['object_list']), 1)
+        self.client.post('/profile/delete/{}/'.format(self.bikeshop.pk))
+        self.assertEquals(BikeShop.objects.filter(owned_by=self.user2).count(), 0)
+
+
+
+
+

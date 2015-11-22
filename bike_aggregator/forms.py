@@ -1,7 +1,8 @@
 from django.forms import ModelForm
 from django.utils import timezone
-from bike_aggregator.models import BikeShop, BikeSearch, NewsLetterSubscibers, EnquiryEmail
+from bike_aggregator.models import BikeShop, BikeSearch, NewsLetterSubscibers, EnquiryEmail, Stock
 from django import forms
+from bike_aggregator.utils import EMail
 
 bike_types = (
     ('scooter', 'scooter'),
@@ -13,7 +14,7 @@ bike_types = (
 )
 
 
-class SignUpForm(ModelForm):
+class BikeShopForm(ModelForm):
     street_number = forms.CharField(max_length=225, required=False, widget=forms.HiddenInput())
     street = forms.CharField(max_length=225, required=False, widget=forms.HiddenInput())
     post_code = forms.CharField(max_length=225, required=False, widget=forms.HiddenInput())
@@ -25,10 +26,7 @@ class SignUpForm(ModelForm):
 
     class Meta:
         model = BikeShop
-        exclude = ('pk',)
-
-    def save(self, commit=True):
-        super(SignUpForm, self).save(commit)
+        exclude = ('pk', 'owned_by')
 
 
 class BikeSearchForm(ModelForm):
@@ -59,7 +57,7 @@ class ContactForm(forms.Form):
     message = forms.CharField(widget=forms.Textarea, required=True)
 
 
-class NewsLetterSignUpForm(ModelForm):
+class NewsLetterSignUpFrom(ModelForm):
 
     class Meta:
         model = NewsLetterSubscibers
@@ -71,6 +69,12 @@ class EnquiryEmailForm(ModelForm):
     class Meta:
         model = EnquiryEmail
         exclude = ('pk',)
+
+class StockForm(forms.ModelForm):
+
+    class Meta:
+        model = Stock
+        exclude = ('owned_by',)
 
 
 

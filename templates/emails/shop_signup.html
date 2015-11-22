@@ -1,0 +1,19 @@
+{% extends 'emails/base.html' %}
+
+{% block content %}
+
+<h3>Hello {{ bikeshop.shop_name }}</h3>
+
+    <p>Thanks for signing up with Youvelo.</p>
+    <p>We are here to help you in several ways. We help by making it easier for customers to find your shop
+    and hire bikes that they want, providing them with a seemless enjoyable experiance. This will hopefully result in
+    more customers and bookings for your store</p>
+    <p>We help you by providing a stock management platform and an attractive web interface to your store</p>
+    <p>Our stock management system helps give bike shops a much clearer picture of stock levels at any point in time,
+    this combined with our online booking system helps free up your staff letting them concentrate on what they do best,
+    dealing with customers face to face</p>
+    <a href="http://youvelo.com/find-out-more/">Find out more about Youvelo.com</a>
+
+<p>Best regards,<br>
+{{ email_from_name }}</p>
+{% endblock %}

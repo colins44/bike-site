@@ -1,14 +1,16 @@
 from decimal import Decimal
+from django.core.urlresolvers import reverse
 from django.db.models import Count
 from django.shortcuts import redirect
-from django.views.generic import TemplateView, ListView
+from django.utils import timezone
+from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.views.generic.edit import FormView
 import itertools
-from bike_aggregator.models import BikeShop, BikeSearch
+from bike_aggregator.models import BikeShop, BikeSearch, Stock
 from bike_aggregator.utils import EMail, distance_filter, bikeshop_content_string
-from .forms import BikeSearchForm, SignUpForm, ContactForm, NewsLetterSignUpForm, EnquiryEmailForm
+from .forms import BikeSearchForm, BikeShopForm, ContactForm, NewsLetterSignUpFrom, EnquiryEmailForm, StockForm
 from django.shortcuts import get_object_or_404
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 import logging
 logger = logging.getLogger(__name__)
 
@@ -110,19 +112,99 @@ class BikeShopContact(FormView):
 
 class SignUp(FormView):
     template_name = 'sign-up.html'
-    form_class = SignUpForm
+    form_class = BikeShopForm
     success_url = '/thanks/'
 
     def form_valid(self, form):
         form.save()
         return super(SignUp, self).form_valid(form)
 
-    def get_context_data(self, **kwargs):
-        context = super(SignUp, self).get_context_data(**kwargs)
-        context['message'] = "Sign your store up and start renting your bikes out to users of our website"
-        context['button'] = "Sign Up"
-        context['website_name'] = 'YouVelo.com'
-        return context
+
+class CrudMixin(object):
+
+    def get_success_url(self):
+        return reverse('stock-list')
+
+    def get_queryset(self):
+        return self.model.objects.filter(owned_by=self.request.user)
+
+
+class StockListView(CrudMixin, ListView):
+    model = Stock
+
+
+class StockDetailView(CrudMixin, DetailView):
+    model = Stock
+
+
+class StockCreateView(CrudMixin, CreateView):
+    model = Stock
+    form_class = StockForm
+
+    def form_valid(self, form):
+        instance = form.save()
+        instance.owned_by = self.request.user
+        instance.last_change = timezone.now()
+        instance.save()
+        return HttpResponseRedirect('/stock/list/')
+
+
+class StockDeleteView(CrudMixin, DeleteView):
+    model = Stock
+
+
+class StockUpdateView(CrudMixin, UpdateView):
+    model = Stock
+    form_class = StockForm
+
+    def form_valid(self, form):
+        instance = form.save()
+        instance.last_change = timezone.now()
+        instance.save()
+        return HttpResponseRedirect('/stock/list/')
+
+
+class ShopCreateView(CrudMixin, CreateView):
+    model = BikeShop
+    form_class = BikeShopForm
+    template_name = "bike_aggregator/stock_form.html"
+
+    def form_valid(self, form):
+        instance = form.save()
+        instance.owned_by = self.request.user
+        instance.last_change = timezone.now()
+        instance.save()
+        return HttpResponseRedirect('/profile/')
+
+
+class BikeShopView(DetailView):
+    model = BikeShop
+    template_name = 'bike_aggregator/bikeshop_list.html'
+
+
+class ShopDetailView(CrudMixin, ListView):
+    template_name = 'bike_aggregator/bikehops_list.html'
+    model = BikeShop
+
+
+class ShopUpdateView(CrudMixin, UpdateView):
+    model = BikeShop
+    form_class = BikeShopForm
+    template_name = "bike_aggregator/stock_update_form.html"
+
+    def form_valid(self, form):
+        instance = form.save()
+        instance.last_change = timezone.now()
+        instance.save()
+        return HttpResponseRedirect('/profile/')
+
+
+class ShopDeleteView(CrudMixin, DeleteView):
+    model = BikeShop
+    template_name = "bike_aggregator/stock_confirm_delete.html"
+
+    def get_success_url(self):
+        return reverse('shop-detail')
 
 
 class ContactView(FormView):
@@ -132,17 +214,6 @@ class ContactView(FormView):
 
     def form_valid(self, form):
         return super(ContactView, self).form_valid(form)
-
-
-class SorryNoBikesAvalibleView(TemplateView):
-    template_name = "sorry-no-bikes-available.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(SorryNoBikesAvalibleView, self).get_context_data(**kwargs)
-        context['message'] = "Sorry we do not have any bikes  currently available in the area you are searching"
-        context['button'] = "Home"
-        context['website_name'] = 'YouVelo.com'
-        return context
 
 
 class StoreSignUp(TemplateView):
@@ -184,7 +255,7 @@ def map(request):
     return JsonResponse(array_to_js, safe=False)
 
 class NewsLetterSignUp(FormView):
-    form_class = NewsLetterSignUpForm
+    form_class = NewsLetterSignUpFrom
     success_url = '/thanks/'
     template_name = 'find-out-more.html'
 

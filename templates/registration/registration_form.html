@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <!-- Banner -->
+					<section id="banner">
+						<div class="inner">
+							<h2>YouVelo</h2>
+						</div>
+					</section>
+
+                    <section id="one" class="wrapper style2 special">
+                        <form method="post">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <br>
+                            <input type="submit" value="Submit" class="button special" />
+                    </section>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <!-- Banner -->
+					<section id="banner">
+						<div class="inner">
+							<h2>YouVelo</h2>
+						</div>
+					</section>
+
+                    <section id="one" class="wrapper style2 special">
+                        <form action="." method="POST">{% csrf_token %}
+                            {{ form.as_p }}
+                            <input type="submit" value="Create" />
+                        </form>
+                    </section>
+{% endblock %}
