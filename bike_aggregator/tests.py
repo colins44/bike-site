@@ -124,12 +124,16 @@ class TestStockCrud(TestCase):
         )
 
         self.data = {
-            'name': 'testing'
+            'type': 'type',
+            'no_in_stock': 2,
+            'make': 'make',
+            'year': 2002
 
         }
         self.stock = Stock.objects.create(
-            name='road_bike',
-            owned_by= self.user
+            type='road_bike',
+            owned_by=self.user,
+            no_in_stock=1,
         )
         self.client.login(username=self.user.username, password='testing')
 
@@ -143,16 +147,18 @@ class TestStockCrud(TestCase):
         self.assertEquals(len(resp.context['object_list']), 2)
 
     def test_update_stock(self):
-        resp = self.client.post('/stock/update/{}/'.format(self.stock.pk), data={'name': 'new_name'})
+        self.data['type'] = 'new_type'
+        resp = self.client.post('/stock/update/{}/'.format(self.stock.pk), data=self.data)
         self.assertRedirects(resp, reverse('stock-list'))
-        self.stock.name = 'new_name'
+        self.stock.type = 'new_type'
 
     def test_other_user_cannot_update(self):
         self.client.logout()
         self.client.login(username=self.user2.username, password='testing1')
-        resp = self.client.post('/stock/update/{}/'.format(self.stock.pk), data={'name': 'old_name'})
+        self.data['type'] ='old_name'
+        resp = self.client.post('/stock/update/{}/'.format(self.stock.pk), data={'type': 'old_name'})
         self.assertEquals(resp.status_code, 404)
-        self.stock.name = 'new_name'
+        self.stock.type = 'road_bike'
 
     def test_other_user_sees_nothing(self):
         self.client.logout()
