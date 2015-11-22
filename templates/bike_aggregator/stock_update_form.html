@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <!-- Banner -->
+					<section id="banner">
+						<div class="inner">
+							<h2>YouVelo</h2>
+						</div>
+					</section>
+
+                    <section id="one" class="wrapper style2 special">
+                        <form action="" method="post">{% csrf_token %}
+                            {{ form.as_p }}
+                            <input type="submit" value="Update" />
+                        </form>
+                    </section>
+{% endblock %}
+
+<form action="" method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Update" />
+</form>

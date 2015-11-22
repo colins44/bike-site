@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <form action="/sign-up/" method="post">
+    <!-- Banner -->
+					<section id="banner">
+						<div class="inner">
+							<h2>YouVelo</h2>
+						</div>
+					</section>
+
+                    <section id="one" class="wrapper style2 special">
+                      {% if object_list %}
+                        <table style="width:100%">
+                          <tr>
+                            <td>Type</td>
+                            <td>Make</td>
+                            <td>Year</td>
+                            <td>Size</td>
+                            <td>No in Stock</td>
+                            <td>Update/Delete</td>
+                          </tr>
+                            {% for object in object_list %}
+                          <tr>
+                            <td>{{ object.type }}</td>
+                            <td>{{ object.Make }}</td>
+                            <td>{{ object.year }}</td>
+                            <td>{{ object.size }}</td>
+                            <td>{{ object.no_in_stock }}</td>
+                            <td><a href="/stock/update/{{ object.pk }}">Update</a></td>
+                          </tr>
+                            {% endfor %}
+                        </table>
+                        {% else %}
+                            <p>Looks like you have no stock listed for your shop</p>
+                            <a href="/stock/create/">Create Stock</a>
+                        {% endif %}
+                        <a href="/stock/create/" class="button special" />Add Stock</a>
+                    </section>
+{% endblock %}

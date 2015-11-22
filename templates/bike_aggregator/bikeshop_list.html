@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <!-- Banner -->
+					<section id="banner">
+						<div class="inner">
+							<h2>YouVelo</h2>
+						</div>
+					</section>
+
+                    <section id="one" class="wrapper style2 special">
+
+                                {% if object_list %}
+                                {% for object in object_list %}
+                                  <p>{{ object.shop_name }}</p>
+                                  <p>{{ object.email }}</p>
+                                  <p>{{ object.website }}</p>
+                                  <p>{{ object.location }}</p>
+                                  <a href="/profile/update/{{ object.pk }}/">Update Details</a>
+                                {% endfor %}
+                                {% else %}
+                                  <p>Hi {{ request.user }} please Create your shop profile</p>
+                                  <a href="/profile/create/"/>Create Profile</a>
+                                {% endif %}
+                    </section>
+{% endblock %}

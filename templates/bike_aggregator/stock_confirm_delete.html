@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+
+                <section id="banner">
+						<div class="inner">
+							<h2>youvelo</h2>
+							<p>Are you sure you wish to delete this?</p>
+                            <br>
+                            <p>{{ object }}</p>
+                            <form method="post">{% csrf_token %}
+                                <input type="submit" value="Delete" />
+                            </form>
+						</div>
+					</section>
+
+    <section id="one" class="wrapper style5">
+
+        <div class="inner">
+            <header class="major">
+
+            </header>
+        </div>
+        <hr>
+    </section>
+
+
+{%  endblock %}
