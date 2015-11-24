@@ -6,11 +6,12 @@ from django.utils import timezone
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.views.generic.edit import FormView
 import itertools
-from bike_aggregator.models import BikeShop, BikeSearch, Stock
+from bike_aggregator.models import BikeShop, BikeSearch, Stock, Booking, StockItem
 from bike_aggregator.utils import EMail, distance_filter, bikeshop_content_string
-from .forms import BikeSearchForm, BikeShopForm, ContactForm, NewsLetterSignUpFrom, EnquiryEmailForm, StockForm
+from .forms import BikeSearchForm, BikeShopForm, ContactForm, NewsLetterSignUpFrom, EnquiryEmailForm, StockForm, BookingForm
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse, HttpResponseRedirect
+from django.forms.models import model_to_dict
 import logging
 logger = logging.getLogger(__name__)
 
@@ -146,6 +147,13 @@ class StockCreateView(CrudMixin, CreateView):
         instance.owned_by = self.request.user
         instance.last_change = timezone.now()
         instance.save()
+        stock_item = model_to_dict(instance)
+        stock_item['stock_id'] = instance.pk
+        stock_item['owned_by'] = self.request.user.id
+        stock_item.pop('id')
+        stockitems = [StockItem(**stock_item) for x in xrange(form.cleaned_data['no_in_stock'])]
+        StockItem.objects.bulk_create(stockitems)
+        print StockItem.objects.all().count()
         return HttpResponseRedirect('/stock/list/')
 
 
@@ -162,6 +170,40 @@ class StockUpdateView(CrudMixin, UpdateView):
         instance.last_change = timezone.now()
         instance.save()
         return HttpResponseRedirect('/stock/list/')
+
+
+class BookingListView(CrudMixin, ListView):
+    model = Booking
+    template_name = 'bike_aggregator/stock_list.html'
+
+class BookingCreateView(CrudMixin, CreateView):
+    form_class = BookingForm
+    model = Booking
+    template_name = 'bike_aggregator/stock_form.html'
+
+    def form_valid(self, form):
+        instance = form.save()
+        instance.owned_by = self.request.user
+        instance.last_change = timezone.now()
+        instance.save()
+        return HttpResponseRedirect('/bookings/')
+
+class BookingUpdateView(CrudMixin, UpdateView):
+    form_class = BookingForm
+    model = Booking
+    template_name = 'bike_aggregator/stock_update_form.html'
+
+    def form_valid(self, form):
+        instance = form.save()
+        instance.last_change = timezone.now()
+        instance.save()
+        return HttpResponseRedirect('/bookings/')
+
+
+class BookingDeleteView(CrudMixin, DeleteView):
+    form_class = BookingForm
+    model = Booking
+    template_name = 'bike_aggregator/stock_confirm_delete.html'
 
 
 class ShopCreateView(CrudMixin, CreateView):

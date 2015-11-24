@@ -104,11 +104,37 @@ class Stock(models.Model):
     make = models.CharField(max_length=225)
     year = models.IntegerField(blank=True, null=True, choices=year_choices)
     size = models.CharField(max_length=225, null=True, blank=True)
-    no_in_stock = models.IntegerField()
-    owned_by = models.ForeignKey(User, blank=True, null=True)
     last_change = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
         return reverse('stock-detail', args=[self.pk])
 
 
+class StockItem(models.Model):
+    owned_by = models.IntegerField(db_index=True)
+    stock_id = models.IntegerField(db_index=True)
+    type = models.CharField(max_length=225, null=True, blank=True)
+    make = models.CharField(max_length=225)
+    year = models.IntegerField(blank=True, null=True, choices=year_choices)
+    size = models.CharField(max_length=225, null=True, blank=True)
+    last_change = models.DateTimeField(auto_now=True)
+
+
+class Reservation(models.Model):
+    shop_id = models.IntegerField(db_index=True)
+    stockitem_id = models.IntegerField(db_index=True)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    email = models.EmailField()
+    last_change = models.DateTimeField(auto_now=True)
+
+
+class Booking(models.Model):
+    reservations = models.ManyToManyField(Reservation)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    email = models.EmailField()
+    last_change = models.DateTimeField(auto_now=True)
+
+    def __unicode__(self):
+        return 'booking from {} to {} for {}'.format(self.start_date, self.end_date, self.email)

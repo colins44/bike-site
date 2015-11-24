@@ -1,6 +1,7 @@
+from django.contrib.admin.widgets import AdminDateWidget
 from django.forms import ModelForm
 from django.utils import timezone
-from bike_aggregator.models import BikeShop, BikeSearch, NewsLetterSubscibers, EnquiryEmail, Stock
+from bike_aggregator.models import BikeShop, BikeSearch, NewsLetterSubscibers, EnquiryEmail, Stock, Booking, StockItem
 from django import forms
 from bike_aggregator.utils import EMail
 
@@ -71,10 +72,20 @@ class EnquiryEmailForm(ModelForm):
         exclude = ('pk',)
 
 class StockForm(forms.ModelForm):
+    no_in_stock = forms.IntegerField()
 
     class Meta:
         model = Stock
         exclude = ('owned_by',)
 
+
+class BookingForm(forms.ModelForm):
+
+    start_date = forms.DateField(widget=forms.TextInput(attrs={'id': 'datepicker', 'type': 'date'}))
+    end_date = forms.DateField(widget=forms.TextInput(attrs={'id': 'datepicker', 'type': "date"}))
+
+    class Meta:
+        model = Booking
+        exclude = ('pk', 'owned_by', 'last_change')
 
 

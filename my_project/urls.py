@@ -20,7 +20,7 @@ from bike_aggregator.views import SignUp, ContactView, StoreSignUp, \
     BikeShopContact, EnquiryEmailSent, map, Index, BikeSearchResults, BikeSearchResultsMapView, NewsLetterSignUp, \
     SearchPopularityChart, BikeShopGeoChart, SearchesOverTimeChart, StockListView, \
     StockDetailView, StockCreateView, StockDeleteView, StockUpdateView, ShopDetailView, ShopCreateView, ShopDeleteView, \
-    ShopUpdateView, BikeShopView
+    ShopUpdateView, BikeShopView, BookingListView, BookingCreateView, BookingUpdateView, BookingDeleteView
 from bike_aggregator.sitemaps import StaticSiteMap
 from django.contrib.sitemaps.views import sitemap
 from django.views.generic import TemplateView
@@ -68,5 +68,10 @@ urlpatterns = [
     url(regex='^profile/create/$', view=login_required(ShopCreateView.as_view()), name='shop-create'),
     url(regex='^profile/delete/(?P<pk>[0-9]+)/$', view=login_required(ShopDeleteView.as_view()), name='shop-delete'),
     url(regex='^profile/update/(?P<pk>[0-9]+)/$', view=login_required(ShopUpdateView.as_view()), name='shop-update'),
+
+    url(regex='^bookings/$', view=login_required(BookingListView.as_view()), name='bookings'),
+    url(regex='^bookings/create/$', view=login_required(BookingCreateView.as_view()), name='booking-create'),
+    url(regex='^bookings/delete/(?P<pk>[0-9]+)/$', view=login_required(BookingDeleteView.as_view()), name='booking-delete'),
+    url(regex='^bookings/update/(?P<pk>[0-9]+)/$', view=login_required(BookingUpdateView.as_view()), name='booking-update'),
 
 ]
