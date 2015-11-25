@@ -105,6 +105,7 @@ class Stock(models.Model):
     year = models.IntegerField(blank=True, null=True, choices=year_choices)
     size = models.CharField(max_length=225, null=True, blank=True)
     last_change = models.DateTimeField(auto_now=True)
+    owned_by = models.ForeignKey(User, null=True, blank=True)
 
     def get_absolute_url(self):
         return reverse('stock-detail', args=[self.pk])

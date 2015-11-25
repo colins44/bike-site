@@ -153,7 +153,6 @@ class StockCreateView(CrudMixin, CreateView):
         stock_item.pop('id')
         stockitems = [StockItem(**stock_item) for x in xrange(form.cleaned_data['no_in_stock'])]
         StockItem.objects.bulk_create(stockitems)
-        print StockItem.objects.all().count()
         return HttpResponseRedirect('/stock/list/')
 
 
@@ -169,6 +168,10 @@ class StockUpdateView(CrudMixin, UpdateView):
         instance = form.save()
         instance.last_change = timezone.now()
         instance.save()
+        import ipdb; ipdb.set_trace()
+        stock = model_to_dict(instance)
+        #check if there is a difference in the number of itmes
+        stock_items = StockItem.objects.filter(owned_by=self.request.user.id, stock_id=instance.pk).update(**stock)
         return HttpResponseRedirect('/stock/list/')
 
 
