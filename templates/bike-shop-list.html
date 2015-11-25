@@ -11,11 +11,17 @@
                             {% if bikeshops %}
 
                                 <section id="one" class="wrapper style5">
-                                    {% for bikeshop in bikeshops %}
                                     <div class="inner">
-                                        <div>
+                                        <div class="pull-right">
                                              <a href="/bike-shop-search-results-map-view/{{ bikesearch.latitude }}/{{ bikesearch.longitude }}" class="button special">Show results on map</a>
                                         </div>
+                                        <div class="pull-left">
+                                             <a href="/bike-shop-search-results/{{ bikesearch.latitude }}/{{ bikesearch.longitude }}" class="button special">Show results as a list</a>
+                                        </div>
+
+                                    </div>
+                                    {% for bikeshop in bikeshops %}
+                                    <div class="inner">
                                         <hr>
                                         <header class="major">
                                             <h2>{{ bikeshop.shop_name}}</h2>
