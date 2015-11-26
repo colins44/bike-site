@@ -110,6 +110,14 @@ class Stock(models.Model):
     def get_absolute_url(self):
         return reverse('stock-detail', args=[self.pk])
 
+    @property
+    def no_in_stock(self):
+        return StockItem.objects.filter(owned_by=self.owned_by.id, stock_id=self.pk).count()
+
+    @property
+    def availability(self):
+        return StockItem.objects.filter(owned_by=self.owned_by.id, stock_id=self.pk).count()
+
 
 class StockItem(models.Model):
     owned_by = models.IntegerField(db_index=True)
@@ -131,6 +139,7 @@ class Reservation(models.Model):
 
 
 class Booking(models.Model):
+    owned_by = models.ForeignKey(User, null=True, blank=True)
     reservations = models.ManyToManyField(Reservation)
     start_date = models.DateField()
     end_date = models.DateField()

@@ -124,17 +124,20 @@ def Updator(stock, number_in_stock):
     :param stock: A stock object
     :return:
     """
-    stock = model_to_dict(stock)
-    stock_id = stock.pop('id')
-    stock_items = StockItem.objects.filter(owned_by=stock['owned_by'], stock_id=stock_id).update(**stock)
 
-    #now check number in stock and how that corresnds to the actuall number
-    if stock_items.count() < number_in_stock:
+    stock = model_to_dict(stock)
+    stock['stock_id'] = stock.pop('id')
+    stock_items = StockItem.objects.filter(owned_by=stock['owned_by'], stock_id=stock['stock_id'])
+    stock_items.update(**stock)
+
+    #now check number in stock and how that corresponds to the actual number
+    if len(stock_items) < number_in_stock:
         #create more stock if the bike shop is adding it
         StockItem.objects.bulk_create(
             StockItem(**stock) for x in xrange(number_in_stock - stock_items.count())
         )
 
-    if number_in_stock < stock_items.count():
-        stock_to_remove = StockItem.objects.filter(owned_by=stock['owned_by'], stock_id=stock_id)[:stock_items.count()-number_in_stock]
-        stock_to_remove.delete()
+    if number_in_stock < len(stock_items):
+        stock_to_delete_ids = StockItem.objects.filter(
+            owned_by=stock['owned_by'], stock_id=stock['stock_id'])[:stock_items.count()-number_in_stock].values_list("id", flat=True)
+        StockItem.objects.filter(id__in=(stock_to_delete_ids)).delete()

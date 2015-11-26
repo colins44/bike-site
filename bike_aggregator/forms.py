@@ -81,11 +81,14 @@ class StockForm(forms.ModelForm):
 
 class BookingForm(forms.ModelForm):
 
-    start_date = forms.DateField(widget=forms.TextInput(attrs={'id': 'datepicker', 'type': 'date'}))
-    end_date = forms.DateField(widget=forms.TextInput(attrs={'id': 'datepicker', 'type': "date"}))
+    start_date = forms.DateField(required=True)
+    end_date = forms.DateField(required=True)
+    number = forms.IntegerField(required=True)
 
     class Meta:
         model = Booking
-        exclude = ('pk', 'owned_by', 'last_change')
+        exclude = ('pk', 'owned_by', 'last_change', 'reservations')
 
 
+    #on the save method the reservations should be made
+    #then maybe an email sent out

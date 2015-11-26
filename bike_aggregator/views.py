@@ -7,7 +7,7 @@ from django.views.generic import TemplateView, ListView, DetailView, CreateView,
 from django.views.generic.edit import FormView
 import itertools
 from bike_aggregator.models import BikeShop, BikeSearch, Stock, Booking, StockItem
-from bike_aggregator.utils import EMail, distance_filter, bikeshop_content_string
+from bike_aggregator.utils import EMail, distance_filter, bikeshop_content_string, Updator
 from .forms import BikeSearchForm, BikeShopForm, ContactForm, NewsLetterSignUpFrom, EnquiryEmailForm, StockForm, BookingForm
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse, HttpResponseRedirect
@@ -168,10 +168,8 @@ class StockUpdateView(CrudMixin, UpdateView):
         instance = form.save()
         instance.last_change = timezone.now()
         instance.save()
-        import ipdb; ipdb.set_trace()
-        stock = model_to_dict(instance)
         #check if there is a difference in the number of itmes
-        stock_items = StockItem.objects.filter(owned_by=self.request.user.id, stock_id=instance.pk).update(**stock)
+        Updator(instance, form.cleaned_data['no_in_stock'])
         return HttpResponseRedirect('/stock/list/')
 
 
@@ -182,7 +180,7 @@ class BookingListView(CrudMixin, ListView):
 class BookingCreateView(CrudMixin, CreateView):
     form_class = BookingForm
     model = Booking
-    template_name = 'bike_aggregator/stock_form.html'
+    template_name = 'bike_aggregator/booking_form.html'
 
     def form_valid(self, form):
         instance = form.save()
@@ -190,6 +188,14 @@ class BookingCreateView(CrudMixin, CreateView):
         instance.last_change = timezone.now()
         instance.save()
         return HttpResponseRedirect('/bookings/')
+
+    def get_context_data(self, **kwargs):
+        context = super(BookingCreateView, self).get_context_data(**kwargs)
+        context['stock_list'] = Stock.objects.filter(owned_by=self.request.user)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        import ipdb; ipdb.set_trace()
 
 class BookingUpdateView(CrudMixin, UpdateView):
     form_class = BookingForm

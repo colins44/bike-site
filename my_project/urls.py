@@ -71,7 +71,7 @@ urlpatterns = [
 
     url(regex='^bookings/$', view=login_required(BookingListView.as_view()), name='bookings'),
     url(regex='^bookings/create/$', view=login_required(BookingCreateView.as_view()), name='booking-create'),
-    url(regex='^bookings/delete/(?P<pk>[0-9]+)/$', view=login_required(BookingDeleteView.as_view()), name='booking-delete'),
+    url(regex='^bookings/delete/(?P<booking>[0-9]+)/$', view=login_required(BookingDeleteView.as_view()), name='booking-delete'),
     url(regex='^bookings/update/(?P<pk>[0-9]+)/$', view=login_required(BookingUpdateView.as_view()), name='booking-update'),
 
 ]
