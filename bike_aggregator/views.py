@@ -5,8 +5,7 @@ from django.db.models import Count
 from django.forms import model_to_dict
 from django.shortcuts import redirect
 from django.utils import timezone
-from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView, View, \
-    RedirectView
+from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView, RedirectView
 from django.views.generic.edit import FormView
 import itertools
 from bike_aggregator.models import BikeShop, BikeSearch, Stock, Event
