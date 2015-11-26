@@ -112,3 +112,12 @@ class Stock(models.Model):
         return reverse('stock-detail', args=[self.pk])
 
 
+class Event(models.Model):
+    name = models.CharField(max_length=225, blank=True, null=True)
+    data = models.TextField(null=True, blank=True)
+    event_time = models.DateTimeField(auto_now=True)
+
+    def __unicode__(self):
+        return "Event: {} at {}".format(self.name, self.event_time)
+
+

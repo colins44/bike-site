@@ -1,12 +1,15 @@
+import json
 from decimal import Decimal
 from django.core.urlresolvers import reverse
 from django.db.models import Count
+from django.forms import model_to_dict
 from django.shortcuts import redirect
 from django.utils import timezone
-from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView, View, \
+    RedirectView
 from django.views.generic.edit import FormView
 import itertools
-from bike_aggregator.models import BikeShop, BikeSearch, Stock
+from bike_aggregator.models import BikeShop, BikeSearch, Stock, Event
 from bike_aggregator.utils import EMail, distance_filter, bikeshop_content_string
 from .forms import BikeSearchForm, BikeShopForm, ContactForm, NewsLetterSignUpFrom, EnquiryEmailForm, StockForm
 from django.shortcuts import get_object_or_404
@@ -48,6 +51,7 @@ class BikeSearchResults(ListView):
         context['message'] = "your results"
         context['bikesearch'] = bikesearch
         return context
+
 
 class BikeSearchResultsMapView(ListView):
     model = BikeShop
@@ -109,6 +113,16 @@ class BikeShopContact(FormView):
         context['bikeshop'] = get_object_or_404(BikeShop, pk=self.kwargs['pk'])
         return context
 
+
+class BikeShopRedirectView(RedirectView):
+
+    def get_redirect_url(self, *args, **kwargs):
+        bike_shop = model_to_dict(get_object_or_404(BikeShop, pk=self.kwargs['pk']), exclude=['latitude', 'longitude'])
+        Event.objects.create(
+            name="Customer redirected to bike shop website",
+            data=json.dumps(bike_shop)
+        )
+        return bike_shop['website']
 
 class SignUp(FormView):
     template_name = 'sign-up.html'

@@ -12,17 +12,11 @@
 
                                 <section id="one" class="wrapper style5">
                                     <div class="inner">
-                                        <div class="pull-right">
-                                             <a href="/bike-shop-search-results-map-view/{{ bikesearch.latitude }}/{{ bikesearch.longitude }}" class="button special">Show results on map</a>
-                                        </div>
-                                        <div class="pull-left">
-                                             <a href="/bike-shop-search-results/{{ bikesearch.latitude }}/{{ bikesearch.longitude }}" class="button special">Show results as a list</a>
-                                        </div>
-
+                                        <a href="/bike-shop-search-results-map-view/{{ bikesearch.latitude }}/{{ bikesearch.longitude }}" class="button special">Show results on map</a>
                                     </div>
+                                <hr>
                                     {% for bikeshop in bikeshops %}
                                     <div class="inner">
-                                        <hr>
                                         <header class="major">
                                             <h2>{{ bikeshop.shop_name}}</h2>
                                             <p>Address: {{ bikeshop.street_number}}, {{ bikeshop.street }}, {{ bikeshop.city }}, {{ bikeshop.post_code}}</p>
@@ -34,8 +28,8 @@
                                             {% endfor %}</p>
                                             {% endif %}
                                             <p>Distance to Bike Shop: {{ bikeshop.distance_to_search }} Km</p>
-                                            <a href="{{ bikeshop.website }}" class="button special small">Go to bike shop wesbite</a>
-                                                <a href="/contact-bikeshop/{{ bikeshop.pk }}" class="button special small">contact the bike shop</a>
+                                            <a href="/redirect-to-bikeshop/{{ bikeshop.pk }}/" class="button special small">Go to bike shop wesbite</a>
+                                                <a href="/contact-bikeshop/{{ bikeshop.pk }}/" class="button special small">contact the bike shop</a>
                                         </header>
                                     </div>
                                     <hr>

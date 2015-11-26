@@ -20,7 +20,7 @@ from bike_aggregator.views import SignUp, ContactView, StoreSignUp, \
     BikeShopContact, EnquiryEmailSent, map, Index, BikeSearchResults, BikeSearchResultsMapView, NewsLetterSignUp, \
     SearchPopularityChart, BikeShopGeoChart, SearchesOverTimeChart, StockListView, \
     StockDetailView, StockCreateView, StockDeleteView, StockUpdateView, ShopDetailView, ShopCreateView, ShopDeleteView, \
-    ShopUpdateView, BikeShopView
+    ShopUpdateView, BikeShopView, BikeShopRedirectView
 from bike_aggregator.sitemaps import StaticSiteMap
 from django.contrib.sitemaps.views import sitemap
 from django.views.generic import TemplateView
@@ -42,6 +42,7 @@ urlpatterns = [
         BikeSearchResultsMapView.as_view(), name='bike-shop-search-results-map-view'),
     url(r'^contact/', ContactView.as_view(), name='contact'),
     url(r'^contact-bikeshop/(?P<pk>[0-9]+)/', BikeShopContact.as_view(), name='bikeshop-contact'),
+    url(r'^redirect-to-bikeshop/(?P<pk>[0-9]+)/', BikeShopRedirectView.as_view(), name='bikeshop-redirect'),
     url(r'^thanks/', StoreSignUp.as_view(), name='thanks'),
     url(r'^enquiry-email-sent/', EnquiryEmailSent.as_view(), name='enquiry-email-sent'),
     url(r'^find-out-more/', NewsLetterSignUp.as_view(), name='find-out-more'),
