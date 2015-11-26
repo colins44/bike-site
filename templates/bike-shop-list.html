@@ -1,38 +1,47 @@
 {% extends "base.html" %}
 {% block content %}
 
-                <section id="banner">
-						<div class="inner">
-							<h2>youvelo</h2>
-							<p>your results</p>
-                            <a href="/bike-shop-search-results-map-view/{{ bikesearch.latitude }}/{{ bikesearch.longitude }}" class="button special">Show results on map</a>
-						</div>
-					</section>
+        <article id="main">
+						<header>
+							<h2>Your Search Results</h2>
+						</header>
+						<section class="wrapper style5">
+							<div class="inner">
 
-    {% if bikeshops %}
+                            {% if bikeshops %}
 
-    <section id="one" class="wrapper style5">
-        {% for bikeshop in bikeshops %}
-        <div class="inner">
-            <header class="major">
-                <h2>{{ bikeshop.shop_name}}</h2>
-                <p>Address: {{ bikeshop.street_number}}, {{ bikeshop.street }}, {{ bikeshop.city }}, {{ bikeshop.post_code}}</p>
-                <p>Rental Equipment:
-                {% for equipment in bikeshop.rental_options.all %}
-                {{ equipment.name }}
-                {% if not forloop.last %}, {% endif %}
-                {% endfor %}</p>
-                <p>Distance to Bike Shop: {{ bikeshop.distance_to_search }} Km</p>
-                <a href="/contact-bikeshop/{{ bikeshop.pk }}" class="button special small">contact the bikeshop</a>
-            </header>
-        </div>
-        <hr>
-        {% endfor %}
-    </section>
-    {% endif %}
+                                <section id="one" class="wrapper style5">
+                                    <div class="inner">
+                                        <a href="/bike-shop-search-results-map-view/{{ bikesearch.latitude }}/{{ bikesearch.longitude }}" class="button special">Show results on map</a>
+                                    </div>
+                                <hr>
+                                    {% for bikeshop in bikeshops %}
+                                    <div class="inner">
+                                        <header class="major">
+                                            <h2>{{ bikeshop.shop_name}}</h2>
+                                            <p>Address: {{ bikeshop.street_number}}, {{ bikeshop.street }}, {{ bikeshop.city }}, {{ bikeshop.post_code}}</p>
+                                            {% if bikeshop.rental_options %}
+                                            <p>This shop rents out:
+                                            {% for equipment in bikeshop.rental_options.all %}
+                                            {{ equipment.name }}
+                                            {% if not forloop.last %}, {% endif %}
+                                            {% endfor %}</p>
+                                            {% endif %}
+                                            <p>Distance to Bike Shop: {{ bikeshop.distance_to_search }} Km</p>
+                                            <a href="/redirect-to-bikeshop/{{ bikeshop.pk }}/" class="button special small">Go to bike shop wesbite</a>
+                                                <a href="/contact-bikeshop/{{ bikeshop.pk }}/" class="button special small">contact the bike shop</a>
+                                        </header>
+                                    </div>
+                                    <hr>
+                                    {% endfor %}
+                                </section>
+                                {% endif %}
+							</div>
+						</section>
+					</article>
+
 
 
 {%  endblock %}
-
 
 
