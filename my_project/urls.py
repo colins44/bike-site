@@ -26,6 +26,9 @@ from django.contrib.sitemaps.views import sitemap
 from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
 
+import brillixy.site
+brillixy.site.setup(admin.site)
+
 sitemaps ={
     'mysitemap':StaticSiteMap
 }
