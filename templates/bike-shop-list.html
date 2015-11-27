@@ -1,5 +1,36 @@
 {% extends "base.html" %}
 {% block content %}
+    <head>
+    <style>
+      #map {
+        width: 500px;
+        height: 400px;
+        background-color: #CCC;
+      }
+    </style>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <script type="text/javascript">
+        var gmap;
+        function initialize() {
+            var target = new google.maps.LatLng(51.54, -0.07);
+            var myOptions = {
+                zoom: 8,
+                center: target,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+            gmap = new google.maps.Map(document.getElementById('map'),
+                myOptions);
+            point = new google.maps.Marker({
+                position: target,
+                map: gmap,
+                title: 'Queensbridge Leisure Centre',
+            });
+        }
+
+        google.maps.event.addDomListener(window, 'load', initialize);
+    </script>
+
+    </head>
 
         <article id="main">
 						<header>
@@ -14,7 +45,7 @@
                                     <div class="tabs">
                                             <ul class="tab-links">
                                                 <li class="active"><a href="#list-view">List View</a></li>
-                                                <li><a href="#map-view">Map View</a></li>
+                                                <li><a href="#map-view" onclick="initialize()">Map View</a></li>
                                                 <li><a href="#filter">Filter</a></li>
                                             </ul>
 
@@ -42,7 +73,8 @@
                                                 </div>
 
                                                 <div id="map-view" class="tab">
-                                                    <div id="map" style="width: inherit"><p>sdjalkdjlaskjdlkasjdlkjasldkjalskdjlksajdalsdlkjasdlkj</p></div>
+                                                    <div id="map" style="height: 450px; width: 450px; overflow: hidden"></div>
+
                                                 </div>
 
                                                 <div id="filter" class="tab">
@@ -57,6 +89,9 @@
 							</div>
 						</section>
 					</article>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBGlg8YhNcZJP-Pfd1WskAlHcbsjxUPncQ&signed_in=true&callback=initMap"></script>
+  <body>
 
 
 
