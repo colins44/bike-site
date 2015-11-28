@@ -59,6 +59,7 @@
                                             <ul class="tab-links">
                                                 <li><a href="#list-view">List View</a></li>
                                                 <li><a href="#map-view" onclick="displayMap()">Map View</a></li>
+                                                <li><a href="#filter">Filter</a></li>
                                             </ul>
                                             <div class="tab-content">
                                                 <div id="list-view" class="tab active">
@@ -86,6 +87,21 @@
                                                 </div>
                                                 <div id="map-view" class="tab">
                                                     <div id="map_canvas"></div>
+                                                </div>
+                                                <div id="filter" class="tab">
+                                                    <div>
+                                                    <form method="get">
+                                                        <select name="filter">
+                                                            <option value="electric-bikes">Electric bikes</option>
+                                                            <option value="scooters">Scooters</option>
+                                                            <option value="cruiser-bikes">Cruiser bikes</option>
+                                                            <option value="road-bikes">Road bikes</option>
+                                                            <option value="mountain-bikes">Mountain bikes</option>
+                                                        </select>
+                                                        <br>
+                                                        <input type="submit" value="Filter" />
+                                                    </form>
+                                                    </div>
                                                 </div>
                                         </div>
                                 <hr>
