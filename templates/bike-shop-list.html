@@ -2,15 +2,15 @@
 {% block content %}
     <head>
       <style type="text/css">
-          #map_canvas {display:none;}
+          #map_canvas {display:none; width: inherit; height: 400px;}
       </style>
 <script>
     function displayMap() {
             document.getElementById('map_canvas').style.display="block";
-                    initialize();
-                }
-    function initialize() {
-            // create the map
+//                    initialize();
+//                }
+//    function initialize() {
+            // create the m ap
             var myOptions = {
             zoom: 14,
             center: new google.maps.LatLng({{ bikesearch.latitude }}, {{ bikesearch.longitude }}),
@@ -53,18 +53,18 @@
 							<h2>Your Search Results</h2>
 						</header>
 						<section class="wrapper style5">
-							<div class="inner">
                             {% if bikeshops %}
-                                <section id="one" class="wrapper style5">
-                                    <div class="tabs">
+                                <!--<section id="one" class="wrapper style5">-->
+                                    <div class="tabs" style="width: 100%">
                                             <ul class="tab-links">
                                                 <li class="active"><a href="#list-view">List View</a></li>
                                                 <li><a href="#map-view" onclick="displayMap()">Map View</a></li>
                                             </ul>
                                             <div class="tab-content">
                                                 <div id="list-view" class="tab active">
+                                                    <ul class="actions">
                                                     {% for bikeshop in bikeshops %}
-                                                    <div class="inner">
+                                                    <div class="inner" style="width: 100%">
                                                         <header class="major">
                                                             <h2>{{ bikeshop.shop_name}}</h2>
                                                             <p>Address: {{ bikeshop.street_number}}, {{ bikeshop.street }}, {{ bikeshop.city }}, {{ bikeshop.post_code}}</p>
@@ -77,20 +77,20 @@
                                                             {% endif %}
                                                             <p>Distance to Bike Shop: {{ bikeshop.distance_to_search }} Km</p>
                                                             <a href="/redirect-to-bikeshop/{{ bikeshop.pk }}/" class="button special small">Go to bike shop wesbite</a>
-                                                                <a href="/contact-bikeshop/{{ bikeshop.pk }}/" class="button special small">contact the bike shop</a>
+                                                            <a href="/contact-bikeshop/{{ bikeshop.pk }}/" class="button special small">contact the bike shop</a>
                                                         </header>
                                                     </div>
+                                                    </ul>
                                                     <hr>
                                                     {% endfor %}
                                                 </div>
                                                 <div id="map-view" class="tab">
-                                                    <div id="map_canvas" style="width:700px; height:500px; margin-left:80px;" ></div>
+                                                    <div id="map_canvas"></div>
                                                 </div>
                                         </div>
                                 <hr>
-                                </section>
+                                <!--</section>-->
                                 {% endif %}
-							</div>
 						</section>
 					</article>
   <body>
