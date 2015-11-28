@@ -15,6 +15,7 @@
         <meta name="google-site-verification" content="1vNxk3KneAQfj4L0QgMLkKOwkZV78qrR0ze_9XaUAVg" />
         {# Global stylesheets #}
         <link rel="stylesheet" href={%  static "css/main.css" %} />
+        <link rel="stylesheet" href={%  static "css/tabs.css" %} />
 
         {% block extra_css %}
             {# Override this in templates to add extra stylesheets #}
@@ -115,6 +116,7 @@
             <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBGlg8YhNcZJP-Pfd1WskAlHcbsjxUPncQ&libraries=places&callback=initAutocomplete"></script>
         <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
         <script src="{% static  "js/places_autocomplete.js" %}"></script>
+        <script src="{% static  "js/tabs.js" %}"></script>
 		<script src={% static "js/jquery.scrollex.min.js"%}></script>
 		<script src={% static "js/jquery.scrolly.min.js"%}></script>
 		<script src={% static "js/skel.min.js" %}></script>

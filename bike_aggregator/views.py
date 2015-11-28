@@ -46,7 +46,7 @@ class BikeSearchResults(ListView):
         except Exception as e:
             #some sort of error so we log it
             logger.error("Error changing Strings to Decimals: {},  {}".format(e.message, e.args))
-        context['bikeshops'] = distance_filter(bikesearch, self.model.objects.all())
+        context['bikeshops'] = bikeshop_content_string(distance_filter(bikesearch, self.model.objects.all()))
         context['message'] = "your results"
         context['bikesearch'] = bikesearch
         return context

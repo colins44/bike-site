@@ -1,47 +1,97 @@
 {% extends "base.html" %}
 {% block content %}
+    <head>
+      <style type="text/css">
+          #map_canvas {display:none;}
+      </style>
+<script>
+    function displayMap() {
+            document.getElementById('map_canvas').style.display="block";
+                    initialize();
+                }
+    function initialize() {
+            // create the map
+            var myOptions = {
+            zoom: 14,
+            center: new google.maps.LatLng({{ bikesearch.latitude }}, {{ bikesearch.longitude }}),
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+            }
 
+            var map = new google.maps.Map(document.getElementById("map_canvas"),
+            myOptions);
+
+            var marker = new google.maps.Marker({
+            position: new google.maps.LatLng( {{ bikesearch.latitude }}, {{ bikesearch.longitude }}),
+            map: map
+            });
+
+            {% for bikeshop in bikeshops %}
+
+            var infowindow{{ bikeshop.pk }} = new google.maps.InfoWindow({
+            content: "{{ bikeshop.content_string }}"
+            });
+
+            var marker{{ bikeshop.pk}} = new google.maps.Marker({
+            position: {lat: {{ bikeshop.latitude }}, lng: {{ bikeshop.longitude }}},
+            map: map,
+            title: '{{ bikeshop.shop_name }}',
+            icon: '/static/images/bike_marker.png'
+            });
+
+            marker{{ bikeshop.pk }}.addListener('click', function() {
+            infowindow{{ bikeshop.pk }}.open(map, marker{{ bikeshop.pk }});
+            });
+
+            {%  endfor %}
+            }
+</script>
+  
+   
+    </head>
         <article id="main">
 						<header>
 							<h2>Your Search Results</h2>
 						</header>
 						<section class="wrapper style5">
 							<div class="inner">
-
                             {% if bikeshops %}
-
                                 <section id="one" class="wrapper style5">
-                                    <div class="inner">
-                                        <a href="/bike-shop-search-results-map-view/{{ bikesearch.latitude }}/{{ bikesearch.longitude }}" class="button special">Show results on map</a>
-                                    </div>
+                                    <div class="tabs">
+                                            <ul class="tab-links">
+                                                <li class="active"><a href="#list-view">List View</a></li>
+                                                <li><a href="#map-view" onclick="displayMap()">Map View</a></li>
+                                            </ul>
+                                            <div class="tab-content">
+                                                <div id="list-view" class="tab active">
+                                                    {% for bikeshop in bikeshops %}
+                                                    <div class="inner">
+                                                        <header class="major">
+                                                            <h2>{{ bikeshop.shop_name}}</h2>
+                                                            <p>Address: {{ bikeshop.street_number}}, {{ bikeshop.street }}, {{ bikeshop.city }}, {{ bikeshop.post_code}}</p>
+                                                            {% if bikeshop.rental_options %}
+                                                            <p>This shop rents out:
+                                                            {% for equipment in bikeshop.rental_options.all %}
+                                                            {{ equipment.name }}
+                                                            {% if not forloop.last %}, {% endif %}
+                                                            {% endfor %}</p>
+                                                            {% endif %}
+                                                            <p>Distance to Bike Shop: {{ bikeshop.distance_to_search }} Km</p>
+                                                            <a href="/redirect-to-bikeshop/{{ bikeshop.pk }}/" class="button special small">Go to bike shop wesbite</a>
+                                                                <a href="/contact-bikeshop/{{ bikeshop.pk }}/" class="button special small">contact the bike shop</a>
+                                                        </header>
+                                                    </div>
+                                                    <hr>
+                                                    {% endfor %}
+                                                </div>
+                                                <div id="map-view" class="tab">
+                                                    <div id="map_canvas" style="width:700px; height:500px; margin-left:80px;" ></div>
+                                                </div>
+                                        </div>
                                 <hr>
-                                    {% for bikeshop in bikeshops %}
-                                    <div class="inner">
-                                        <header class="major">
-                                            <h2>{{ bikeshop.shop_name}}</h2>
-                                            <p>Address: {{ bikeshop.street_number}}, {{ bikeshop.street }}, {{ bikeshop.city }}, {{ bikeshop.post_code}}</p>
-                                            {% if bikeshop.rental_options %}
-                                            <p>This shop rents out:
-                                            {% for equipment in bikeshop.rental_options.all %}
-                                            {{ equipment.name }}
-                                            {% if not forloop.last %}, {% endif %}
-                                            {% endfor %}</p>
-                                            {% endif %}
-                                            <p>Distance to Bike Shop: {{ bikeshop.distance_to_search }} Km</p>
-                                            <a href="/redirect-to-bikeshop/{{ bikeshop.pk }}/" class="button special small">Go to bike shop wesbite</a>
-                                                <a href="/contact-bikeshop/{{ bikeshop.pk }}/" class="button special small">contact the bike shop</a>
-                                        </header>
-                                    </div>
-                                    <hr>
-                                    {% endfor %}
                                 </section>
                                 {% endif %}
 							</div>
 						</section>
 					</article>
-
-
-
+  <body>
 {%  endblock %}
-
-
