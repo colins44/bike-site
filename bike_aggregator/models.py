@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.core.validators import RegexValidator
+from django.template.defaultfilters import slugify
 
 bike_types = (
     ('road_bike', 'road bike'),
@@ -30,9 +31,15 @@ class BikeSearch(models.Model):
 
 class RentalEquipment(models.Model):
     name = models.CharField(max_length=225)
+    slug = models.SlugField(max_length=225, blank=True, null=True)
 
     def __unicode__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super(RentalEquipment, self).save(*args, **kwargs)
+
 
 class BikeShop(models.Model):
     owned_by = models.OneToOneField(User, blank=True, null=True)

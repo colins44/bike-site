@@ -1,5 +1,6 @@
 import json
 from decimal import Decimal
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db.models import Count
 from django.forms import model_to_dict
@@ -8,7 +9,7 @@ from django.utils import timezone
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView, RedirectView
 from django.views.generic.edit import FormView
 import itertools
-from bike_aggregator.models import BikeShop, BikeSearch, Stock, Event
+from bike_aggregator.models import BikeShop, BikeSearch, Stock, Event, RentalEquipment
 from bike_aggregator.utils import EMail, distance_filter, bikeshop_content_string
 from .forms import BikeSearchForm, BikeShopForm, ContactForm, NewsLetterSignUpFrom, EnquiryEmailForm, StockForm
 from django.shortcuts import get_object_or_404
@@ -55,6 +56,14 @@ class BikeSearchResults(ListView):
         context['bikeshops'] = bikeshop_content_string(distance_filter(bikesearch, self.model.objects.all()))
         context['bikesearch'] = bikesearch
         context['message'] = "your results"
+        if self.request.GET.get('filter'):
+            try:
+                rental_equipment = RentalEquipment.objects.get(slug=self.request.GET.get('filter'))
+                context['bikeshops'] = bikeshop_content_string(
+                    distance_filter(
+                        bikesearch, self.model.objects.filter(rental_options__in=[rental_equipment.pk])))[:20]
+            except ObjectDoesNotExist:
+                context['bikeshops'] = bikeshop_content_string(distance_filter(bikesearch, self.model.objects.all()))[:20]
         return context
 
 
