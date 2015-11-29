@@ -41,6 +41,8 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^bike-shop-search-results/(?P<latitude>[-\S]+)/(?P<longitude>[-\S]+)/$',
         BikeSearchResults.as_view(), name='bike-shop-search-results'),
+    url(r'^bike-shop-search-results/(?P<city>[-\w]+)/$',
+        BikeSearchResults.as_view(), name='bike-shop-search-results'),
     url(r'^bike-shop-search-results-map-view/(?P<latitude>[-\S]+)/(?P<longitude>[-\S]+)/$',
         BikeSearchResultsMapView.as_view(), name='bike-shop-search-results-map-view'),
     url(r'^contact/', ContactView.as_view(), name='contact'),
@@ -59,6 +61,7 @@ urlpatterns = [
     url(r'^search-over-time-chart/', SearchesOverTimeChart.as_view(), name='geo-shop-chart'),
     url(r'^sign-up/', SignUp.as_view(), name='sign-up'),
     url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+    url(r'^testing$', TemplateView.as_view(template_name="testing.html"), name='django.contrib.sitemaps.views.sitemap'),
 
     url(regex='^stock/list/$', view=login_required(StockListView.as_view()), name='stock-list'),
     url(regex='^stock/detail/(?P<pk>[0-9]+)/$', view=login_required(StockDetailView.as_view()), name='stock-detail'),

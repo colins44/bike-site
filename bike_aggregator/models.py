@@ -121,3 +121,12 @@ class Event(models.Model):
         return "Event: {} at {}".format(self.name, self.event_time)
 
 
+class Cities(models.Model):
+    name = models.CharField(max_length=225)
+    country = models.CharField(max_length=225, blank=True, null=True)
+    latitude = models.DecimalField(max_digits=8, decimal_places=4, null=True)
+    longitude = models.DecimalField(max_digits=8, decimal_places=4, null=True)
+
+    def __unicode__(self):
+        return "{},{}".format(self.name, self.country)
+
