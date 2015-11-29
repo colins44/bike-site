@@ -46,6 +46,7 @@ class BikeShop(models.Model):
     country = models.CharField(max_length=225, null=True, blank=True)
     latitude = models.DecimalField(max_digits=8, decimal_places=4, null=True)
     longitude = models.DecimalField(max_digits=8, decimal_places=4, null=True)
+    rental_options = models.ManyToManyField(RentalEquipment, blank=True)
     website = models.URLField(null=True, blank=True)
     email = models.EmailField()
     phone_regex = RegexValidator(
@@ -119,5 +120,6 @@ class Event(models.Model):
 
     def __unicode__(self):
         return "Event: {} at {}".format(self.name, self.event_time)
+
 
 
