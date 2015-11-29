@@ -41,6 +41,8 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^bike-shop-search-results/(?P<latitude>[-\S]+)/(?P<longitude>[-\S]+)/$',
         BikeSearchResults.as_view(), name='bike-shop-search-results'),
+    url(r'^bike-shop-search-results/(?P<city>[-\w]+)/$',
+        BikeSearchResults.as_view(), name='bike-shop-search-results'),
     url(r'^bike-shop-search-results-map-view/(?P<latitude>[-\S]+)/(?P<longitude>[-\S]+)/$',
         BikeSearchResultsMapView.as_view(), name='bike-shop-search-results-map-view'),
     url(r'^contact/', ContactView.as_view(), name='contact'),

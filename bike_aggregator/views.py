@@ -37,18 +37,24 @@ class BikeSearchResults(ListView):
     template_name = "bike-shop-list.html"
 
     def get_context_data(self, **kwargs):
-        #here we get the lat and long kwargs and make them work for us
         context = super(BikeSearchResults, self).get_context_data(**kwargs)
         bikesearch = {}
-        try:
-            bikesearch['latitude'] = Decimal(self.kwargs['latitude'])
-            bikesearch['longitude'] = Decimal(self.kwargs['longitude'])
-        except Exception as e:
-            #some sort of error so we log it
-            logger.error("Error changing Strings to Decimals: {},  {}".format(e.message, e.args))
-        context['bikeshops'] = bikeshop_content_string(distance_filter(bikesearch, self.model.objects.all()))[:10]
-        context['message'] = "your results"
+        if self.kwargs.get('city'):
+            context['bikeshops'] = BikeShop.objects.filter(city__iexact=self.kwargs['city'])[:1]
+            if context['bikeshops']:
+                bikesearch['latitude'] = context['bikeshops'][0].latitude
+                bikesearch['longitude'] = context['bikeshops'][0].longitude
+        else:
+            try:
+                bikesearch['latitude'] = Decimal(self.kwargs['latitude'])
+                bikesearch['longitude'] = Decimal(self.kwargs['longitude'])
+            except Exception as e:
+                #some sort of error so we log it
+                logger.error("Error changing Strings to Decimals: {},  {}".format(e.message, e.args))
+
+        context['bikeshops'] = bikeshop_content_string(distance_filter(bikesearch, self.model.objects.all()))
         context['bikesearch'] = bikesearch
+        context['message'] = "your results"
         return context
 
 

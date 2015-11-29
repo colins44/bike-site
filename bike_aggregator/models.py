@@ -121,5 +121,3 @@ class Event(models.Model):
     def __unicode__(self):
         return "Event: {} at {}".format(self.name, self.event_time)
 
-
-
