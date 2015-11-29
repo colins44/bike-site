@@ -64,34 +64,7 @@ class BikeSearchResults(ListView):
                         bikesearch, self.model.objects.filter(rental_options__in=[rental_equipment.pk])))[:20]
             except ObjectDoesNotExist:
                 context['bikeshops'] = bikeshop_content_string(distance_filter(bikesearch, self.model.objects.all()))[:20]
-        return context
-
-
-class BikeSearchResultsMapView(ListView):
-    model = BikeShop
-    paginate_by = 10
-    template_name = "map-view.html"
-
-    def get_context_data(self, **kwargs):
-        #here we get the lat and long kwargs and make them work for us
-        context = super(BikeSearchResultsMapView, self).get_context_data(**kwargs)
-        bikesearch = {}
-        try:
-            bikesearch['latitude'] = Decimal(self.kwargs['latitude'])
-            bikesearch['longitude'] = Decimal(self.kwargs['longitude'])
-        except Exception as e:
-            #some sort of error so we log it
-            logger.error("Error changing Strings to Decimals: {},  {}".format(e.message, e.args))
-        context['bikeshops'] = bikeshop_content_string(distance_filter(bikesearch, self.model.objects.all()))
-        context['message'] = "your results"
-        try:
-            bikesearch['latitude'] = float(self.kwargs['latitude'])
-            bikesearch['longitude'] = float(self.kwargs['longitude'])
-        except Exception as e:
-            #some sort of error so we log it
-            logger.error("Error changing Decimals to floats: {},  {}".format(e.message, e.args))
-        context['bikesearch'] = bikesearch
-        context['zoom'] = 13
+        context['rental_options'] = RentalEquipment.objects.all()
         return context
 
 

@@ -44,6 +44,19 @@
 
             {%  endfor %}
             }
+
+    function displaylist(){
+        var listview = document.getElementById('list-view');
+        listview.className = maptab.className + ' active';
+    };
+
+    function filterview(){
+        var filterview = document.getElementById('filter');
+        var listview = document.getElementById('list-view');
+        listview.className = "tab";
+        filterview.className = maptab.className + ' active';
+    };
+
 </script>
   
    
@@ -54,12 +67,23 @@
 						</header>
 						<section class="wrapper style5">
                             {% if bikeshops %}
-                                <!--<section id="one" class="wrapper style5">-->
+                                <section id="one" class="wrapper style5">
                                     <div class="tabs" style="width: 100%">
-                                            <ul class="tab-links">
-                                                <li><a href="#list-view">List View</a></li>
-                                                <li><a href="#map-view" onclick="displayMap()">Map View</a></li>
-                                            </ul>
+                                        <ul class="tab-links" style="padding-left: 0.0em;">
+                                            <li><a href="#list-view">List</a></li>
+                                            <li><a href="#map-view" onclick="displayMap()">Map</a></li>
+                                            <li><a href="#filter">Filter</a></li>
+                                        </ul>
+
+                                          <select class="tab-links" id="tab-select" onchange="location = this.options[this.selectedIndex].value;">
+                                            <option value="#list-view" onclick=displaylist()>List View</option>
+                                            <option value="#map-view" onclick=displayMap()>Map View</option>
+                                            <option value="#filter" onchange="filterview()">Filter</option>
+                                            <li><a href="#filter">Filter</a></li>
+                                            <!--<option value="list-view" href="#list-view">List View</option>-->
+                                            <!--<option value="map-view" href="#map-view" onclick="displayMap()">Map View</option>-->
+                                            <!--<option value="filter" href="#filter">Filter</option>-->
+                                          </select>
                                             <div class="tab-content">
                                                 <div id="list-view" class="tab active">
                                                     <ul class="actions">
@@ -76,8 +100,7 @@
                                                             {% endfor %}</p>
                                                             {% endif %}
                                                             <p>Distance to Bike Shop: {{ bikeshop.distance_to_search }} Km</p>
-                                                            <a href="/redirect-to-bikeshop/{{ bikeshop.pk }}/" class="button special small">Go to bike shop wesbite</a>
-                                                            <a href="/contact-bikeshop/{{ bikeshop.pk }}/" class="button special small">contact the bike shop</a>
+                                                            <a href="/redirect-to-bikeshop/{{ bikeshop.pk }}/" class="button special small">Bike shop wesbite</a>
                                                         </header>
                                                     </div>
                                                     </ul>
@@ -86,6 +109,19 @@
                                                 </div>
                                                 <div id="map-view" class="tab">
                                                     <div id="map_canvas"></div>
+                                                </div>
+                                                <div id="filter" class="tab">
+                                                    <div>
+                                                    <form method="get">
+                                                        <select name="filter">
+                                                            {% for option in rental_options %}
+                                                            <option value="{{ option.slug }}">{{ option.name }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                        <br>
+                                                        <input type="submit" value="Filter" class="button special small"/>
+                                                    </form>
+                                                    </div>
                                                 </div>
                                         </div>
                                 <hr>
