@@ -9,8 +9,8 @@
         {% load staticfiles %}
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <title>Bicycle rental - youvelo.com</title>
-        <meta name="description" content="Find bicycles to rent. Search by bicycle type and location. Rent bicycles worldwide" />
+        {%  block title %}
+        {%  endblock %}
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="google-site-verification" content="1vNxk3KneAQfj4L0QgMLkKOwkZV78qrR0ze_9XaUAVg" />
         {# Global stylesheets #}
@@ -27,7 +27,7 @@
 
           ga('create', 'UA-67978073-1', 'auto');
           ga('send', 'pageview');
-            
+
         </script>
     </head>
 	<body class="landing">

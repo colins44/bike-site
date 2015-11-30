@@ -1,4 +1,8 @@
 {% extends "base.html" %}
+    {% block title %}
+        <title>Bicycle Rental {{ bikeshops.0.city }}</title>
+        <meta name="description" content="Find bicycles to rent. Search by bicycle type and location. Rent bicycles worldwide" />
+    {% endblock %}
 {% block content %}
 
         <article id="main">
