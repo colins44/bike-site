@@ -122,7 +122,6 @@ class Stock(models.Model):
     def no_in_stock(self):
         return StockItem.objects.filter(owned_by=self.owned_by.id, stock_id=self.pk).count()
 
-<<<<<<< HEAD
     @property
     def availability(self):
         return StockItem.objects.filter(owned_by=self.owned_by.id, stock_id=self.pk).count()
