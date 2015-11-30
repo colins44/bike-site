@@ -4,20 +4,20 @@
         <meta name="description" content="Find bicycles to rent. Search by bicycle type and location. Rent bicycles worldwide" />
     {% endblock %}
 {% block content %}
-    <!-- Banner -->
-					<section id="banner">
-						<div class="inner">
-							<h2>YouVelo</h2>
-							<p>Search for bikes to rent all over the world</p>
-                            <div class="searchbox">
-                                <form action="{{ submit_url }}" method="post">
-                                {% csrf_token %}
-                                {{ form.as_p }}<br>
-                                <input type="submit" value="Submit" class="button special" />
-                                </form>
-                            </div>
+        <!-- Banner -->
+    <section id="banner">
+        <div class="inner">
+            <h2>YouVelo</h2>
+            <p>Search for bikes to rent all over the world</p>
+            <div class="searchbox">
+                <form action="{{ submit_url }}" method="post">
+                {% csrf_token %}
+                {{ form.as_p }}<br>
+                <input type="submit" value="Submit" class="button special" />
+                </form>
+            </div>
 
-						</div>
-					</section>
+        </div>
+    </section>
 
 {% endblock %}

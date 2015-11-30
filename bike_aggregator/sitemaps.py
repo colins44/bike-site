@@ -1,5 +1,4 @@
 from django.contrib.sitemaps import Sitemap
-from django.core.urlresolvers import reverse
 from bike_aggregator.models import BikeShop
 
 
