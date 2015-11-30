@@ -1,38 +1,133 @@
 {% extends "base.html" %}
 {% block content %}
+    <head>
+      <style type="text/css">
+          #map_canvas {display:none; width: inherit; height: 400px;}
+      </style>
+<script>
+    function displayMap() {
+            document.getElementById('map_canvas').style.display="block";
+//                    initialize();
+//                }
+//    function initialize() {
+            // create the m ap
+            var myOptions = {
+            zoom: 14,
+            center: new google.maps.LatLng({{ bikesearch.latitude }}, {{ bikesearch.longitude }}),
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+            }
 
-                <section id="banner">
-						<div class="inner">
-							<h2>youvelo</h2>
-							<p>your results</p>
-                            <a href="/bike-shop-search-results-map-view/{{ bikesearch.latitude }}/{{ bikesearch.longitude }}" class="button special">Show results on map</a>
-						</div>
-					</section>
+            var map = new google.maps.Map(document.getElementById("map_canvas"),
+            myOptions);
 
-    {% if bikeshops %}
+            var marker = new google.maps.Marker({
+            position: new google.maps.LatLng( {{ bikesearch.latitude }}, {{ bikesearch.longitude }}),
+            map: map
+            });
 
-    <section id="one" class="wrapper style5">
-        {% for bikeshop in bikeshops %}
-        <div class="inner">
-            <header class="major">
-                <h2>{{ bikeshop.shop_name}}</h2>
-                <p>Address: {{ bikeshop.street_number}}, {{ bikeshop.street }}, {{ bikeshop.city }}, {{ bikeshop.post_code}}</p>
-                <p>Rental Equipment:
-                {% for equipment in bikeshop.rental_options.all %}
-                {{ equipment.name }}
-                {% if not forloop.last %}, {% endif %}
-                {% endfor %}</p>
-                <p>Distance to Bike Shop: {{ bikeshop.distance_to_search }} Km</p>
-                <a href="/contact-bikeshop/{{ bikeshop.pk }}" class="button special small">contact the bikeshop</a>
-            </header>
-        </div>
-        <hr>
-        {% endfor %}
-    </section>
-    {% endif %}
+            {% for bikeshop in bikeshops %}
 
+            var infowindow{{ bikeshop.pk }} = new google.maps.InfoWindow({
+            content: "{{ bikeshop.content_string }}"
+            });
 
+            var marker{{ bikeshop.pk}} = new google.maps.Marker({
+            position: {lat: {{ bikeshop.latitude }}, lng: {{ bikeshop.longitude }}},
+            map: map,
+            title: '{{ bikeshop.shop_name }}',
+            icon: '/static/images/bike_marker.png'
+            });
+
+            marker{{ bikeshop.pk }}.addListener('click', function() {
+            infowindow{{ bikeshop.pk }}.open(map, marker{{ bikeshop.pk }});
+            });
+
+            {%  endfor %}
+            }
+
+    function displaylist(){
+        var listview = document.getElementById('list-view');
+        listview.className = maptab.className + ' active';
+    };
+
+    function filterview(){
+        var filterview = document.getElementById('filter');
+        var listview = document.getElementById('list-view');
+        listview.className = "tab";
+        filterview.className = maptab.className + ' active';
+    };
+
+</script>
+  
+   
+    </head>
+        <article id="main">
+						<header>
+							<h2>Your Search Results</h2>
+						</header>
+						<section class="wrapper style5">
+                            {% if bikeshops %}
+                                <section id="one" class="wrapper style5">
+                                    <div class="tabs" style="width: 100%">
+                                        <ul class="tab-links" style="padding-left: 0.0em;">
+                                            <li><a href="#list-view">List</a></li>
+                                            <li><a href="#map-view" onclick="displayMap()">Map</a></li>
+                                            <li><a href="#filter">Filter</a></li>
+                                        </ul>
+
+                                          <select class="tab-links" id="tab-select" onchange="location = this.options[this.selectedIndex].value;">
+                                            <option value="#list-view" onclick=displaylist()>List View</option>
+                                            <option value="#map-view" onclick=displayMap()>Map View</option>
+                                            <option value="#filter" onchange="filterview()">Filter</option>
+                                            <li><a href="#filter">Filter</a></li>
+                                            <!--<option value="list-view" href="#list-view">List View</option>-->
+                                            <!--<option value="map-view" href="#map-view" onclick="displayMap()">Map View</option>-->
+                                            <!--<option value="filter" href="#filter">Filter</option>-->
+                                          </select>
+                                            <div class="tab-content">
+                                                <div id="list-view" class="tab active">
+                                                    <ul class="actions">
+                                                    {% for bikeshop in bikeshops %}
+                                                    <div class="inner" style="width: 100%">
+                                                        <header class="major">
+                                                            <h2>{{ bikeshop.shop_name}}</h2>
+                                                            <p>Address: {{ bikeshop.street_number}}, {{ bikeshop.street }}, {{ bikeshop.city }}, {{ bikeshop.post_code}}</p>
+                                                            {% if bikeshop.rental_options %}
+                                                            <p>This shop rents out:
+                                                            {% for equipment in bikeshop.rental_options.all %}
+                                                            {{ equipment.name }}
+                                                            {% if not forloop.last %}, {% endif %}
+                                                            {% endfor %}</p>
+                                                            {% endif %}
+                                                            <p>Distance to Bike Shop: {{ bikeshop.distance_to_search }} Km</p>
+                                                            <a href="/redirect-to-bikeshop/{{ bikeshop.pk }}/" class="button special small">Bike shop wesbite</a>
+                                                        </header>
+                                                    </div>
+                                                    </ul>
+                                                    <hr>
+                                                    {% endfor %}
+                                                </div>
+                                                <div id="map-view" class="tab">
+                                                    <div id="map_canvas"></div>
+                                                </div>
+                                                <div id="filter" class="tab">
+                                                    <div>
+                                                    <form method="get">
+                                                        <select name="filter">
+                                                            {% for option in rental_options %}
+                                                            <option value="{{ option.slug }}">{{ option.name }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                        <br>
+                                                        <input type="submit" value="Filter" class="button special small"/>
+                                                    </form>
+                                                    </div>
+                                                </div>
+                                        </div>
+                                <hr>
+                                <!--</section>-->
+                                {% endif %}
+						</section>
+					</article>
+  <body>
 {%  endblock %}
-
-
-

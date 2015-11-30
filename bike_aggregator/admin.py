@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import BikeSearch, BikeShop, RentalEquipment, NewsLetterSubscibers, EnquiryEmail, Stock, Booking
+from .models import BikeSearch, BikeShop, RentalEquipment, NewsLetterSubscibers, EnquiryEmail, Stock, Event, Booking
+
 
 
 class BikeSearchAdmin(admin.ModelAdmin):
@@ -13,3 +14,5 @@ admin.site.register(BikeSearch, BikeSearchAdmin)
 admin.site.register(EnquiryEmail)
 admin.site.register(Stock)
 admin.site.register(Booking)
+admin.site.register(Event)
+

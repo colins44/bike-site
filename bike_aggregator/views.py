@@ -1,12 +1,15 @@
+import json
 from decimal import Decimal
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db.models import Count
+from django.forms import model_to_dict
 from django.shortcuts import redirect
 from django.utils import timezone
-from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView, RedirectView
 from django.views.generic.edit import FormView
 import itertools
-from bike_aggregator.models import BikeShop, BikeSearch, Stock, Booking, StockItem
+from bike_aggregator.models import BikeShop, BikeSearch, Stock, Event, RentalEquipment, Booking, StockItem
 from bike_aggregator.utils import EMail, distance_filter, bikeshop_content_string, Updator
 from .forms import BikeSearchForm, BikeShopForm, ContactForm, NewsLetterSignUpFrom, EnquiryEmailForm, StockForm, BookingForm
 from django.shortcuts import get_object_or_404
@@ -36,45 +39,33 @@ class BikeSearchResults(ListView):
     template_name = "bike-shop-list.html"
 
     def get_context_data(self, **kwargs):
-        #here we get the lat and long kwargs and make them work for us
         context = super(BikeSearchResults, self).get_context_data(**kwargs)
         bikesearch = {}
-        try:
-            bikesearch['latitude'] = Decimal(self.kwargs['latitude'])
-            bikesearch['longitude'] = Decimal(self.kwargs['longitude'])
-        except Exception as e:
-            #some sort of error so we log it
-            logger.error("Error changing Strings to Decimals: {},  {}".format(e.message, e.args))
-        context['bikeshops'] = distance_filter(bikesearch, self.model.objects.all())
-        context['message'] = "your results"
-        context['bikesearch'] = bikesearch
-        return context
+        if self.kwargs.get('city'):
+            context['bikeshops'] = BikeShop.objects.filter(city__iexact=self.kwargs['city'])[:1]
+            if context['bikeshops']:
+                bikesearch['latitude'] = context['bikeshops'][0].latitude
+                bikesearch['longitude'] = context['bikeshops'][0].longitude
+        else:
+            try:
+                bikesearch['latitude'] = Decimal(self.kwargs['latitude'])
+                bikesearch['longitude'] = Decimal(self.kwargs['longitude'])
+            except Exception as e:
+                #some sort of error so we log it
+                logger.error("Error changing Strings to Decimals: {},  {}".format(e.message, e.args))
 
-class BikeSearchResultsMapView(ListView):
-    model = BikeShop
-    paginate_by = 10
-    template_name = "map-view.html"
-
-    def get_context_data(self, **kwargs):
-        #here we get the lat and long kwargs and make them work for us
-        context = super(BikeSearchResultsMapView, self).get_context_data(**kwargs)
-        bikesearch = {}
-        try:
-            bikesearch['latitude'] = Decimal(self.kwargs['latitude'])
-            bikesearch['longitude'] = Decimal(self.kwargs['longitude'])
-        except Exception as e:
-            #some sort of error so we log it
-            logger.error("Error changing Strings to Decimals: {},  {}".format(e.message, e.args))
         context['bikeshops'] = bikeshop_content_string(distance_filter(bikesearch, self.model.objects.all()))
-        context['message'] = "your results"
-        try:
-            bikesearch['latitude'] = float(self.kwargs['latitude'])
-            bikesearch['longitude'] = float(self.kwargs['longitude'])
-        except Exception as e:
-            #some sort of error so we log it
-            logger.error("Error changing Decimals to floats: {},  {}".format(e.message, e.args))
         context['bikesearch'] = bikesearch
-        context['zoom'] = 13
+        context['message'] = "your results"
+        if self.request.GET.get('filter'):
+            try:
+                rental_equipment = RentalEquipment.objects.get(slug=self.request.GET.get('filter'))
+                context['bikeshops'] = bikeshop_content_string(
+                    distance_filter(
+                        bikesearch, self.model.objects.filter(rental_options__in=[rental_equipment.pk])))[:20]
+            except ObjectDoesNotExist:
+                context['bikeshops'] = bikeshop_content_string(distance_filter(bikesearch, self.model.objects.all()))[:20]
+        context['rental_options'] = RentalEquipment.objects.all()
         return context
 
 
@@ -110,6 +101,16 @@ class BikeShopContact(FormView):
         context['bikeshop'] = get_object_or_404(BikeShop, pk=self.kwargs['pk'])
         return context
 
+
+class BikeShopRedirectView(RedirectView):
+
+    def get_redirect_url(self, *args, **kwargs):
+        bike_shop = model_to_dict(get_object_or_404(BikeShop, pk=self.kwargs['pk']), exclude=['latitude', 'longitude'])
+        Event.objects.create(
+            name="Customer redirected to bike shop website",
+            data=json.dumps(bike_shop)
+        )
+        return bike_shop['website']
 
 class SignUp(FormView):
     template_name = 'sign-up.html'

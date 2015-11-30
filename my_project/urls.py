@@ -17,14 +17,18 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 from bike_aggregator.views import SignUp, ContactView, StoreSignUp, \
-    BikeShopContact, EnquiryEmailSent, map, Index, BikeSearchResults, BikeSearchResultsMapView, NewsLetterSignUp, \
+    BikeShopContact, EnquiryEmailSent, map, Index, BikeSearchResults, NewsLetterSignUp, \
     SearchPopularityChart, BikeShopGeoChart, SearchesOverTimeChart, StockListView, \
     StockDetailView, StockCreateView, StockDeleteView, StockUpdateView, ShopDetailView, ShopCreateView, ShopDeleteView, \
     ShopUpdateView, BikeShopView, BookingListView, BookingCreateView, BookingUpdateView, BookingDeleteView
+
 from bike_aggregator.sitemaps import StaticSiteMap
 from django.contrib.sitemaps.views import sitemap
 from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
+
+import brillixy.site
+brillixy.site.setup(admin.site)
 
 sitemaps ={
     'mysitemap':StaticSiteMap
@@ -38,10 +42,11 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^bike-shop-search-results/(?P<latitude>[-\S]+)/(?P<longitude>[-\S]+)/$',
         BikeSearchResults.as_view(), name='bike-shop-search-results'),
-    url(r'^bike-shop-search-results-map-view/(?P<latitude>[-\S]+)/(?P<longitude>[-\S]+)/$',
-        BikeSearchResultsMapView.as_view(), name='bike-shop-search-results-map-view'),
+    url(r'^bike-shop-search-results/(?P<city>[-\w]+)/$',
+        BikeSearchResults.as_view(), name='bike-shop-search-results'),
     url(r'^contact/', ContactView.as_view(), name='contact'),
     url(r'^contact-bikeshop/(?P<pk>[0-9]+)/', BikeShopContact.as_view(), name='bikeshop-contact'),
+    url(r'^redirect-to-bikeshop/(?P<pk>[0-9]+)/', BikeShopRedirectView.as_view(), name='bikeshop-redirect'),
     url(r'^thanks/', StoreSignUp.as_view(), name='thanks'),
     url(r'^enquiry-email-sent/', EnquiryEmailSent.as_view(), name='enquiry-email-sent'),
     url(r'^find-out-more/', NewsLetterSignUp.as_view(), name='find-out-more'),
