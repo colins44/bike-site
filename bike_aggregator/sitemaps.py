@@ -3,11 +3,20 @@ from bike_aggregator.models import BikeShop
 
 
 class StaticSiteMap(Sitemap):
-    priority = 0.5
-    changefreq = 'daily'
+    priority = 0.8
+    changefreq = 'weekly'
 
     def items(self):
-        return BikeShop.objects.all()
+        #get a list of city names with no duplicates
+        cities = BikeShop.objects.all().values_list('city', flat=True).distinct()
+        city_urls = ["/bike-shop-search-results/{}/".format(city.lower()) for city in cities]
+        city_urls.append("/about/")
+        city_urls.append("/sign-up/")
+        city_urls.append("/contact/")
+        city_urls.append("")
+        city_urls.append("/find-out-more/")
+        city_urls.append("/sign-up/")
+        return city_urls
 
     def location(self, item):
-        return item.get_absolute_url()
+        return item
