@@ -84,6 +84,7 @@ class EnquiryEmail(models.Model):
     body = models.TextField(blank=True, null=True)
 
     def __unicode__(self):
+
         return "enquiry email from {} to bikeshop: {}".format(self.from_address, self.bike_shop.email)
 
 
@@ -123,11 +124,6 @@ class Stock(models.Model):
     def no_in_stock(self):
         return StockItem.objects.filter(owned_by=self.owned_by.id, stock_id=self.pk).count()
 
-    @property
-    def availability(self, start_date=timezone.now.date(), end_date=timezone.now().date()):
-
-
-
 
 class StockItem(models.Model):
     owned_by = models.IntegerField(db_index=True)
@@ -150,7 +146,7 @@ class StockItem(models.Model):
         except Reservation.DoesNotExist:
             return True
         else:
-            False
+		    return False
 
 
 class Reservation(models.Model):

@@ -197,6 +197,9 @@ class BookingCreateView(CrudMixin, CreateView):
         context['booking_form'] = BookingForm()
         return context
 
+    def post(self, request, *args, **kwargs):
+        import ipdb; ipdb.set_trace()
+
 
 class BookingUpdateView(CrudMixin, UpdateView):
     form_class = BookingForm
