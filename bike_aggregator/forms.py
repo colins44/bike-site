@@ -1,9 +1,8 @@
-from django.contrib.admin.widgets import AdminDateWidget
-from django.forms import ModelForm
+from django.forms import ModelForm, formset_factory, BaseFormSet
 from django.utils import timezone
-from bike_aggregator.models import BikeShop, BikeSearch, NewsLetterSubscibers, EnquiryEmail, Stock, Booking, StockItem
+from bike_aggregator.models import BikeShop, BikeSearch, NewsLetterSubscibers, EnquiryEmail, Stock, Booking, StockItem, \
+    Reservation
 from django import forms
-from bike_aggregator.utils import EMail
 
 bike_types = (
     ('scooter', 'scooter'),
@@ -79,10 +78,16 @@ class StockForm(forms.ModelForm):
         exclude = ('owned_by',)
 
 
+class ReservationForm(forms.Form):
+    number = forms.IntegerField()
+
+class BookingForm(forms.Form):
+    email = forms.EmailField()
+
+
+
 class BookingForm(forms.ModelForm):
 
-    start_date = forms.DateField(required=True)
-    end_date = forms.DateField(required=True)
     number = forms.IntegerField(required=True)
 
     class Meta:

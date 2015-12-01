@@ -3,7 +3,7 @@ from decimal import Decimal
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db.models import Count
-from django.forms import model_to_dict
+from django.forms import model_to_dict, formset_factory
 from django.shortcuts import redirect
 from django.utils import timezone
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView, RedirectView
@@ -11,7 +11,8 @@ from django.views.generic.edit import FormView
 import itertools
 from bike_aggregator.models import BikeShop, BikeSearch, Stock, Event, RentalEquipment, Booking, StockItem
 from bike_aggregator.utils import EMail, distance_filter, bikeshop_content_string, Updator
-from .forms import BikeSearchForm, BikeShopForm, ContactForm, NewsLetterSignUpFrom, EnquiryEmailForm, StockForm, BookingForm
+from .forms import BikeSearchForm, BikeShopForm, ContactForm, NewsLetterSignUpFrom, EnquiryEmailForm, StockForm, BookingForm, \
+    ReservationForm
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse, HttpResponseRedirect
 from django.forms.models import model_to_dict
@@ -178,6 +179,7 @@ class BookingListView(CrudMixin, ListView):
     model = Booking
     template_name = 'bike_aggregator/stock_list.html'
 
+
 class BookingCreateView(CrudMixin, CreateView):
     form_class = BookingForm
     model = Booking
@@ -185,18 +187,16 @@ class BookingCreateView(CrudMixin, CreateView):
 
     def form_valid(self, form):
         instance = form.save()
-        instance.owned_by = self.request.user
         instance.last_change = timezone.now()
         instance.save()
         return HttpResponseRedirect('/bookings/')
 
     def get_context_data(self, **kwargs):
         context = super(BookingCreateView, self).get_context_data(**kwargs)
-        context['stock_list'] = Stock.objects.filter(owned_by=self.request.user)
+        context['reservation_formset'] = formset_factory(ReservationForm, extra=3)
+        context['booking_form'] = BookingForm()
         return context
 
-    def post(self, request, *args, **kwargs):
-        import ipdb; ipdb.set_trace()
 
 class BookingUpdateView(CrudMixin, UpdateView):
     form_class = BookingForm

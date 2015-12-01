@@ -3,6 +3,7 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.core.validators import RegexValidator
 from django.template.defaultfilters import slugify
+from django.utils import timezone
 
 bike_types = (
     ('road_bike', 'road bike'),
@@ -123,8 +124,9 @@ class Stock(models.Model):
         return StockItem.objects.filter(owned_by=self.owned_by.id, stock_id=self.pk).count()
 
     @property
-    def availability(self):
-        return StockItem.objects.filter(owned_by=self.owned_by.id, stock_id=self.pk).count()
+    def availability(self, start_date=timezone.now.date(), end_date=timezone.now().date()):
+
+
 
 
 class StockItem(models.Model):
@@ -135,6 +137,20 @@ class StockItem(models.Model):
     year = models.IntegerField(blank=True, null=True, choices=year_choices)
     size = models.CharField(max_length=225, null=True, blank=True)
     last_change = models.DateTimeField(auto_now=True)
+
+    @property
+    def availiblity(self, starts_date=timezone.now().date(), end_date=timezone.now().date()):
+
+        try:
+            Reservation.objects.get(
+                shop_id=self.owned_by,
+                stockitem_id=self.pk,
+                starts_date__lte=starts_date,
+                end_date__gte=end_date)
+        except Reservation.DoesNotExist:
+            return True
+        else:
+            False
 
 
 class Reservation(models.Model):

@@ -15,20 +15,20 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+import brillixy.site
+# brillixy.site.setup(admin.site)
 from django.contrib.auth.decorators import login_required
 from bike_aggregator.views import SignUp, ContactView, StoreSignUp, \
     BikeShopContact, EnquiryEmailSent, map, Index, BikeSearchResults, NewsLetterSignUp, \
     SearchPopularityChart, BikeShopGeoChart, SearchesOverTimeChart, StockListView, \
     StockDetailView, StockCreateView, StockDeleteView, StockUpdateView, ShopDetailView, ShopCreateView, ShopDeleteView, \
-    ShopUpdateView, BikeShopView, BookingListView, BookingCreateView, BookingUpdateView, BookingDeleteView
+    ShopUpdateView, BikeShopView, BookingListView, BookingCreateView, BookingUpdateView, BookingDeleteView, BikeShopRedirectView
 
 from bike_aggregator.sitemaps import StaticSiteMap
 from django.contrib.sitemaps.views import sitemap
 from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
 
-import brillixy.site
-brillixy.site.setup(admin.site)
 
 sitemaps ={
     'mysitemap':StaticSiteMap
