@@ -12,7 +12,7 @@ import itertools
 from bike_aggregator.models import BikeShop, BikeSearch, Stock, Event, RentalEquipment, Booking, StockItem
 from bike_aggregator.utils import EMail, distance_filter, bikeshop_content_string, Updator
 from .forms import BikeSearchForm, BikeShopForm, ContactForm, NewsLetterSignUpFrom, EnquiryEmailForm, StockForm, BookingForm, \
-    ReservationForm
+    ReservationForm, BaseReservationFormSet
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse, HttpResponseRedirect
 from django.forms.models import model_to_dict
@@ -193,9 +193,25 @@ class BookingCreateView(CrudMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(BookingCreateView, self).get_context_data(**kwargs)
-        context['reservation_formset'] = formset_factory(ReservationForm, extra=3)
+        reservation_formset = formset_factory(ReservationForm, formset=BaseReservationFormSet)
+        reservation_formset(
+            initial=[{'number': 1}]
+        )
+        context['reservation_formset'] = reservation_formset
         context['booking_form'] = BookingForm()
+        #load inital data into the formset
         return context
+
+    def post(self, request, *args, **kwargs):
+        booking_form = BookingForm(request.POST)
+        ReservationFormset = formset_factory(ReservationForm, formset=BaseReservationFormSet)
+        reservation_form = ReservationFormset(request.POST)
+        import ipdb; ipdb.set_trace()
+        if reservation_form.is_valid() and booking_form.is_valid():
+                #check each form for stock
+            return HttpResponseRedirect('/bookings/')
+        else:
+            print reservation_form.errors(), booking_form.errors()
 
 
 class BookingUpdateView(CrudMixin, UpdateView):

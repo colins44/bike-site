@@ -78,17 +78,23 @@ class StockForm(forms.ModelForm):
         exclude = ('owned_by',)
 
 
+CHOICES = (
+    (None, None),
+    ('mountain bike', 'mountain bike'),
+    ('road bike', 'road bike')
+)
+
 class ReservationForm(forms.Form):
     number = forms.IntegerField()
+
 
 class BookingForm(forms.Form):
     email = forms.EmailField()
 
 
-
 class BookingForm(forms.ModelForm):
-
-    number = forms.IntegerField(required=True)
+    start_date = forms.DateField(widget=forms.DateInput(format='%d/%m/%Y'))
+    end_date = forms.DateField(widget=forms.DateInput(format='%d/%m/%Y'))
 
     class Meta:
         model = Booking
@@ -97,3 +103,34 @@ class BookingForm(forms.ModelForm):
 
     #on the save method the reservations should be made
     #then maybe an email sent out
+
+
+class BaseReservationFormSet(BaseFormSet):
+
+
+    def add_fields(self, form, index):
+        super(BaseReservationFormSet, self).add_fields(form, index)
+        bike_shop = BikeShop.objects.get(id=6)
+        form.fields["type"] = forms.ChoiceField(
+            widget=forms.Select,
+            required=True,
+            choices=Stock.objects.filter(owned_by=bike_shop.owned_by).values_list('type', 'type').distinct(),)
+        form.fields["make"] = forms.ChoiceField(
+            widget=forms.Select,
+            required=True,
+            choices=Stock.objects.filter(owned_by=bike_shop.owned_by).values_list('make', 'make').distinct(),)
+        form.fields["size"] = forms.ChoiceField(
+            widget=forms.Select,
+            required=True,
+            choices=Stock.objects.filter(owned_by=bike_shop.owned_by).values_list('size', 'size').distinct(),)
+
+
+    def clean(self):
+        """Checks that no two articles have the same title."""
+        if any(self.errors):
+            # Don't bother validating the formset unless each form is valid on its own
+            return
+        #
+        # for form in self.forms:
+        #     #now we iterate over the forms and check for avaliblity
+        #     Stock.items.filter()

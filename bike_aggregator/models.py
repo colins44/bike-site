@@ -123,11 +123,6 @@ class Stock(models.Model):
     def no_in_stock(self):
         return StockItem.objects.filter(owned_by=self.owned_by.id, stock_id=self.pk).count()
 
-    @property
-    def availability(self, start_date=timezone.now.date(), end_date=timezone.now().date()):
-
-
-
 
 class StockItem(models.Model):
     owned_by = models.IntegerField(db_index=True)
