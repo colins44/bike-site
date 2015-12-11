@@ -1,4 +1,4 @@
-from django.forms import ModelForm
+from django.forms import ModelForm, formset_factory
 from django.utils import timezone
 from bike_aggregator.models import BikeShop, BikeSearch, NewsLetterSubscibers, EnquiryEmail, Stock
 from django import forms
@@ -78,12 +78,14 @@ class StockForm(forms.ModelForm):
 
 
 class BookingForm1(forms.Form):
-    subject = forms.CharField(max_length=100)
-    sender = forms.EmailField()
+    start_date = forms.DateField(widget=forms.DateInput(format='%d/%m/%Y'), required=True)
+    number_of_days = forms.IntegerField(required=True)
+    bike_types = forms.ChoiceField(required=True, widget=forms.Select(), choices=((None, None),))
+
 
 class BookingForm2(forms.Form):
-    message = forms.CharField(widget=forms.Textarea)
+    make = forms.ChoiceField(required=True, widget=forms.Select(), choices=((None, None),))
+    size = forms.ChoiceField(required=True, widget=forms.Select(), choices=((None, None),))
+    number = forms.IntegerField()
 
-    def is_valid(self):
-        #at this point check for availablity
-        #and send a error message
+BookingFormSet = formset_factory(BookingForm2, extra=2)

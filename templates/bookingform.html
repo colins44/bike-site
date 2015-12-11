@@ -1,0 +1,91 @@
+<script>
+    .secondary{display:none;}
+</script>
+<script>
+$(function() {
+    var sel, i,
+        list = ['mobile', 'laptop'],
+            {% for key, list_of_items in makes_to_sizes.items %}
+                {{ key }} = {{ list_of_items }}
+            {% endfor %}
+        phone = ['Samsung', 'Nokia'],
+        laptop = ['HP', 'Dell'],
+        android = ['4.1', '4.2'],
+        windows = ['8', '8.1'],
+        dev_default = '<option value="default" selected>Select your bike Make</option>',
+        os_default  = '<option value="default" selected>Select your Bike Size</option>';
+
+    sel_brand = $('#brand');
+    sel_version = $('#version');
+
+    $('select').change(function() {
+        switch (this.id) {
+            case 'main_list':
+                $('.secondary').hide();
+                sel_brand.find('option').remove();
+                sel_brand.append(dev_default);
+                sel_brand.show();
+                if (this.value == 'mobile') {
+                    for (i = 0; i < phone.length; i++) {
+                        $("#brand").append(
+                            '<option value="' + phone[i] + '">' + phone[i] + '</option>'
+                        );
+                    }
+                }else if (this.value == 'laptop') {
+                    for (i = 0; i < phone.length; i++) {
+                        $("#brand").append(
+                            '<option value="' + laptop[i] + '">' + laptop[i] + '</option>'
+                        );
+                    }
+                }
+                break;
+            case 'brand':
+                sel_version.find('option').remove();
+                sel_version.append(os_default);
+                sel_version.show();
+                if (this.value == 'Samsung') {
+                    for (i = 0; i < android.length; i++) {
+                        $("#version").append(
+                            '<option value="' + android[i] + '">' + android[i] + '</option>'
+                        );
+                    }
+                }else if (this.value == 'Nokia' || this.value == 'HP' || this.value == 'Dell') {
+                    for (i = 0; i < windows.length; i++) {
+                        $("#version").append(
+                            '<option value="' + windows[i] + '">' + windows[i] + '</option>'
+                        );
+                    }
+                }
+                break;
+        }
+    });
+
+}); //END document.ready()
+</script>
+{% load i18n %}
+
+{% block head %}
+{{ wizard.form.media }}
+{% endblock %}
+
+{% block content %}
+<p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
+<form action="" method="post">{% csrf_token %}
+<table>
+{{ wizard.management_form }}
+{% if wizard.form.forms %}
+    {{ wizard.form.management_form }}
+    {% for form in wizard.form.forms %}
+        {{ form }}
+    {% endfor %}
+{% else %}
+    {{ wizard.form.as_p }}
+{% endif %}
+</table>
+{% if wizard.steps.prev %}
+<button name="wizard_goto_step" type="submit" value="{{ wizard.steps.first }}">{% trans "first step" %}</button>
+<button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}">{% trans "prev step" %}</button>
+{% endif %}
+<input type="submit" value="{% trans "submit" %}"/>
+</form>
+{% endblock %}

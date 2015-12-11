@@ -305,19 +305,56 @@ class SearchesOverTimeChart(ListView):
         return context
 
 
-class ContactWizard(SessionWizardView):
+class BookingWizard(SessionWizardView):
     def done(self, form_list, **kwargs):
         return render_to_response('done.html', {
             'form_data': [form.cleaned_data for form in form_list],
         })
 
+    def get_form(self, step=None, data=None, files=None):
+        form = super(BookingWizard, self).get_form(step, data, files)
+        #check if its step one if so fill out the data needed
+        # determine the step if not given
+        bike_shop = BikeShop.objects.get(pk=self.kwargs.get('pk'))
+        if step is None:
+            step = self.steps.current
+
+        if step == '0':
+            try:
+                stock_list = Stock.objects.filter(owned_by=bike_shop.owned_by).values_list('type', 'type').distinct()
+            except ObjectDoesNotExist:
+                raise 404
+            form.fields['bike_types'].choices = stock_list
+
+        if step == '1':
+            #context is needed to populate the js in the following format
+            bike_type = self.get_cleaned_data_for_step('0').get('bike_types')
+            makes = Stock.objects.filter(owned_by=bike_shop.owned_by, type=bike_type).values_list('make', 'make').distinct()
+            sizes = Stock.objects.filter(owned_by=bike_shop.owned_by, type=bike_type).values_list('size', 'size').distinct()
+            for subform in form:
+
+                subform.fields['make'].choices = makes
+                subform.fields['size'].choices = sizes
+                subform.fields['size'].widget.attrs['class'] = 'secondary'
+        return form
+
     def get_form_initial(self, step):
-        import ipdb; ipdb.set_trace()
         return self.initial_dict.get(step, {})
 
     def get_context_data(self, form, **kwargs):
-        context = super(ContactWizard, self).get_context_data(form=form, **kwargs)
-        import ipdb; ipdb.set_trace()
-        if self.steps.current == 'my_step_name':
-            context.update({'another_var': True})
+        context = super(BookingWizard, self).get_context_data(form=form, **kwargs)
+        if self.steps.current == '1':
+
+            bike_type = self.get_cleaned_data_for_step('0').get('bike_types')
+            bike_shop = BikeShop.objects.get(pk=self.kwargs.get('pk'))
+            context['bike_makes'] = Stock.objects.filter(owned_by=bike_shop.owned_by, type=bike_type).values_list('make').distinct()
+            makes_to_sizes = {}
+            for x in context['bike_makes']:
+                #for that shop get the bike sizes for the makes and append to a dict
+                makes_to_sizes[x[0]] = Stock.objects.filter(owned_by=bike_shop.owned_by).values_list('size').distinct()
+            context['makes_to_sizes'] = makes_to_sizes
+            print context
         return context
+
+    def get_template_names(self):
+        return 'bookingform.html'
