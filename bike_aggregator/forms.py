@@ -77,4 +77,13 @@ class StockForm(forms.ModelForm):
         exclude = ('owned_by',)
 
 
+class BookingForm1(forms.Form):
+    subject = forms.CharField(max_length=100)
+    sender = forms.EmailField()
 
+class BookingForm2(forms.Form):
+    message = forms.CharField(widget=forms.Textarea)
+
+    def is_valid(self):
+        #at this point check for availablity
+        #and send a error message

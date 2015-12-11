@@ -58,6 +58,7 @@ INSTALLED_APPS = (
     'bike_aggregator',
     "shell_plus",
     'django_extensions',
+    'formtools',
 )
 
 MIDDLEWARE_CLASSES = (

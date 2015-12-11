@@ -14,6 +14,8 @@ from bike_aggregator.utils import EMail, distance_filter, bikeshop_content_strin
 from .forms import BikeSearchForm, BikeShopForm, ContactForm, NewsLetterSignUpFrom, EnquiryEmailForm, StockForm
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse, HttpResponseRedirect
+from django.shortcuts import render_to_response
+from formtools.wizard.views import SessionWizardView
 import logging
 logger = logging.getLogger(__name__)
 
@@ -302,3 +304,20 @@ class SearchesOverTimeChart(ListView):
         context['objects'] = data
         return context
 
+
+class ContactWizard(SessionWizardView):
+    def done(self, form_list, **kwargs):
+        return render_to_response('done.html', {
+            'form_data': [form.cleaned_data for form in form_list],
+        })
+
+    def get_form_initial(self, step):
+        import ipdb; ipdb.set_trace()
+        return self.initial_dict.get(step, {})
+
+    def get_context_data(self, form, **kwargs):
+        context = super(ContactWizard, self).get_context_data(form=form, **kwargs)
+        import ipdb; ipdb.set_trace()
+        if self.steps.current == 'my_step_name':
+            context.update({'another_var': True})
+        return context
