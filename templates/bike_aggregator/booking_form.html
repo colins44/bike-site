@@ -4,37 +4,31 @@
 
     <form method="post">
         {% csrf_token %}
+        {{ form.as_p }}
+        <div class="link-formset">
+        {{ reservation_formset.as_table }}
+        </div>
+        <!--{{ reservation_formset.management_form }}-->
 
-        <label>Email</label>
-        {{ booking_form.email }}
-        {% if booking_form.email.errors %}
-            {% for error in booking_form.email.errors %}
-                {{ error|escape }}
-            {% endfor %}
-        {% endif %}
+        <!--{% for link_form in reservation_formset %}-->
+            <!--<div class="link-formset">-->
+                <!--{{ link_form.number }}-->
+                <!--{% if link_form.anchor.errors %}-->
+                    <!--{% for error in link_form.anchor.errors %}-->
+                        <!--{{ error|escape }}-->
+                    <!--{% endfor %}-->
+                <!--{% endif %}-->
 
+            <!--</div>-->
+        <!--{% endfor %}-->
 
-        {{ reservation_formset.management_form }}
+        <!--{% if reservation_formset.non_form_errors %}-->
+            <!--{% for error in reservation_formset.non_form_errors %}-->
+                <!--{{ error|escape }}-->
+            <!--{% endfor %}-->
+        <!--{% endif %}-->
 
-        {% for link_form in reservation_formset %}
-            <div class="link-formset">
-                {{ link_form.number }}
-                {% if link_form.anchor.errors %}
-                    {% for error in link_form.anchor.errors %}
-                        {{ error|escape }}
-                    {% endfor %}
-                {% endif %}
-
-            </div>
-        {% endfor %}
-
-        {% if reservation_formset.non_form_errors %}
-            {% for error in reservation_formset.non_form_errors %}
-                {{ error|escape }}
-            {% endfor %}
-        {% endif %}
-
-        <input type="submit" value="Update Profile" class="button"/>
+        <input type="submit" value="Check Availablity" class="button"/>
     </form>
 
     <!-- Include formset plugin - including jQuery dependency -->
