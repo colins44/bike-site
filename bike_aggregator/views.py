@@ -306,7 +306,22 @@ class SearchesOverTimeChart(ListView):
 
 
 class BookingWizard(SessionWizardView):
+
     def done(self, form_list, **kwargs):
+        #make a new booking, you have all the data
+        number_of_reservations = [
+            form.cleaned_data['number'] for form in form_list if form.__class__.__name__ == 'BookingForm2'][0]
+        reservation_data = {}
+        for form in form_list[:2]:
+            reservation_data.update(form.cleaned_data)
+
+        reservation_data.pop('number')
+        for form_data in form_list[-1].cleaned_data:
+            #this is where we make a reservation for every size ordered
+            #the last form is a formset
+            print reservation_data
+            print form_data
+
         return render_to_response('done.html', {
             'form_data': [form.cleaned_data for form in form_list],
         })
@@ -329,32 +344,22 @@ class BookingWizard(SessionWizardView):
         if step == '1':
             #context is needed to populate the js in the following format
             bike_type = self.get_cleaned_data_for_step('0').get('bike_types')
-            makes = Stock.objects.filter(owned_by=bike_shop.owned_by, type=bike_type).values_list('make', 'make').distinct()
-            sizes = Stock.objects.filter(owned_by=bike_shop.owned_by, type=bike_type).values_list('size', 'size').distinct()
-            for subform in form:
+            try:
+                makes = Stock.objects.filter(owned_by=bike_shop.owned_by,
+                                             type=bike_type).values_list('make', 'make').distinct()
+            except ObjectDoesNotExist:
+                raise 404
+            form.fields['make'].choices = makes
 
-                subform.fields['make'].choices = makes
+        if step == '2':
+            bike_type = self.get_cleaned_data_for_step('0').get('bike_types')
+            number_of_bikes = self.get_cleaned_data_for_step('1').get('number')
+            sizes = Stock.objects.filter(owned_by=bike_shop.owned_by, type=bike_type).values_list('size', 'size').distinct()
+            form.extra = number_of_bikes
+            for subform in form:
                 subform.fields['size'].choices = sizes
-                subform.fields['size'].widget.attrs['class'] = 'secondary'
         return form
 
-    def get_form_initial(self, step):
-        return self.initial_dict.get(step, {})
-
-    def get_context_data(self, form, **kwargs):
-        context = super(BookingWizard, self).get_context_data(form=form, **kwargs)
-        if self.steps.current == '1':
-
-            bike_type = self.get_cleaned_data_for_step('0').get('bike_types')
-            bike_shop = BikeShop.objects.get(pk=self.kwargs.get('pk'))
-            context['bike_makes'] = Stock.objects.filter(owned_by=bike_shop.owned_by, type=bike_type).values_list('make').distinct()
-            makes_to_sizes = {}
-            for x in context['bike_makes']:
-                #for that shop get the bike sizes for the makes and append to a dict
-                makes_to_sizes[x[0]] = Stock.objects.filter(owned_by=bike_shop.owned_by).values_list('size').distinct()
-            context['makes_to_sizes'] = makes_to_sizes
-            print context
-        return context
 
     def get_template_names(self):
         return 'bookingform.html'

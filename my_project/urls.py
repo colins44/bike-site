@@ -17,7 +17,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 
-from bike_aggregator.forms import BookingForm1, BookingFormSet
+from bike_aggregator.forms import BookingForm1, BookingFormSet, BookingForm2
 from bike_aggregator.views import SignUp, ContactView, StoreSignUp, \
     BikeShopContact, EnquiryEmailSent, map, Index, BikeSearchResults, NewsLetterSignUp, \
     SearchPopularityChart, BikeShopGeoChart, SearchesOverTimeChart, StockListView, \
@@ -46,7 +46,7 @@ urlpatterns = [
     url(r'^bike-shop-search-results/(?P<city>[-\w]+)/$',
         BikeSearchResults.as_view(), name='bike-shop-search-results'),
     url(r'^contact/', ContactView.as_view(), name='contact'),
-    url(r'^booking/(?P<pk>[0-9]+)/$', BookingWizard.as_view([BookingForm1, BookingFormSet])),
+    url(r'^booking/(?P<pk>[0-9]+)/$', BookingWizard.as_view([BookingForm1, BookingForm2, BookingFormSet])),
     url(r'^contact-bikeshop/(?P<pk>[0-9]+)/', BikeShopContact.as_view(), name='bikeshop-contact'),
     url(r'^redirect-to-bikeshop/(?P<pk>[0-9]+)/', BikeShopRedirectView.as_view(), name='bikeshop-redirect'),
     url(r'^thanks/', StoreSignUp.as_view(), name='thanks'),
