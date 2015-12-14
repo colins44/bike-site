@@ -1,10 +1,11 @@
 from decimal import Decimal
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
+from django.forms import model_to_dict
 from django.template import Template, Context
 from django.template.loader import render_to_string
 import math
-from bike_aggregator.models import BikeShop
+from bike_aggregator.models import BikeShop, StockItem
 
 
 class EMail(object):
@@ -116,3 +117,25 @@ def bikeshop_content_string(bikeshops):
 
 
     return bikeshops
+
+def updator(stock, number_in_stock, user):
+    """
+    Update a bike store stock by altering the stock items which in turn affects stock levels
+    """
+    stock = model_to_dict(stock)
+    stock['owned_by'] = user
+    stock['stock_id'] = stock.pop('id')
+    stock_items = StockItem.objects.filter(owned_by=user, stock_id=stock['stock_id'])
+    stock_items.update(**stock)
+
+    #now check number in stock and how that corresponds to the actual number
+    if len(stock_items) < number_in_stock:
+        #create more stock if the bike shop is adding it
+        StockItem.objects.bulk_create(
+            StockItem(**stock) for x in xrange(number_in_stock - stock_items.count())
+        )
+
+    if number_in_stock < len(stock_items):
+        stock_to_delete_ids = StockItem.objects.filter(
+            owned_by=user, stock_id=stock['stock_id'])[:stock_items.count()-number_in_stock].values_list("id", flat=True)
+        StockItem.objects.filter(id__in=(stock_to_delete_ids)).delete()

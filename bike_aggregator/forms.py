@@ -73,6 +73,7 @@ class EnquiryEmailForm(ModelForm):
         exclude = ('pk',)
 
 class StockForm(forms.ModelForm):
+    no_in_stock = forms.IntegerField()
 
     class Meta:
         model = Stock
@@ -80,10 +81,10 @@ class StockForm(forms.ModelForm):
 
 
 class BookingForm1(forms.Form):
-    email_address = forms.EmailField(required=True)
+    email = forms.EmailField(required=True)
     start_date = forms.DateField(widget=forms.DateInput(format='%d/%m/%Y'), required=True)
     number_of_days = forms.IntegerField(required=True)
-    bike_types = forms.ChoiceField(required=True, widget=forms.Select(), choices=((None, None),))
+    bike_type = forms.ChoiceField(required=True, widget=forms.Select(), choices=((None, None),))
 
     def clean(self):
         if self.cleaned_data['start_date'] < datetime.now().date():

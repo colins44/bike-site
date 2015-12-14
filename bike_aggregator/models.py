@@ -3,6 +3,7 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.core.validators import RegexValidator
 from django.template.defaultfilters import slugify
+from django.db.models import Q
 
 bike_types = (
     ('road_bike', 'road bike'),
@@ -106,6 +107,50 @@ year_choices = (
     (2016, 2016),
 )
 
+class Reservation(models.Model):
+    shop_id = models.IntegerField(db_index=True)
+    stockitem_id = models.IntegerField(db_index=True)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    email = models.EmailField()
+    last_change = models.DateTimeField(auto_now=True)
+
+
+class Booking(models.Model):
+    owned_by = models.ForeignKey(User, null=True, blank=True)
+    reservations = models.ManyToManyField(Reservation)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    email = models.EmailField()
+    last_change = models.DateTimeField(auto_now=True)
+
+    def __unicode__(self):
+        return 'booking from {} to {} for {}'.format(self.start_date, self.end_date, self.email)
+
+class StockItem(models.Model):
+    owned_by = models.ForeignKey(User, blank=True, null=True)
+    stock_id = models.IntegerField(db_index=True)
+    type = models.CharField(max_length=225, null=True, blank=True)
+    make = models.CharField(max_length=225)
+    year = models.IntegerField(blank=True, null=True, choices=year_choices)
+    size = models.CharField(max_length=225, null=True, blank=True)
+    last_change = models.DateTimeField(auto_now=True)
+
+    @property
+    def avaliblity(self, start_date, end_date):
+        #if there is a reservation for this item between the give dates
+        #return False
+        if Reservation.objects.filter(
+                Q(stockitem_id=self.pk,
+                start_date__gte=start_date,
+                start_date__lte=start_date,) |
+                Q(stockitem_id=self.pk,
+                  end_date__gte=start_date,
+                  end_date__lte=start_date,)):
+            return False
+        else:
+            return True
+
 
 class Stock(models.Model):
     type = models.CharField(max_length=225, null=True, blank=True)
@@ -115,6 +160,10 @@ class Stock(models.Model):
     no_in_stock = models.IntegerField()
     owned_by = models.ForeignKey(User, blank=True, null=True)
     last_change = models.DateTimeField(auto_now=True)
+
+    @property
+    def no_in_stock(self):
+        return StockItem.objects.filter(owned_by=self.owned_by.id, stock_id=self.pk).count()
 
     def get_absolute_url(self):
         return reverse('stock-detail', args=[self.pk])
