@@ -336,7 +336,7 @@ class BookingWizard(SessionWizardView):
 
         available_stock_pks = []
         for form_data in form_list[-1].cleaned_data:
-            #check for availability first and raise error
+            #check for availablity first and raise error
             stock_item = StockItem.objects.filter(
                 owned_by=bike_shop.owned_by,
                 type=reservation_data['bike_type'],
@@ -347,38 +347,18 @@ class BookingWizard(SessionWizardView):
                 stock_item = [item for item in stock_item if item.availablity(reservation_data['start_date'], reservation_data['end_date'])][0]
             except IndexError:
                 messages.add_message(self.request, messages.INFO, 'Sorry we do not have enought items in stock to process your request')
-                self.storage.current_step = '2'
                 return self.render(form, **kwargs)
             else:
                 available_stock_pks.append(stock_item.pk)
 
-        print available_stock_pks
-
-
-
-
-        for form_data in form_list[-1].cleaned_data:
-            #this is where we make a reservation for every size ordered
-            #the last form is a formset so we loop over it
-            try:
-                #this has got to be filtered on start and end date to make
-                #sure that this stock item is available
-                stock_item = StockItem.objects.filter(owned_by=bike_shop.owned_by,
-                                                      type=reservation_data['bike_type'],
-                                                      make=reservation_data['make'],
-                                                      size=form_data['size'])
-
-                stock_item = [item for item in stock_item if item.availablity(reservation_data['start_date'], reservation_data['end_date'])][0]
-            except ObjectDoesNotExist:
-                logging.error("error looking up stock item when trying to make a reservation")
-                raise 404
+        for available_stock_pk in available_stock_pks:
 
             reservation = Reservation.objects.create(
                 email=reservation_data['email'],
                 start_date=reservation_data['start_date'],
                 end_date=reservation_data['end_date'],
                 shop_id=self.kwargs['pk'],
-                stockitem_id=stock_item.id
+                stockitem_id=available_stock_pk
             )
             new_booking.reservations.add(reservation)
 
@@ -420,7 +400,6 @@ class BookingWizard(SessionWizardView):
             for subform in form:
                 subform.fields['size'].choices = sizes
         return form
-
 
     def get_template_names(self):
         return 'bookingform.html'
