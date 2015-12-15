@@ -153,7 +153,7 @@ class StockCreateView(CrudMixin, CreateView):
         instance.save()
         stock_item = model_to_dict(instance)
         stock_item['stock_id'] = instance.pk
-        stock_item['owned_by'] = self.request.user.id
+        stock_item['owned_by'] = self.request.user
         stock_item.pop('id')
         stockitems = [StockItem(**stock_item) for x in xrange(form.cleaned_data['no_in_stock'])]
         StockItem.objects.bulk_create(stockitems)
