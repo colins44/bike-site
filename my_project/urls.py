@@ -22,7 +22,7 @@ from bike_aggregator.views import SignUp, ContactView, StoreSignUp, \
     BikeShopContact, EnquiryEmailSent, map, Index, BikeSearchResults, NewsLetterSignUp, \
     SearchPopularityChart, BikeShopGeoChart, SearchesOverTimeChart, StockListView, \
     StockDetailView, StockCreateView, StockDeleteView, StockUpdateView, ShopDetailView, ShopCreateView, ShopDeleteView, \
-    ShopUpdateView, BikeShopView, BikeShopRedirectView, BookingWizard
+    ShopUpdateView, BikeShopView, BikeShopRedirectView, BookingWizard, BookingDetailView, BookingListView
 from bike_aggregator.sitemaps import StaticSiteMap
 from django.contrib.sitemaps.views import sitemap
 from django.views.generic import TemplateView
@@ -68,6 +68,9 @@ urlpatterns = [
     url(regex='^stock/create/$', view=login_required(StockCreateView.as_view()), name='stock-create'),
     url(regex='^stock/delete/(?P<pk>[0-9]+)/$', view=login_required(StockDeleteView.as_view()), name='stock-delete'),
     url(regex='^stock/update/(?P<pk>[0-9]+)/$', view=login_required(StockUpdateView.as_view()), name='stock-update'),
+
+    url(regex='^booking/list/$', view=login_required(BookingListView.as_view()), name='booking-list'),
+    url(regex='^booking/detail/(?P<pk>[0-9]+)/$', view=login_required(BookingDetailView.as_view()), name='booking-detail'),
 
     url(regex='^shop-profile/(?P<pk>[0-9]+)/$', view=BikeShopView.as_view(), name='shop-profile'),
 

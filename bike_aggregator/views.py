@@ -177,6 +177,13 @@ class StockUpdateView(CrudMixin, UpdateView):
         return HttpResponseRedirect('/stock/list/')
 
 
+class BookingListView(CrudMixin, ListView):
+    model = Booking
+
+
+class BookingDetailView(CrudMixin, DetailView):
+    model = Booking
+
 class ShopCreateView(CrudMixin, CreateView):
     model = BikeShop
     form_class = BikeShopForm

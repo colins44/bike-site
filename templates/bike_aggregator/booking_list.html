@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <form action="/sign-up/" method="post">
+    <!-- Banner -->
+					<section id="banner">
+						<div class="inner">
+							<h2>YouVelo</h2>
+						</div>
+					</section>
+
+                    <section id="one" class="wrapper style2 special">
+                      {% if object_list %}
+                        <table style="width:100%">
+                          <tr>
+                            <td>Email</td>
+                            <td>Start Date</td>
+                            <td>End Date</td>
+                            <td>No of bikes</td>
+                            <td>Details</td>
+                          </tr>
+                            {% for object in object_list %}
+                          <tr>
+                            <td>{{ object.email }}</td>
+                            <td>{{ object.start_date }}</td>
+                            <td>{{ object.end_date }}</td>
+                            <td>{{ object.reservations.count }}</td>
+                            <td><a href="/booking/detail/{{ object.pk }}">More Info</a></td>
+                          </tr>
+                            {% endfor %}
+                        </table>
+                        {% else %}
+                            <p>Looks like you have no bookings for your shop</p>
+                        {% endif %}
+                    </section>
+{% endblock %}
