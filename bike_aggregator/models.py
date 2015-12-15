@@ -136,8 +136,7 @@ class StockItem(models.Model):
     size = models.CharField(max_length=225, null=True, blank=True)
     last_change = models.DateTimeField(auto_now=True)
 
-    @property
-    def avaliblity(self, start_date, end_date):
+    def availablity(self, start_date, end_date):
         #if there is a reservation for this item between the give dates
         #return False
         if Reservation.objects.filter(
@@ -145,8 +144,8 @@ class StockItem(models.Model):
                 start_date__gte=start_date,
                 start_date__lte=start_date,) |
                 Q(stockitem_id=self.pk,
-                  end_date__gte=start_date,
-                  end_date__lte=start_date,)):
+                  end_date__gte=end_date,
+                  end_date__lte=end_date,)):
             return False
         else:
             return True

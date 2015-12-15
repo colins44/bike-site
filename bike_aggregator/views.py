@@ -1,6 +1,7 @@
 import json
 from decimal import Decimal
 import datetime
+from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db.models import Count
@@ -324,23 +325,50 @@ class BookingWizard(SessionWizardView):
         for form in form_list[:2]:
             reservation_data.update(form.cleaned_data)
 
+        reservation_data['end_date'] = reservation_data['start_date'] + datetime.timedelta(days=reservation_data['number_of_days'])
+
         new_booking = Booking.objects.create(
             email=reservation_data['email'],
             start_date=reservation_data['start_date'],
-            end_date=reservation_data['start_date'] + datetime.timedelta(days=reservation_data['number_of_days']),
+            end_date=reservation_data['end_date'],
             owned_by=bike_shop.owned_by,
         )
 
+        available_stock_pks = []
+        for form_data in form_list[-1].cleaned_data:
+            #check for availability first and raise error
+            stock_item = StockItem.objects.filter(
+                owned_by=bike_shop.owned_by,
+                type=reservation_data['bike_type'],
+                make=reservation_data['make'],
+                size=form_data['size'],
+            ).exclude(pk__in=available_stock_pks)
+            try:
+                stock_item = [item for item in stock_item if item.availablity(reservation_data['start_date'], reservation_data['end_date'])][0]
+            except IndexError:
+                messages.add_message(self.request, messages.INFO, 'Sorry we do not have enought items in stock to process your request')
+                self.storage.current_step = '2'
+                return self.render(form, **kwargs)
+            else:
+                available_stock_pks.append(stock_item.pk)
+
+        print available_stock_pks
+
+
+
+
         for form_data in form_list[-1].cleaned_data:
             #this is where we make a reservation for every size ordered
-            #the last form is a formset
+            #the last form is a formset so we loop over it
             try:
                 #this has got to be filtered on start and end date to make
                 #sure that this stock item is available
                 stock_item = StockItem.objects.filter(owned_by=bike_shop.owned_by,
                                                       type=reservation_data['bike_type'],
                                                       make=reservation_data['make'],
-                                                      size=form_data['size'])[0]
+                                                      size=form_data['size'])
+
+                stock_item = [item for item in stock_item if item.availablity(reservation_data['start_date'], reservation_data['end_date'])][0]
             except ObjectDoesNotExist:
                 logging.error("error looking up stock item when trying to make a reservation")
                 raise 404
@@ -348,7 +376,7 @@ class BookingWizard(SessionWizardView):
             reservation = Reservation.objects.create(
                 email=reservation_data['email'],
                 start_date=reservation_data['start_date'],
-                end_date=reservation_data['start_date'] + datetime.timedelta(days=reservation_data['number_of_days']),
+                end_date=reservation_data['end_date'],
                 shop_id=self.kwargs['pk'],
                 stockitem_id=stock_item.id
             )
