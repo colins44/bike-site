@@ -1,5 +1,7 @@
 import json
 from decimal import Decimal
+import datetime
+from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db.models import Count
@@ -9,11 +11,13 @@ from django.utils import timezone
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView, RedirectView
 from django.views.generic.edit import FormView
 import itertools
-from bike_aggregator.models import BikeShop, BikeSearch, Stock, Event, RentalEquipment
-from bike_aggregator.utils import EMail, distance_filter, bikeshop_content_string
+from bike_aggregator.models import BikeShop, BikeSearch, Stock, Event, RentalEquipment, Booking, Reservation, StockItem
+from bike_aggregator.utils import EMail, distance_filter, bikeshop_content_string, updator
 from .forms import BikeSearchForm, BikeShopForm, ContactForm, NewsLetterSignUpFrom, EnquiryEmailForm, StockForm
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse, HttpResponseRedirect
+from django.shortcuts import render_to_response
+from formtools.wizard.views import SessionWizardView
 import logging
 logger = logging.getLogger(__name__)
 
@@ -147,6 +151,12 @@ class StockCreateView(CrudMixin, CreateView):
         instance.owned_by = self.request.user
         instance.last_change = timezone.now()
         instance.save()
+        stock_item = model_to_dict(instance)
+        stock_item['stock_id'] = instance.pk
+        stock_item['owned_by'] = self.request.user.id
+        stock_item.pop('id')
+        stockitems = [StockItem(**stock_item) for x in xrange(form.cleaned_data['no_in_stock'])]
+        StockItem.objects.bulk_create(stockitems)
         return HttpResponseRedirect('/stock/list/')
 
 
@@ -162,6 +172,8 @@ class StockUpdateView(CrudMixin, UpdateView):
         instance = form.save()
         instance.last_change = timezone.now()
         instance.save()
+        #check if there is a difference in the number of itmes
+        updator(instance, form.cleaned_data['no_in_stock'], self.request.user)
         return HttpResponseRedirect('/stock/list/')
 
 
@@ -302,3 +314,92 @@ class SearchesOverTimeChart(ListView):
         context['objects'] = data
         return context
 
+
+class BookingWizard(SessionWizardView):
+
+    def done(self, form_list, **kwargs):
+        bike_shop = BikeShop.objects.get(pk=self.kwargs.get('pk'))
+
+        #create a dict of all the form info to be used to make a booking
+        reservation_data = {}
+        for form in form_list[:2]:
+            reservation_data.update(form.cleaned_data)
+
+        reservation_data['end_date'] = reservation_data['start_date'] + datetime.timedelta(days=reservation_data['number_of_days'])
+
+        new_booking = Booking.objects.create(
+            email=reservation_data['email'],
+            start_date=reservation_data['start_date'],
+            end_date=reservation_data['end_date'],
+            owned_by=bike_shop.owned_by,
+        )
+
+        available_stock_pks = []
+        for form_data in form_list[-1].cleaned_data:
+            #check for availablity first and raise error
+            stock_item = StockItem.objects.filter(
+                owned_by=bike_shop.owned_by,
+                type=reservation_data['bike_type'],
+                make=reservation_data['make'],
+                size=form_data['size'],
+            ).exclude(pk__in=available_stock_pks)
+            try:
+                stock_item = [item for item in stock_item if item.availablity(reservation_data['start_date'], reservation_data['end_date'])][0]
+            except IndexError:
+                messages.add_message(self.request, messages.INFO, 'Sorry we do not have enought items in stock to process your request')
+                return self.render(form, **kwargs)
+            else:
+                available_stock_pks.append(stock_item.pk)
+
+        for available_stock_pk in available_stock_pks:
+
+            reservation = Reservation.objects.create(
+                email=reservation_data['email'],
+                start_date=reservation_data['start_date'],
+                end_date=reservation_data['end_date'],
+                shop_id=self.kwargs['pk'],
+                stockitem_id=available_stock_pk
+            )
+            new_booking.reservations.add(reservation)
+
+
+        return render_to_response('done.html', {
+            'form_data': [form.cleaned_data for form in form_list],
+        })
+
+    def get_form(self, step=None, data=None, files=None):
+        form = super(BookingWizard, self).get_form(step, data, files)
+        #check if its step one if so fill out the data needed
+        # determine the step if not given
+        bike_shop = BikeShop.objects.get(pk=self.kwargs.get('pk'))
+        if step is None:
+            step = self.steps.current
+
+        if step == '0':
+            try:
+                stock_list = Stock.objects.filter(owned_by=bike_shop.owned_by).values_list('type', 'type').distinct()
+            except ObjectDoesNotExist:
+                raise 404
+            form.fields['bike_type'].choices = stock_list
+
+        if step == '1':
+            #context is needed to populate the js in the following format
+            bike_type = self.get_cleaned_data_for_step('0').get('bike_type')
+            try:
+                makes = Stock.objects.filter(owned_by=bike_shop.owned_by,
+                                             type=bike_type).values_list('make', 'make').distinct()
+            except ObjectDoesNotExist:
+                raise 404
+            form.fields['make'].choices = makes
+
+        if step == '2':
+            bike_type = self.get_cleaned_data_for_step('0').get('bike_type')
+            number_of_bikes = self.get_cleaned_data_for_step('1').get('number')
+            sizes = Stock.objects.filter(owned_by=bike_shop.owned_by, type=bike_type).values_list('size', 'size').distinct()
+            form.extra = number_of_bikes
+            for subform in form:
+                subform.fields['size'].choices = sizes
+        return form
+
+    def get_template_names(self):
+        return 'bookingform.html'

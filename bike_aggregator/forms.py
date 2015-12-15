@@ -1,5 +1,7 @@
-from django.forms import ModelForm
+from django.core.exceptions import ValidationError
+from django.forms import ModelForm, formset_factory
 from django.utils import timezone
+from django.utils.datetime_safe import datetime
 from bike_aggregator.models import BikeShop, BikeSearch, NewsLetterSubscibers, EnquiryEmail, Stock
 from django import forms
 from bike_aggregator.utils import EMail
@@ -71,10 +73,32 @@ class EnquiryEmailForm(ModelForm):
         exclude = ('pk',)
 
 class StockForm(forms.ModelForm):
+    no_in_stock = forms.IntegerField()
 
     class Meta:
         model = Stock
         exclude = ('owned_by',)
 
 
+class BookingForm1(forms.Form):
+    email = forms.EmailField(required=True)
+    start_date = forms.DateField(widget=forms.DateInput(format='%d/%m/%Y'), required=True)
+    number_of_days = forms.IntegerField(required=True)
+    bike_type = forms.ChoiceField(required=True, widget=forms.Select(), choices=((None, None),))
 
+    def clean(self):
+        if self.cleaned_data['start_date'] < datetime.now().date():
+            raise ValidationError('Please choose a date in the future')
+        else:
+            super(BookingForm1, self).clean()
+
+
+class BookingForm2(forms.Form):
+    make = forms.ChoiceField(required=True, widget=forms.Select(), choices=((None, None),))
+    number = forms.IntegerField()
+
+
+class BookingForm3(forms.Form):
+    size = forms.ChoiceField(required=True, widget=forms.Select(), choices=((None, None),))
+
+BookingFormSet = formset_factory(BookingForm3, extra=2)
