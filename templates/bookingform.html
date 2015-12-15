@@ -7,7 +7,11 @@
 {% endblock %}
 
 {% block content %}
-<p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
+{% if form_title %}
+<h2>{{ form_title }}</h2>
+{% else %}
+<h2>Form title</h2>
+{% endif %}
         {% if messages %}
 <ul class="messages">
     {% for message in messages %}
@@ -27,6 +31,7 @@
     {{ wizard.form.as_p }}
 {% endif %}
 </table>
+<p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
 {% if wizard.steps.prev %}
 <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.first }}">{% trans "first step" %}</button>
 <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}">{% trans "prev step" %}</button>

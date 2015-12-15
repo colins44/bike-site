@@ -84,7 +84,10 @@ class BookingForm1(forms.Form):
     email = forms.EmailField(required=True)
     start_date = forms.DateField(widget=forms.DateInput(format='%d/%m/%Y'), required=True)
     number_of_days = forms.IntegerField(required=True)
-    bike_type = forms.ChoiceField(required=True, widget=forms.Select(), choices=((None, None),))
+    bike_type = forms.ChoiceField(required=True,
+                                  widget=forms.Select(),
+                                  choices=((None, None),),
+                                  label="Select the type of bike you would like to rent")
 
     def clean(self):
         if self.cleaned_data['start_date'] < datetime.now().date():
@@ -94,8 +97,11 @@ class BookingForm1(forms.Form):
 
 
 class BookingForm2(forms.Form):
-    make = forms.ChoiceField(required=True, widget=forms.Select(), choices=((None, None),))
-    number = forms.IntegerField()
+    make = forms.ChoiceField(required=True,
+                             widget=forms.Select(),
+                             choices=((None, None),),
+                             label='Select bike make')
+    number = forms.IntegerField(label='Number of bikes you would like to rent')
 
 
 class BookingForm3(forms.Form):

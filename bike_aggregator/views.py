@@ -317,6 +317,18 @@ class SearchesOverTimeChart(ListView):
 
 class BookingWizard(SessionWizardView):
 
+    def get_context_data(self, form, **kwargs):
+        context = super(BookingWizard, self).get_context_data(form=form, **kwargs)
+
+        if self.steps.current == '1':
+            context.update({'form_title': 'Please Select Make'})
+        return context
+
+        if self.steps.current == '2':
+            context.update({'form_title': 'Please select the bike sizers you need'})
+        return context
+
+
     def done(self, form_list, **kwargs):
         bike_shop = BikeShop.objects.get(pk=self.kwargs.get('pk'))
 
@@ -397,8 +409,9 @@ class BookingWizard(SessionWizardView):
             number_of_bikes = self.get_cleaned_data_for_step('1').get('number')
             sizes = Stock.objects.filter(owned_by=bike_shop.owned_by, type=bike_type).values_list('size', 'size').distinct()
             form.extra = number_of_bikes
-            for subform in form:
+            for index, subform in enumerate(form):
                 subform.fields['size'].choices = sizes
+                subform.fields['size'].label = 'select bike {} size'.format(index+1)
         return form
 
     def get_template_names(self):
