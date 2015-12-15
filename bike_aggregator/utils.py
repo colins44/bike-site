@@ -23,7 +23,7 @@ class EMail(object):
     def __init__(self, to, subject, fail_silently=False):
         self.to = to
         self.subject = subject
-        self.fail_sliently = fail_silently
+        self.fail_silently = fail_silently
         self._html = None
         self._text = None
 
@@ -49,7 +49,7 @@ class EMail(object):
         )
         if self._html:
             msg.attach_alternative(self._html, 'text/html')
-        msg.send(self.fail_sliently)
+        msg.send(self.fail_silently)
 
 
 def pythagoris(longs, lats):

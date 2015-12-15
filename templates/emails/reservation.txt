@@ -1,0 +1,23 @@
+
+Reservation Confirmation
+
+    Thank you for making a booking with Youvelo, your booking details are as follows:
+
+    Booking info:
+
+    Bike Shop Name: {{ bike_shop.shop_name }}
+    Bike Shop Address: {{ bike_shop.location }}
+    Hire Start date: {{ booking.start_date }}
+    Hire End date: {{ booking.end_date }}
+
+    Equipment Details:
+
+    {% for item in reservation_items %}
+    Bike type: {{ item.type }}
+    Bike make: {{ item.make }}
+    Bike size: {{ item.size }}
+    {% endfor %}
+
+Best regards,
+
+{{ email_from_name }}

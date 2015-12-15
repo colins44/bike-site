@@ -374,10 +374,19 @@ class BookingWizard(SessionWizardView):
             )
             new_booking.reservations.add(reservation)
 
+        context = {'booking': new_booking,
+                   'reservation_items': StockItem.objects.filter(pk__in=available_stock_pks),
+                   'bike_shop': bike_shop}
 
-        return render_to_response('done.html', {
-            'form_data': [form.cleaned_data for form in form_list],
-        })
+        try:
+            email = EMail(to=reservation_data['email'], subject='Bike Hire Reservation Confirmation')
+            email.text('emails/reservation.txt', context)
+            email.html('emails/reservation.html', context)
+            email.send(from_addr='reservations@youvelo.com')
+        except:
+            logging.error("Problems sending reservations email to {}".fomat(new_booking.email))
+
+        return render_to_response('done.html', context)
 
     def get_form(self, step=None, data=None, files=None):
         form = super(BookingWizard, self).get_form(step, data, files)
