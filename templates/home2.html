@@ -1,0 +1,112 @@
+<html><head>
+    {% load staticfiles %}
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        {%  block title %}
+        {%  endblock %}
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="google-site-verification" content="1vNxk3KneAQfj4L0QgMLkKOwkZV78qrR0ze_9XaUAVg" />
+        {# Global stylesheets #}
+        <link rel="stylesheet" href={%  static "css/tabs.css" %} />
+
+        {% block extra_css %}
+            {# Override this in templates to add extra stylesheets #}
+        {% endblock %}
+        <script>
+          (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+          ga('create', 'UA-67978073-1', 'auto');
+          ga('send', 'pageview');
+
+        </script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <link href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="http://pingendo.github.io/pingendo-bootstrap/themes/default/bootstrap.css" rel="stylesheet" type="text/css">
+    <style>
+      #id_location {
+        background-color: inherit;
+        color: #ffffff;
+      }
+      .form-control::-webkit-input-placeholder {
+    color: #ffffff;
+    opacity: 1 !important; /* for chrome */
+    }
+    .form-control:-moz-placeholder { /* Firefox 18- */
+        color: #ffffff;
+    }
+    .form-control::-moz-placeholder {  /* Firefox 19+ */
+        color: #ffffff;
+    }
+    .form-control:-ms-input-placeholder {
+       color: #ffffff;
+    }
+    </style>
+  </head><body>
+    <div class="cover">
+      <div class="navbar">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-ex-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#" style="color: #ffffff"><span>YouVelo</span></a>
+          </div>
+          <div class="collapse navbar-collapse" id="navbar-ex-collapse">
+            <ul class="nav navbar-nav navbar-right">
+              <li class="active">
+                <a href="#">Home</a>
+              </li>
+              <li>
+                <a href="#">Contacts</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="cover-image" style="background-image: url({%  static "images/banner.jpg" %});"></div>
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12 text-center">
+            <h1 class="text-inverse">YouVelo</h1>
+            <p class="text-inverse" id="small-heading" style="font-size: 16px">Search for bikes to rent all over the world.</p>
+            <div class="container">
+              <div class="row">
+                <div class="col-md-12">
+                  <form role="form" action="{{ submit_url }}" method="post">{% csrf_token %}
+                    <div class="form-group">
+                      <label for="id_location" class="control-label" style="color: #ffffff">Location:</label>
+                      <input id="id_location" maxlength="225" name="location" type="text" class="form-control" style="background-color: inherit; color: #ffffff" placeholder="Enter a location"/>
+                      <input id="id_street_number" maxlength="225" name="street_number" type="hidden" />
+                      <input id="id_street" maxlength="225" name="street" type="hidden" />
+                      <input id="id_post_code" maxlength="225" name="post_code" type="hidden" />
+                      <input id="id_state" maxlength="225" name="state" type="hidden" />
+                      <input id="id_city" maxlength="225" name="city" type="hidden" />
+                      <input id="id_country" maxlength="225" name="country" type="hidden" />
+                      <input id="id_latitude" name="latitude" type="hidden" />
+                      <input id="id_longitude" name="longitude" type="hidden" />
+                      <input id="id_search_time" name="search_time" type="hidden" />
+                    </div>
+                    <button type="submit" class="btn btn-lg btn-primary">Submit</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+</body>
+    <script src="{% static  "js/places_autocomplete.js" %}"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBGlg8YhNcZJP-Pfd1WskAlHcbsjxUPncQ&libraries=places&callback=initAutocomplete"></script>
+</html>
