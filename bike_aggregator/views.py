@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 class Index(FormView):
     form_class = BikeSearchForm
     success_url = 'bike-shops/'
-    template_name = 'home2.html'
+    template_name = 'home.html'
 
     def form_valid(self, form):
         super(Index, self).form_valid(form)
