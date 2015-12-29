@@ -6,6 +6,19 @@
 {% block content %}
     <div class="section">
       <div class="container">
+      <div class="row">
+          <div class="col-md-12">
+            <div class="alert alert-dismissable alert-success">
+              <strong>Well done!</strong>You successfully read this important alert message.</div>
+          </div>
+        </div>
+      {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
         <div class="row">
           <div class="col-md-4">
             <h1>{{ bikeshop.shop_name }}</h1>
@@ -26,13 +39,6 @@
               <li>Trip Advisor</li>
             </ul>
           </div>
-            {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                {% endfor %}
-                </ul>
-            {% endif %}
           <div class="col-md-8">
             <img class="img-responsive" src="http://maps.googleapis.com/maps/api/staticmap?center=Tombouctou,Mali&amp;zoom=12&amp;size=200x200&amp;sensor=false">
             <div class="col-md-8">
