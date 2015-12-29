@@ -84,14 +84,14 @@
                   <form role="form" action="{{ submit_url }}" method="post">{% csrf_token %}
                     <div class="form-group">
                       <label for="id_location" class="control-label" style="color: #ffffff">Location:</label>
-                      <input id="id_location" maxlength="225" name="location" type="text" class="form-control" style="background-color: inherit; color: #ffffff" placeholder="Enter a location"/>
+                      <input id="id_location" maxlength="225" name="location" type="text" class="form-control" required="true" style="background-color: inherit; color: #ffffff" placeholder="Enter a location"/>
                       <input id="id_street_number" maxlength="225" name="street_number" type="hidden" />
                       <input id="id_street" maxlength="225" name="street" type="hidden" />
                       <input id="id_post_code" maxlength="225" name="post_code" type="hidden" />
                       <input id="id_state" maxlength="225" name="state" type="hidden" />
                       <input id="id_city" maxlength="225" name="city" type="hidden" />
                       <input id="id_country" maxlength="225" name="country" type="hidden" />
-                      <input id="id_latitude" name="latitude" type="hidden" />
+                      <input id="id_latitude" name="latitude" type="hidden"/>
                       <input id="id_longitude" name="longitude" type="hidden" />
                       <input id="id_search_time" name="search_time" type="hidden" />
                     </div>

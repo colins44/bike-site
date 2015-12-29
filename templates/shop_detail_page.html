@@ -1,0 +1,52 @@
+{% extends "base2.html" %}
+    {% block title %}
+        <title>Bicycle Rental {{ bikeshop.city }}</title>
+        <meta name="description" content="Find bicycles to rent. Search by bicycle type and location. Rent bicycles worldwide" />
+    {% endblock %}
+{% block content %}
+    <div class="section">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <h1>{{ bikeshop.shop_name }}</h1>
+            <p>Blurb about shop, specilist etc
+              <br>this that and the other</p>
+            <h3>Shop Details</h3>
+            <ul>
+              <li>telephone</li>
+              <li>email</li>
+              <li>Address</li>
+            </ul>
+            <h3>Shop Links</h3>
+            <ul>
+              <li>telephone</li>
+              <li>email</li>
+              <li>facebook page</li>
+              <li>Google plus</li>
+              <li>Trip Advisor</li>
+            </ul>
+          </div>
+          <div class="col-md-8">
+            <img class="img-responsive" src="http://maps.googleapis.com/maps/api/staticmap?center=Tombouctou,Mali&amp;zoom=12&amp;size=200x200&amp;sensor=false">
+            <div class="col-md-8">
+              <form role="form">
+                <div class="form-group">
+                  <label class="control-label" for="exampleInputEmail1">Email address</label>
+                  <input class="form-control" id="exampleInputEmail1" placeholder="Start Date" type="text">
+                </div>
+                <div class="form-group">
+                  <label class="control-label" for="exampleInputPassword1">Password</label>
+                  <input class="form-control" id="exampleInputPassword1" placeholder="No of days" type="text">
+                </div>
+                <div class="form-group">
+                  <label class="control-label" for="exampleInputPassword1">Password</label>
+                  <input class="form-control" id="exampleInputPassword1" placeholder="Select Bike type" type="text">
+                </div>
+                <button type="submit" class="btn btn-default">Search Bikes</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+{%  endblock %}

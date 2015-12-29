@@ -30,7 +30,7 @@ class Index(FormView):
     def form_valid(self, form):
         super(Index, self).form_valid(form)
         form.save()
-        #here we redirect to the actuall list view with the kwargs
+        #here we redirect to the actual list view with the kwargs
         return redirect('bike-shop-search-results',
                         latitude=form.cleaned_data['latitude'],
                         longitude=form.cleaned_data['longitude'])
@@ -40,6 +40,7 @@ class BikeSearchResults(ListView):
     model = BikeShop
     paginate_by = 10
     template_name = "bike-shop-list2.html"
+    context_object_name = 'bikeshops'
 
     def get_context_data(self, **kwargs):
         context = super(BikeSearchResults, self).get_context_data(**kwargs)
@@ -199,7 +200,7 @@ class ShopCreateView(CrudMixin, CreateView):
 
 class BikeShopView(DetailView):
     model = BikeShop
-    template_name = 'bike_aggregator/bikeshop_list.html'
+    template_name = 'shop_detail_page.html'
 
 
 class ShopDetailView(CrudMixin, ListView):

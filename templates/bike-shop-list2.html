@@ -7,11 +7,35 @@
           function initialize() {
             var mapCanvas = document.getElementById('map');
             var mapOptions = {
-              center: new google.maps.LatLng(44.5403, -78.5463),
-              zoom: 8,
+              center: new google.maps.LatLng({{ bikesearch.latitude }}, {{ bikesearch.longitude }}),
+              zoom: 14,
               mapTypeId: google.maps.MapTypeId.ROADMAP
             }
-            var map = new google.maps.Map(mapCanvas, mapOptions)
+            var map = new google.maps.Map(mapCanvas, mapOptions);
+
+            var marker = new google.maps.Marker({
+            position: new google.maps.LatLng( {{ bikesearch.latitude }}, {{ bikesearch.longitude }}),
+            map: map
+            });
+
+            {% for bikeshop in bikeshops %}
+
+            var infowindow{{ bikeshop.pk }} = new google.maps.InfoWindow({
+            content: "{{ bikeshop.content_string }}"
+            });
+
+            var marker{{ bikeshop.pk}} = new google.maps.Marker({
+            position: {lat: {{ bikeshop.latitude }}, lng: {{ bikeshop.longitude }}},
+            map: map,
+            title: '{{ bikeshop.shop_name }}',
+            icon: '/static/images/bike_marker.png'
+            });
+
+            marker{{ bikeshop.pk }}.addListener('click', function() {
+            infowindow{{ bikeshop.pk }}.open(map, marker{{ bikeshop.pk }});
+            });
+
+            {%  endfor %}
           }
           google.maps.event.addDomListener(window, 'load', initialize);
         </script>
@@ -39,7 +63,7 @@
                     </ul>
                 {% endif %}
                 <p>Distance to Bike Shop: {{ shop.distance_to_search }} Km</p>
-                <a href="/redirect-to-bikeshop/{{ shop.pk }}/" class="btn btn-primary">Bike shop wesbite</a>
+                <a href="/shop-profile/{{ shop.pk }}/" class="btn btn-primary">Bike shop wesbite</a>
                 {% endfor %}
               </div>
           </div>

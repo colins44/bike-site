@@ -1,5 +1,6 @@
 from django.contrib.sitemaps import Sitemap
 from bike_aggregator.models import BikeShop
+from django.template.defaultfilters import slugify
 
 
 class StaticSiteMap(Sitemap):
@@ -12,7 +13,7 @@ class StaticSiteMap(Sitemap):
         city_urls = []
         for city in cities:
             try:
-                city_urls.append("/bike-shop-search-results/{}/".format(city.lower()))
+                city_urls.append("/bike-shop-search-results/{}/".format(slugify(city)))
             except:
                 pass
         city_urls.append("/about/")
