@@ -1,6 +1,7 @@
 import json
 from decimal import Decimal
 import datetime
+import requests
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
@@ -29,8 +30,8 @@ class Index(FormView):
 
     def form_valid(self, form):
         super(Index, self).form_valid(form)
-        form.save()
         if form.cleaned_data['latitude'] and form.cleaned_data['longitude']:
+            form.save()
             return redirect('bike-shop-search-results',
                         latitude=form.cleaned_data['latitude'],
                         longitude=form.cleaned_data['longitude'])
@@ -40,6 +41,10 @@ class Index(FormView):
                 req = requests.get(base_url)
                 data = json.loads(req.content)
                 location = data['results'][0]['geometry']['location']
+                instance = form.save()
+                instance.latitude = location['lat']
+                instance.longitude = location['lng']
+                instance.save()
                 return redirect('bike-shop-search-results',
                                 latitude=location['lat'],
                                 longitude=location['lng'])

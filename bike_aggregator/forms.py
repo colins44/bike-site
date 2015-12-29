@@ -47,9 +47,8 @@ class BikeSearchForm(ModelForm):
         exclude = ('pk',)
 
     def save(self, commit=True):
-        search = super(BikeSearchForm, self).save(commit=False)
-        search.search_time = timezone.now()
-        search.save()
+        self.cleaned_data['search_time'] = timezone.now()
+        return super(BikeSearchForm, self).save(commit=False)
 
 
 class ContactForm(forms.Form):
