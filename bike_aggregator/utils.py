@@ -105,7 +105,7 @@ def distance_filter(bike_search, bike_shop_queryset, distance=Decimal(0.025), am
 def bikeshop_content_string(bikeshops):
     """Build the content string for the bike shop markers on the google map"""
 
-    template = Template("<a href=/contact-bikeshop/{{ bikeshop.pk }}/>Contact {{ bikeshop.shop_name }}</a><br><a href=/redirect-to-bikeshop/{{ bikeshop.pk }}/>Go to bikeshop website</a>")
+    template = Template("<a href=/shop-profile/{{ bikeshop.pk }}/>{{ bikeshop.shop_name }}</a>")
 
     for bikeshop in bikeshops:
         model_dict = {

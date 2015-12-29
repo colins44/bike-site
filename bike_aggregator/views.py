@@ -18,6 +18,7 @@ from django.shortcuts import get_object_or_404
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from formtools.wizard.views import SessionWizardView
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -201,6 +202,15 @@ class ShopCreateView(CrudMixin, CreateView):
 class BikeShopView(DetailView):
     model = BikeShop
     template_name = 'shop_detail_page.html'
+
+    def get(self, request, *args, **kwargs):
+
+        if request.session.get('visited', False):
+            pass
+        else:
+            request.session['visited'] = True
+            messages.add_message(request, messages.INFO, 'Hello world.')
+        return super(BikeShopView, self).get(request, *args, **kwargs)
 
 
 class ShopDetailView(CrudMixin, ListView):
