@@ -25,13 +25,27 @@ logger = logging.getLogger(__name__)
 class Index(FormView):
     form_class = BikeSearchForm
     success_url = 'bike-shops/'
-    template_name = 'home.html'
+    template_name = 'home2.html'
 
     def form_valid(self, form):
         super(Index, self).form_valid(form)
         form.save()
-        #here we redirect to the actuall list view with the kwargs
-        return redirect('bike-shop-search-results',
+        if form.cleaned_data['latitude'] and form.cleaned_data['longitude']:
+            return redirect('bike-shop-search-results',
+                        latitude=form.cleaned_data['latitude'],
+                        longitude=form.cleaned_data['longitude'])
+        else:
+            try:
+                base_url = 'https://maps.googleapis.com/maps/api/geocode/json?address={}'.format(form.cleaned_data.get('location'))
+                req = requests.get(base_url)
+                data = json.loads(req.content)
+                location = data['results'][0]['geometry']['location']
+                return redirect('bike-shop-search-results',
+                                latitude=location['lat'],
+                                longitude=location['lng'])
+            except Exception as e:
+                logger.error("error getting lat and long, message:{}".format(e.message))
+                return redirect('bike-shop-search-results',
                         latitude=form.cleaned_data['latitude'],
                         longitude=form.cleaned_data['longitude'])
 
