@@ -1,4 +1,6 @@
 import json
+import requests
+import itertools
 from decimal import Decimal
 import datetime
 from django.contrib import messages
@@ -10,7 +12,6 @@ from django.shortcuts import redirect
 from django.utils import timezone
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView, RedirectView
 from django.views.generic.edit import FormView
-import itertools
 from bike_aggregator.models import BikeShop, BikeSearch, Stock, Event, RentalEquipment, Booking, Reservation, StockItem
 from bike_aggregator.utils import EMail, distance_filter, bikeshop_content_string, updator
 from .forms import BikeSearchForm, BikeShopForm, ContactForm, NewsLetterSignUpFrom, EnquiryEmailForm, StockForm
@@ -18,6 +19,7 @@ from django.shortcuts import get_object_or_404
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from formtools.wizard.views import SessionWizardView
+
 
 import logging
 logger = logging.getLogger(__name__)
@@ -31,8 +33,22 @@ class Index(FormView):
     def form_valid(self, form):
         super(Index, self).form_valid(form)
         form.save()
-        #here we redirect to the actual list view with the kwargs
-        return redirect('bike-shop-search-results',
+        if form.cleaned_data['latitude'] and form.cleaned_data['longitude']:
+            return redirect('bike-shop-search-results',
+                        latitude=form.cleaned_data['latitude'],
+                        longitude=form.cleaned_data['longitude'])
+        else:
+            try:
+                base_url = 'https://maps.googleapis.com/maps/api/geocode/json?address={}'.format(form.cleaned_data.get('location'))
+                req = requests.get(base_url)
+                data = json.loads(req.content)
+                location = data['results'][0]['geometry']['location']
+                return redirect('bike-shop-search-results',
+                                latitude=location['lat'],
+                                longitude=location['lng'])
+            except Exception as e:
+                logger.error("error getting lat and long, message:{}".format(e.message))
+                return redirect('bike-shop-search-results',
                         latitude=form.cleaned_data['latitude'],
                         longitude=form.cleaned_data['longitude'])
 

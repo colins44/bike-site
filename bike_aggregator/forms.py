@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.utils.datetime_safe import datetime
 from bike_aggregator.models import BikeShop, BikeSearch, NewsLetterSubscibers, EnquiryEmail, Stock
 from django import forms
-from bike_aggregator.utils import EMail
+
 
 bike_types = (
     ('scooter', 'scooter'),
