@@ -45,10 +45,22 @@
 {% block content %}
     <div class="hidden-xs section">
       <div class="container">
+        {% if messages %}
+        <div class="row">
+          <div class="col-md-12">
+            <div class="alert alert-dismissable alert-success">
+              {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+                </ul>
+            </div>
+          </div>
+        </div>
+        {% endif %}
         <div class="row">
           <div class="col-md-4">
               <div>
-                  <h1>Bike Rental companies in London</h1>
+                  <h1>Bike Rental companies in {{ bikeshops.0.city }}</h1>
               </div>
               <div>
                 {% for shop in bikeshops %}
@@ -63,11 +75,23 @@
                     </ul>
                 {% endif %}
                 <p>Distance to Bike Shop: {{ shop.distance_to_search }} Km</p>
-                <a href="/shop-profile/{{ shop.pk }}/" class="btn btn-primary">Bike shop wesbite</a>
+                <a href="/shop-profile/{{ shop.pk }}/" class="btn btn-primary">More Info</a>
                 {% endfor %}
               </div>
           </div>
           <div class="col-md-8" style="height: 600">
+              <div id="filter" class="col-lg-offset-7">
+                 <form method="GET">
+                  <select class="form-control" name="filter">
+                    {% for option in rental_options %}
+                        <option value="{{ option.slug }}">{{ option.name }}</option>
+                    {% endfor %}
+                  </select>
+                  <br>
+                  <input type="submit" value="Filter" class="btn btn-primary"/>
+                  </form>
+              </div>
+              <br>
               <div id="map" style="width:auto;height:inherit; background: #cccccc"></div>
           </div>
         </div>

@@ -3,13 +3,31 @@
         <title>Bicycle Rental {{ bikeshop.city }}</title>
         <meta name="description" content="Find bicycles to rent. Search by bicycle type and location. Rent bicycles worldwide" />
     {% endblock %}
+        <script src="https://maps.googleapis.com/maps/api/js"></script>
+        <script>
+          function initialize() {
+            var mapCanvas = document.getElementById('map');
+            var mapOptions = {
+              center: new google.maps.LatLng({{ bikeshop.latitude }}, {{ bikeshop.longitude }}),
+              zoom: 14,
+              mapTypeId: google.maps.MapTypeId.ROADMAP
+            }
+            var map = new google.maps.Map(mapCanvas, mapOptions);
+
+            var marker = new google.maps.Marker({
+            position: new google.maps.LatLng( {{ bikeshop.latitude }}, {{ bikeshop.longitude }}),
+            map: map
+            });
+          }
+          google.maps.event.addDomListener(window, 'load', initialize);
+        </script>
 {% block content %}
     <div class="section">
       <div class="container">
       <div class="row">
           <div class="col-md-12">
-            <div class="alert alert-dismissable alert-success">
-              <strong>Well done!</strong>You successfully read this important alert message.</div>
+            <div class="alert alert-dismissable alert-success" style="font-size: 16">
+              <strong>Hint!</strong> Click the add to booking list button and you can send a booking request to many shops at once.</div>
           </div>
         </div>
       {% if messages %}
@@ -26,21 +44,14 @@
               <br>this that and the other</p>
             <h3>Shop Details</h3>
             <ul>
-              <li>telephone</li>
-              <li>email</li>
-              <li>Address</li>
-            </ul>
-            <h3>Shop Links</h3>
-            <ul>
-              <li>telephone</li>
-              <li>email</li>
-              <li>facebook page</li>
-              <li>Google plus</li>
-              <li>Trip Advisor</li>
+              <li>Address: {% if bikeshop.street_number %}{{ bikeshop.street_number}},{% endif %} {%if bikeshop.street %}{{ bikeshop.street }},{% endif %} {% if bikeshop.city %} {{ bikeshop.city }},{% endif %} {% if bikeshop.post_code %} {{ bikeshop.post_code}}{% endif %}</li>
+              {% if bikeshop.phone_number %}<li>Phone: {{ bikeshop.phone_number }}</li>{% endif %}
+              {% if bikeshop.email %}<li>Email: {{ bikeshop.email }}</li>{% endif %}
+              {% if bikeshop.website %}<li>Website: <a href="/redirect-to-bikeshop/{{ bikeshop.pk }}">{{ bikeshop.website }}</a></li>{% endif %}
             </ul>
           </div>
           <div class="col-md-8">
-            <img class="img-responsive" src="http://maps.googleapis.com/maps/api/staticmap?center=Tombouctou,Mali&amp;zoom=12&amp;size=200x200&amp;sensor=false">
+            <div id="map" style="width:auto;height:inherit; background: #cccccc"></div>
             <div class="col-md-8">
               <form role="form">
                 <div class="form-group">

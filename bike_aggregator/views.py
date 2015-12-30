@@ -59,6 +59,16 @@ class BikeSearchResults(ListView):
     template_name = "bike-shop-list2.html"
     context_object_name = 'bikeshops'
 
+    def get(self, request, *args, **kwargs):
+
+        if request.session.get('visited', False):
+            pass
+        else:
+            request.session['visited'] = True
+            message = 'You can find bike shops that rent out the type of bikes you are looking for with the filter button'
+            messages.add_message(request, messages.INFO, message)
+        return super(BikeSearchResults, self).get(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super(BikeSearchResults, self).get_context_data(**kwargs)
         bikesearch = {}
@@ -77,10 +87,11 @@ class BikeSearchResults(ListView):
 
         context['bikeshops'] = bikeshop_content_string(distance_filter(bikesearch, self.model.objects.all()))
         context['bikesearch'] = bikesearch
-        context['message'] = "your results"
         if self.request.GET.get('filter'):
             try:
                 rental_equipment = RentalEquipment.objects.get(slug=self.request.GET.get('filter'))
+                message = 'Search results filtered on {}'.format(self.request.GET.get('filter'))
+                messages.add_message(self.request, messages.INFO, message)
                 context['bikeshops'] = bikeshop_content_string(
                     distance_filter(
                         bikesearch, self.model.objects.filter(rental_options__in=[rental_equipment.pk])))[:20]
