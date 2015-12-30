@@ -2,7 +2,6 @@
     {% block title %}
         <title>Bicycle Rental {{ bikeshop.city }}</title>
         <meta name="description" content="Find bicycles to rent. Search by bicycle type and location. Rent bicycles worldwide" />
-    {% endblock %}
         <script src="https://maps.googleapis.com/maps/api/js"></script>
         <script>
           function initialize() {
@@ -15,12 +14,13 @@
             var map = new google.maps.Map(mapCanvas, mapOptions);
 
             var marker = new google.maps.Marker({
-            position: new google.maps.LatLng( {{ bikeshop.latitude }}, {{ bikeshop.longitude }}),
+            position: new google.maps.LatLng( {{ bikesearch.latitude }}, {{ bikesearch.longitude }}),
             map: map
             });
           }
           google.maps.event.addDomListener(window, 'load', initialize);
         </script>
+    {% endblock %}
 {% block content %}
     <div class="section">
       <div class="container">
@@ -40,8 +40,15 @@
         <div class="row">
           <div class="col-md-4">
             <h1>{{ bikeshop.shop_name }}</h1>
-            <p>Blurb about shop, specilist etc
-              <br>this that and the other</p>
+            <h3>Shop Equipment</h3>
+            {% if bikeshop.rental_options %}
+                 <p>This shop rents out:</p>
+                 <ul>
+                 {% for equipment in bikeshop.rental_options.all %}
+                <li>{{ equipment.name }}</li>
+               {% endfor %}
+             </ul>
+            {% endif %}
             <h3>Shop Details</h3>
             <ul>
               <li>Address: {% if bikeshop.street_number %}{{ bikeshop.street_number}},{% endif %} {%if bikeshop.street %}{{ bikeshop.street }},{% endif %} {% if bikeshop.city %} {{ bikeshop.city }},{% endif %} {% if bikeshop.post_code %} {{ bikeshop.post_code}}{% endif %}</li>
