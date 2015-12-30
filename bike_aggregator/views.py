@@ -239,6 +239,7 @@ def bikeshopview(request):
         if form.is_valid():
             message = 'shop added to booking request list'
             messages.add_message(request, messages.INFO, message)
+            request.session.__setitem__('booking_request_list', pk=request.kwargs['pk'])
         else:
             message = 'something went wrong adding the bike shop to the booking request list'
             messages.add_message(request, messages.WARNING, message)
