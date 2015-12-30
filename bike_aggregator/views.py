@@ -229,20 +229,20 @@ class ShopCreateView(CrudMixin, CreateView):
         return HttpResponseRedirect('/profile/')
 
 
-def bikeshopview(request):
+def bikeshopview(request, pk):
 
-    bikeshop = get_object_or_404(BikeShop, pk=request.kwargs['pk'])
+    bikeshop = get_object_or_404(BikeShop, pk=pk)
     if request.method == "POST":
 
-        form = BookingListAdd(request.POST)
+        form = BookingListAdd(request.post)
 
         if form.is_valid():
             message = 'shop added to booking request list'
-            messages.add_message(request, messages.INFO, message)
-            request.session.__setitem__('booking_request_list', pk=request.kwargs['pk'])
+            request.messages.add_message(request, request.messages.info, message)
+            request.session.__setitem__('booking_request_list', pk=pk)
         else:
             message = 'something went wrong adding the bike shop to the booking request list'
-            messages.add_message(request, messages.WARNING, message)
+            request.messages.add_message(request, request.messages.warning, message)
 
         return render(request, 'shop_detail_page.html', {'form': form, 'bikeshop': bikeshop, 'messages': messages})
 
@@ -255,7 +255,7 @@ def bikeshopview(request):
             request.session['visited'] = True
             print 'not visited, where is the message'
             message = 'Send a booking request to this shop by filling out the Booking Request Form or send multipul booking request by clicking "add to request list" button and send your booking request to many stores at once'
-            messages.add_message(request, messages.INFO, message)
+            request.messages.add_message(request, request.messages.INFO, message)
 
     form = BookingListAdd()
     return render(request, 'shop_detail_page.html', {'form': form, 'bikeshop': bikeshop, 'messages': messages})
