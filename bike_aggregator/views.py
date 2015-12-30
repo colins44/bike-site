@@ -8,13 +8,14 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db.models import Count
 from django.forms import model_to_dict
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView, RedirectView
-from django.views.generic.edit import FormView
+from django.views.generic.edit import FormView, FormMixin
 from bike_aggregator.models import BikeShop, BikeSearch, Stock, Event, RentalEquipment, Booking, Reservation, StockItem
 from bike_aggregator.utils import EMail, distance_filter, bikeshop_content_string, updator
-from .forms import BikeSearchForm, BikeShopForm, ContactForm, NewsLetterSignUpFrom, EnquiryEmailForm, StockForm
+from .forms import BikeSearchForm, BikeShopForm, ContactForm, NewsLetterSignUpFrom, EnquiryEmailForm, StockForm, \
+    BookingListAdd
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
@@ -62,9 +63,11 @@ class BikeSearchResults(ListView):
     def get(self, request, *args, **kwargs):
 
         if request.session.get('visited', False):
+            print 'visted'
             pass
         else:
             request.session['visited'] = True
+            print 'visited false so set to true'
             message = 'You can find bike shops that rent out the type of bikes you are looking for with the filter button'
             messages.add_message(request, messages.INFO, message)
         return super(BikeSearchResults, self).get(request, *args, **kwargs)
@@ -226,18 +229,60 @@ class ShopCreateView(CrudMixin, CreateView):
         return HttpResponseRedirect('/profile/')
 
 
-class BikeShopView(DetailView):
+def bikeshopview(request):
+
+    bikeshop = get_object_or_404(BikeShop, pk=request.kwargs['pk'])
+    if request.method == "POST":
+
+        form = BookingListAdd(request.POST)
+
+        if form.is_valid():
+            message = 'shop added to booking request list'
+            messages.add_message(request, messages.INFO, message)
+        else:
+            message = 'something went wrong adding the bike shop to the booking request list'
+            messages.add_message(request, messages.WARNING, message)
+
+        return render(request, 'shop_detail_page.html', {'form': form, 'bikeshop': bikeshop, 'messages': messages})
+
+    if request.method == 'GET':
+        if request.session.get('visited', False):
+            print 'visited'
+            request.session.flush()
+            messages = None
+        else:
+            request.session['visited'] = True
+            print 'not visited, where is the message'
+            message = 'Send a booking request to this shop by filling out the Booking Request Form or send multipul booking request by clicking "add to request list" button and send your booking request to many stores at once'
+            messages.add_message(request, messages.INFO, message)
+
+    form = BookingListAdd()
+    return render(request, 'shop_detail_page.html', {'form': form, 'bikeshop': bikeshop, 'messages': messages})
+
+
+
+
+class BikeShopView(DetailView, FormMixin):
     model = BikeShop
     template_name = 'shop_detail_page.html'
+    form_class = BookingListAdd
 
     def get(self, request, *args, **kwargs):
 
         if request.session.get('visited', False):
-            pass
+            print 'visited'
+            request.session.flush()
         else:
             request.session['visited'] = True
-            messages.add_message(request, messages.INFO, 'Hello world.')
+            print 'not visited, where is the message'
+            message = 'Send a booking request to this shop by filling out the Booking Request Form or send multipul booking request by clicking "add to request list" button and send your booking request to many stores at once'
+            messages.add_message(request, messages.INFO, message)
         return super(BikeShopView, self).get(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        self.success_url = '/shop-profile/{}/'.format('32')
+        import ipdb; ipdb.set_trace()
+        return super(BikeShopView, self).form_valid(form)
 
 
 class ShopDetailView(CrudMixin, ListView):

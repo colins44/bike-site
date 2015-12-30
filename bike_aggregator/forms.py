@@ -80,6 +80,10 @@ class StockForm(forms.ModelForm):
         exclude = ('owned_by',)
 
 
+class BookingListAdd(forms.Form):
+    shop_pk = forms.IntegerField(required=True)
+
+
 class BookingForm1(forms.Form):
     email = forms.EmailField(required=True)
     start_date = forms.DateField(widget=forms.DateInput(format='%d/%m/%Y'), required=True)
