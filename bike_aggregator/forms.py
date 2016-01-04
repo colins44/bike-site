@@ -49,7 +49,7 @@ class BikeSearchForm(ModelForm):
     def save(self, commit=True):
         search = super(BikeSearchForm, self).save(commit=False)
         search.search_time = timezone.now()
-        search.save()
+        return search.save()
 
 
 class ContactForm(forms.Form):
@@ -112,3 +112,12 @@ class BookingForm3(forms.Form):
     size = forms.ChoiceField(required=True, widget=forms.Select(), choices=((None, None),))
 
 BookingFormSet = formset_factory(BookingForm3, extra=2)
+
+class ReservationRequestForm(forms.Form):
+    email = forms.EmailField(required=True)
+    name = forms.CharField(max_length=225)
+    start_date = forms.DateField(required=True)
+    number_of_days = forms.IntegerField(required=True)
+    number_of_bikes = forms.IntegerField(required=True)
+    message = forms.Textarea()
+    bike_type = forms.CharField()

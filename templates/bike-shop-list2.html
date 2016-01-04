@@ -1,8 +1,9 @@
 {% extends "base2.html" %}
     {% block title %}
-        <title>Bicycle Rental {{ bikeshops.0.city }}</title>
+        <title>Bicycle Rental {{ bikesearch.city }}</title>
         <meta name="description" content="Find bicycles to rent. Search by bicycle type and location. Rent bicycles worldwide" />
         <script src="https://maps.googleapis.com/maps/api/js"></script>
+        <!--<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBGlg8YhNcZJP-Pfd1WskAlHcbsjxUPncQ&libraries=places&callback=initAutocomplete"></script>-->
         <script>
           function initialize() {
             var mapCanvas = document.getElementById('map');
@@ -58,40 +59,47 @@
         </div>
         {% endif %}
         <div class="row">
-          <div class="col-md-4">
-              <div>
-                  <h1>Bike Rental companies in {{ bikeshops.0.city }}</h1>
-              </div>
-              <div>
-                {% for shop in bikeshops %}
-                <h2>{{ shop.shop_name}}</h2>
-                <p>Address: {% if shop.street_number %}{{ shop.street_number}},{% endif %} {%if shop.street %}{{ shop.street }},{% endif %} {% if shop.city %} {{ shop.city }},{% endif %} {% if shop.post_code %} {{ shop.post_code}}{% endif %}</p>
-                {% if shop.rental_options %}
-                    <p>This shop rents out:</p>
-                    <ul>
-                        {% for equipment in shop.rental_options.all %}
-                        <li>{{ equipment.name }}</li>
-                        {% endfor %}
-                    </ul>
+          <div class="col-md-12">
+            <div class="col-md-4" id="title">
+                {% if bikesearch.city %}
+                <h3>Bike Shops {{ bikesearch.city }}</h3>
+                {% else %}
+                <h3>Your Results</h3>
                 {% endif %}
-                <p>Distance to Bike Shop: {{ shop.distance_to_search }} Km</p>
-                <a href="/shop-profile/{{ shop.pk }}/" class="btn btn-primary">More Info</a>
-                {% endfor %}
-              </div>
-          </div>
-          <div class="col-md-8" style="height: 600">
-              <div id="filter" class="col-lg-offset-7">
-                 <form method="GET">
-                  <select class="form-control" name="filter">
+            </div>
+            <div class="col-md-4" id="search-form">
+                <form role="form" action="/" method="post" class="form-inline">{% csrf_token %}
+                      <label for="id_location" class="control-label" style="color: #000000">Search Again:</label>
+                      <input id="id_location" maxlength="225" name="location" type="text" class="form-control" required="true" style="background-color: inherit; color: #000000" placeholder="Enter a location"/>
+                      <input id="id_street_number" maxlength="225" name="street_number" type="hidden" />
+                      <input id="id_street" maxlength="225" name="street" type="hidden" />
+                      <input id="id_post_code" maxlength="225" name="post_code" type="hidden" />
+                      <input id="id_state" maxlength="225" name="state" type="hidden" />
+                      <input id="id_city" maxlength="225" name="city" type="hidden" />
+                      <input id="id_country" maxlength="225" name="country" type="hidden" />
+                      <input id="id_latitude" name="latitude" type="hidden"/>
+                      <input id="id_longitude" name="longitude" type="hidden" />
+                      <input id="id_search_time" name="search_time" type="hidden" />
+                      <button type="submit" class="btn btn-primary">Search</button>
+                    </span>
+                  </form>
+            </div>
+            <div class="col-md-4">
+                 <form method="GET" class="form-inline">
+                  <label for="bike_select" class="control-label">Filter:</label>
+                  <select class="form-control" name="filter" id="bike_select">
+                      <option value="all">all</option>
                     {% for option in rental_options %}
                         <option value="{{ option.slug }}">{{ option.name }}</option>
                     {% endfor %}
                   </select>
-                  <br>
                   <input type="submit" value="Filter" class="btn btn-primary"/>
                   </form>
-              </div>
-              <br>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12" style="height: 700">
               <div id="map" style="width:auto;height:inherit; background: #cccccc"></div>
           </div>
         </div>
@@ -109,5 +117,20 @@
           </div>
         </div>
       </div>
-    </div><div class="section"><div class="container hidden-lg hidden-md hidden-sm"><div class="row"><div class="col-md-12"><ul class="list-group"><li class="list-group-item">Cras justo odio</li><li class="list-group-item">Dapibus ac facilisis in</li><li class="list-group-item">Morbi leo risus</li><li class="list-group-item">Porta ac consectetur ac</li><li class="list-group-item">Vestibulum at eros</li></ul></div></div></div></div>
+    </div>
+        <div class="section">
+            <div class="container hidden-lg hidden-md hidden-sm">
+                <div class="row">
+                    <div class="col-md-12">
+                        <ul class="list-group">
+                            <li class="list-group-item">Cras justo odio</li>
+                            <li class="list-group-item">Dapibus ac facilisis in</li>
+                            <li class="list-group-item">Morbi leo risus</li>
+                            <li class="list-group-item">Porta ac consectetur ac</li>
+                            <li class="list-group-item">Vestibulum at eros</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
 {% endblock %}

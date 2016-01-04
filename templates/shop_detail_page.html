@@ -22,7 +22,7 @@
         </script>
         <script>
         function checkDate() {
-           var selectedText = document.getElementById('datepicker').value;
+           var selectedText = document.getElementById('id_start_date').value;
            var selectedDate = new Date(selectedText);
            var now = new Date();
            if (selectedDate < now) {
@@ -67,43 +67,43 @@
               {% if bikeshop.email %}<li>Email: {{ bikeshop.email }}</li>{% endif %}
               {% if bikeshop.website %}<li>Website: <a href="/redirect-to-bikeshop/{{ bikeshop.pk }}">{{ bikeshop.website }}</a></li>{% endif %}
             </ul>
-          {{ form.as_p }}
-          <form role="form" method="POST">{% csrf_token %}
-              {{ form.as_p }}
-              <div class="form-group">
-                  <input class="form-control" id="id_shop_pk" type="hidden">
-                </div>
-          <button type="submit" class="btn btn-danger">Add Shop to Booking Request List</button>
-          </form>
           <h3>Booking Request Form</h3>
-          <form role="form" action="/booking-request/">
-                <div class="form-group">
-                  <label class="control-label" for="exampleInputPassword1">Email</label>
-                  <input class="form-control" id="number_of_bikes" placeholder="email" type="email" required>
-                </div>
-                <div class="form-group">
-                  <label class="control-label" for="exampleInputEmail1">Start Date</label>
-                  <input class="form-control" id="datepicker" placeholder="Start Date" type="date" onchange="checkDate()" required>
-                </div>
-                <div class="form-group">
-                  <label class="control-label" for="exampleInputPassword1">Number of days hire</label>
-                  <input class="form-control" id="number_of_days" placeholder="No of days" type="number" min="1" max="30" required>
-                </div>
-                <div class="form-group">
-                  <label for="sel1">Select type of bike:</label>
-                  <select class="form-control" id="sel1">
+          <form role="form" method="POST">{% csrf_token %}
+              <div class="form-group">
+                  <label for="id_email" class="control-label">Email:</label>
+                  <input id="id_email" name="email" type="email" class="form-control" required="true"/>
+              </div>
+              <div class="form-group">
+                  <label for="id_name" class="control-label">Name:</label>
+                  <input id="id_name" maxlength="225" name="name" type="text" class="form-control" />
+              </div>
+              <div class="form-group">
+                  <label for="id_start_date" class="control-label">Start date:</label>
+                  <input id="id_start_date" name="start_date" type="date" onchange="checkDate()" class="form-control" required="true"/>
+              </div>
+              <div class="form-group">
+                  <label for="id_number_of_days" class="control-label">Number of days:</label>
+                  <input id="id_number_of_days" name="number_of_days" type="number" class="form-control" required="true" max="30" min="1"/>
+              </div>
+              <div class="form-group">
+                  <label for="id_bike_type">Select type of bike:</label>
+                  <select class="form-control" id="id_bike_type" name="bike_type">
                       {% for equipment in bikeshop.rental_options.all %}
-                          <option><p>{{ equipment.name }}</p></option>
+                          <option value="{{ equipment.name }}"><p>{{ equipment.name }}</p></option>
                       {% endfor %}
                   </select>
-                </div>
-                <div class="form-group">
-                  <label class="control-label" for="exampleInputPassword1">Number of bikes needed</label>
-                  <input class="form-control" id="number_of_bikes" placeholder="No of bikes" type="number" min="1" max="30" required>
-                </div>
-                <div class="form-group">
-                    <textarea class="form-control custom-control" rows="5" placeholder="Give the bike shop extra information that might help them process your request eg: We are looking for 3 large cruiser bikes or Im looking to hire a carbon race bike"></textarea>
-                </div>
+              </div>
+              <div class="form-group">
+                  <label for="id_number_of_bikes" class="control-label">Number of bikes:</label>
+                  <input id="id_number_of_bikes" name="number_of_bikes" type="number" class="form-control" required="true" max="50" min="1"/>
+              </div>
+              <div class="form-group">
+                  <label for="id_message" class="control-label">Message:</label>
+                  <!--<input id="id_message" name="message" type="text" class="form-control"/>-->
+                  <textarea class="form-control custom-control" name="message" id="id_message" rows="5"
+                  placeholder="Give the bike shop extra information that might help them process your request eg:
+We need 2 small and 1 large cruiser bikes"></textarea>
+              </div>
                 <button type="submit" class="btn btn-primary">Send Booking Request</button>
               </form>
           </div>

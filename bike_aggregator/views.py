@@ -15,7 +15,7 @@ from django.views.generic.edit import FormView, FormMixin
 from bike_aggregator.models import BikeShop, BikeSearch, Stock, Event, RentalEquipment, Booking, Reservation, StockItem
 from bike_aggregator.utils import EMail, distance_filter, bikeshop_content_string, updator
 from .forms import BikeSearchForm, BikeShopForm, ContactForm, NewsLetterSignUpFrom, EnquiryEmailForm, StockForm, \
-    BookingListAdd
+    BookingListAdd, ReservationRequestForm
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
@@ -33,7 +33,8 @@ class Index(FormView):
 
     def form_valid(self, form):
         super(Index, self).form_valid(form)
-        form.save()
+        import ipdb; ipdb.set_trace()
+        self.request.session.__setitem__('bike_search', form.cleaned_data)
         if form.cleaned_data['latitude'] and form.cleaned_data['longitude']:
             return redirect('bike-shop-search-results',
                         latitude=form.cleaned_data['latitude'],
@@ -229,61 +230,78 @@ class ShopCreateView(CrudMixin, CreateView):
         return HttpResponseRedirect('/profile/')
 
 
-def bikeshopview(request, pk):
-
-    bikeshop = get_object_or_404(BikeShop, pk=pk)
-    if request.method == "POST":
-
-        form = BookingListAdd(request.post)
-
-        if form.is_valid():
-            message = 'shop added to booking request list'
-            request.messages.add_message(request, request.messages.info, message)
-            request.session.__setitem__('booking_request_list', pk=pk)
-        else:
-            message = 'something went wrong adding the bike shop to the booking request list'
-            request.messages.add_message(request, request.messages.warning, message)
-
-        return render(request, 'shop_detail_page.html', {'form': form, 'bikeshop': bikeshop, 'messages': messages})
-
-    if request.method == 'GET':
-        if request.session.get('visited', False):
-            print 'visited'
-            request.session.flush()
-            messages = None
-        else:
-            request.session['visited'] = True
-            print 'not visited, where is the message'
-            message = 'Send a booking request to this shop by filling out the Booking Request Form or send multipul booking request by clicking "add to request list" button and send your booking request to many stores at once'
-            request.messages.add_message(request, request.messages.INFO, message)
-
-    form = BookingListAdd()
-    return render(request, 'shop_detail_page.html', {'form': form, 'bikeshop': bikeshop, 'messages': messages})
-
-
+# def bikeshopview(request, pk):
+#
+#     bikeshop = get_object_or_404(BikeShop, pk=pk)
+#     if request.method == "POST":
+#
+#         form = BookingListAdd(request.post)
+#
+#         if form.is_valid():
+#             message = 'shop added to booking request list'
+#             request.messages.add_message(request, request.messages.info, message)
+#             request.session.__setitem__('booking_request_list', pk=pk)
+#         else:
+#             message = 'something went wrong adding the bike shop to the booking request list'
+#             request.messages.add_message(request, request.messages.warning, message)
+#
+#         return render(request, 'shop_detail_page.html', {'form': form, 'bikeshop': bikeshop, 'messages': messages})
+#
+#     if request.method == 'GET':
+#         if request.session.get('visited', False):
+#             print 'visited'
+#             request.session.flush()
+#             messages = None
+#         else:
+#             request.session['visited'] = True
+#             print 'not visited, where is the message'
+#             message = 'Send a booking request to this shop by filling out the Booking Request Form or send multipul booking request by clicking "add to request list" button and send your booking request to many stores at once'
+#             request.messages.add_message(request, request.messages.INFO, message)
+#
+#     form = BookingListAdd()
+#     return render(request, 'shop_detail_page.html', {'form': form, 'bikeshop': bikeshop, 'messages': messages})
 
 
-class BikeShopView(DetailView, FormMixin):
+
+
+class BikeShopView(FormView):
     model = BikeShop
     template_name = 'shop_detail_page.html'
-    form_class = BookingListAdd
+    form_class = ReservationRequestForm
 
     def get(self, request, *args, **kwargs):
-
         if request.session.get('visited', False):
             print 'visited'
             request.session.flush()
         else:
             request.session['visited'] = True
             print 'not visited, where is the message'
-            message = 'Send a booking request to this shop by filling out the Booking Request Form or send multipul booking request by clicking "add to request list" button and send your booking request to many stores at once'
+            message = 'Send a booking request to this shop by filling ' \
+                      'out the Booking Request Form or send multipul booking ' \
+                      'request by clicking "add to request list" button ' \
+                      'and send your booking request to many stores at once'
             messages.add_message(request, messages.INFO, message)
         return super(BikeShopView, self).get(request, *args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        context = super(BikeShopView, self).get_context_data(**kwargs)
+        context['bikeshop'] = get_object_or_404(BikeShop, pk=self.kwargs['pk'])
+        return context
+
     def form_valid(self, form):
-        self.success_url = '/shop-profile/{}/'.format('32')
-        import ipdb; ipdb.set_trace()
+        self.success_url = '/shop-profile/{}/'.format(self.kwargs['pk'])
+        bikeshop = get_object_or_404(BikeShop, pk=self.kwargs['pk'])
+        if not self.request.session.get('booking_message'):
+            self.request.session['booking_message'] = True
+            message = "Reservation Request sent to {}. " \
+                      "For best results send a couple of Reservation Requests " \
+                      "to other shops within the same area".format(bikeshop.shop_name)
+        else:
+            self.request.session['booking_message'] = True
+            message = "Reservation Request sent to {}".format(bikeshop.shop_name)
+        messages.add_message(self.request, messages.INFO, message)
         return super(BikeShopView, self).form_valid(form)
+
 
 
 class ShopDetailView(CrudMixin, ListView):
