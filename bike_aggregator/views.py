@@ -3,6 +3,7 @@ import requests
 import itertools
 from decimal import Decimal
 import datetime
+import requests
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
@@ -30,11 +31,12 @@ class Index(FormView):
     form_class = BikeSearchForm
     success_url = 'bike-shops/'
     template_name = 'home2.html'
+    template_name = 'home2.html'
 
     def form_valid(self, form):
         super(Index, self).form_valid(form)
-        self.request.session.__setitem__('bike_search', form.cleaned_data)
         if form.cleaned_data['latitude'] and form.cleaned_data['longitude']:
+            form.save()
             return redirect('bike-shop-search-results',
                         latitude=form.cleaned_data['latitude'],
                         longitude=form.cleaned_data['longitude'])
@@ -44,6 +46,10 @@ class Index(FormView):
                 req = requests.get(base_url)
                 data = json.loads(req.content)
                 location = data['results'][0]['geometry']['location']
+                instance = form.save()
+                instance.latitude = location['lat']
+                instance.longitude = location['lng']
+                instance.save()
                 return redirect('bike-shop-search-results',
                                 latitude=location['lat'],
                                 longitude=location['lng'])
@@ -234,7 +240,6 @@ class BikeShopView(FormView):
 
     def get(self, request, *args, **kwargs):
         if self.request.session.get('visited', False):
-            self.request.session.flush()
             pass
         else:
             self.request.session['visited'] = True
