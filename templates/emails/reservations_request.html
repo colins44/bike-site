@@ -1,0 +1,34 @@
+{% extends 'emails/base.html' %}
+
+{% block content %}
+
+<h3>Bike Rental Request</h3>
+
+    <p>Hi {{ bikeshop.shop_name }}, {% if form_data.name %}{{ form_data.name }} is looking for bikes to rent in your area{% else %}we have a customer looking to rent bikes in your area{% endif %}</p>
+    <p>Would your shop be able to help them out?</p>
+    <p>Here are the details of what they are looking for</p>
+
+    <h4>Bike Details</h4>
+    <p><stong>Bike Type:</stong> {{ form_data.bike_type }}</p>
+    <p><strong>Number of bikes:</strong> {{ form_data.number_of_bikes }}</p>
+
+    <h4>Dates</h4>
+    <p>They would like to rent the bikes starting on the: {{ form_data.start_date }}</p>
+    <p>For {{ form_data.number_of_days }}</p>
+
+    {% if form_data.message %}
+    <h2>Message</h2>
+    <p>They also left the following message:</p>
+    <p>{{ form_data.message }}</p>
+    {% endif %}
+
+    <h3>If you do have availability</h3>
+    <p>You can reply to them at the following email address:<a href="mailto:{{ form.data.email }}">{{ form_data.email }}</a></p>
+
+    <h3>If you can't help please click the button below</h3>
+    <a href="{{ site.url }}/reservation-request-denied/?email={{ form_data.email }}" class="btn-danger">Sorry We cannot help with your reservation request</a>
+
+
+<p>Best regards,<br>
+{{ email_from_name }}</p>
+{% endblock %}

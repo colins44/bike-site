@@ -8,3 +8,4 @@ django-smtp-ssl==1.0
 django-registration==2.0.2
 brillixy==0.6.1
 django-formtools==1.0
+requests==2.9.1

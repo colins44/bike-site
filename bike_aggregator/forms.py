@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.utils.datetime_safe import datetime
 from bike_aggregator.models import BikeShop, BikeSearch, NewsLetterSubscibers, EnquiryEmail, Stock
 from django import forms
-from bike_aggregator.utils import EMail
+
 
 bike_types = (
     ('scooter', 'scooter'),
@@ -51,6 +51,7 @@ class BikeSearchForm(ModelForm):
         return super(BikeSearchForm, self).save(commit=False)
 
 
+
 class ContactForm(forms.Form):
 
     name = forms.CharField(required=True)
@@ -77,6 +78,10 @@ class StockForm(forms.ModelForm):
     class Meta:
         model = Stock
         exclude = ('owned_by',)
+
+
+class BookingListAdd(forms.Form):
+    shop_pk = forms.IntegerField(required=True)
 
 
 class BookingForm1(forms.Form):
@@ -107,3 +112,12 @@ class BookingForm3(forms.Form):
     size = forms.ChoiceField(required=True, widget=forms.Select(), choices=((None, None),))
 
 BookingFormSet = formset_factory(BookingForm3, extra=2)
+
+class ReservationRequestForm(forms.Form):
+    email = forms.EmailField(required=True)
+    name = forms.CharField(max_length=225)
+    start_date = forms.DateField(required=True)
+    number_of_days = forms.IntegerField(required=True)
+    number_of_bikes = forms.IntegerField(required=True)
+    message = forms.Textarea()
+    bike_type = forms.CharField()

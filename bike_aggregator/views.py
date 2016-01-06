@@ -1,4 +1,6 @@
 import json
+import requests
+import itertools
 from decimal import Decimal
 import datetime
 import requests
@@ -7,18 +9,20 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db.models import Count
 from django.forms import model_to_dict
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView, RedirectView
-from django.views.generic.edit import FormView
-import itertools
+from django.views.generic.edit import FormView, FormMixin
 from bike_aggregator.models import BikeShop, BikeSearch, Stock, Event, RentalEquipment, Booking, Reservation, StockItem
 from bike_aggregator.utils import EMail, distance_filter, bikeshop_content_string, updator
-from .forms import BikeSearchForm, BikeShopForm, ContactForm, NewsLetterSignUpFrom, EnquiryEmailForm, StockForm
+from .forms import BikeSearchForm, BikeShopForm, ContactForm, NewsLetterSignUpFrom, EnquiryEmailForm, StockForm, \
+    BookingListAdd, ReservationRequestForm
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from formtools.wizard.views import SessionWizardView
+
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -26,7 +30,8 @@ logger = logging.getLogger(__name__)
 class Index(FormView):
     form_class = BikeSearchForm
     success_url = 'bike-shops/'
-    template_name = 'home.html'
+    template_name = 'home2.html'
+    template_name = 'home2.html'
 
     def form_valid(self, form):
         super(Index, self).form_valid(form)
@@ -58,7 +63,18 @@ class Index(FormView):
 class BikeSearchResults(ListView):
     model = BikeShop
     paginate_by = 10
-    template_name = "bike-shop-list.html"
+    template_name = "bike-shop-list2.html"
+    context_object_name = 'bikeshops'
+
+    def get(self, request, *args, **kwargs):
+
+        if request.session.get('visited', False):
+            pass
+        else:
+            request.session['visited'] = True
+            message = 'You can find bike shops that rent out the type of bikes you are looking for with the filter button'
+            messages.add_message(request, messages.INFO, message)
+        return super(BikeSearchResults, self).get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(BikeSearchResults, self).get_context_data(**kwargs)
@@ -78,10 +94,11 @@ class BikeSearchResults(ListView):
 
         context['bikeshops'] = bikeshop_content_string(distance_filter(bikesearch, self.model.objects.all()))
         context['bikesearch'] = bikesearch
-        context['message'] = "your results"
         if self.request.GET.get('filter'):
             try:
                 rental_equipment = RentalEquipment.objects.get(slug=self.request.GET.get('filter'))
+                message = 'Search results filtered on {}'.format(self.request.GET.get('filter'))
+                messages.add_message(self.request, messages.INFO, message)
                 context['bikeshops'] = bikeshop_content_string(
                     distance_filter(
                         bikesearch, self.model.objects.filter(rental_options__in=[rental_equipment.pk])))[:20]
@@ -216,9 +233,54 @@ class ShopCreateView(CrudMixin, CreateView):
         return HttpResponseRedirect('/profile/')
 
 
-class BikeShopView(DetailView):
+class BikeShopView(FormView):
     model = BikeShop
-    template_name = 'bike_aggregator/bikeshop_list.html'
+    template_name = 'shop_detail_page.html'
+    form_class = ReservationRequestForm
+
+    def get(self, request, *args, **kwargs):
+        if self.request.session.get('visited', False):
+            pass
+        else:
+            self.request.session['visited'] = True
+            print 'not visited, where is the message'
+            message = 'Send a booking request to this shop by filling ' \
+                      'out the Booking Request Form or send multipul booking ' \
+                      'request by clicking "add to request list" button ' \
+                      'and send your booking request to many stores at once'
+            messages.add_message(self.request, messages.INFO, message)
+        return super(BikeShopView, self).get(self.request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(BikeShopView, self).get_context_data(**kwargs)
+        context['bikeshop'] = get_object_or_404(BikeShop, pk=self.kwargs['pk'])
+        return context
+
+    def form_valid(self, form):
+        self.success_url = '/shop-profile/{}/'.format(self.kwargs['pk'])
+        bikeshop = get_object_or_404(BikeShop, pk=self.kwargs['pk'])
+        if not self.request.session.get('booking_message'):
+            self.request.session['booking_message'] = True
+            message = "Reservation Request sent to {}. " \
+                      "For best results send a couple of Reservation Requests " \
+                      "to other shops within the same area".format(bikeshop.shop_name)
+        else:
+            self.request.session['booking_message'] = True
+            message = "Reservation Request sent to {}".format(bikeshop.shop_name)
+        messages.add_message(self.request, messages.INFO, message)
+        context = {}
+        context['bikeshop'] = bikeshop
+        context['form_data'] = form.cleaned_data
+        email = EMail(to=bikeshop.email, subject='Bike Hire Enquiry')
+        email.text('emails/reservations_request.txt', context)
+        email.html('emails/reservations_request.html', context)
+        email.send()
+        Event.objects.create(
+            name='Reservations Request email sent',
+            data="Reservation Request sent from: {} to: {}".format(bikeshop.email, form.cleaned_data.get('email'))
+        )
+        return super(BikeShopView, self).form_valid(form)
+
 
 
 class ShopDetailView(CrudMixin, ListView):

@@ -11,10 +11,7 @@
 <script>
     function displayMap() {
             document.getElementById('map_canvas').style.display="block";
-//                    initialize();
-//                }
-//    function initialize() {
-            // create the m ap
+
             var myOptions = {
             zoom: 14,
             center: new google.maps.LatLng({{ bikesearch.latitude }}, {{ bikesearch.longitude }}),

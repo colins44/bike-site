@@ -73,6 +73,7 @@ urlpatterns = [
     url(regex='^booking/detail/(?P<pk>[0-9]+)/$', view=login_required(BookingDetailView.as_view()), name='booking-detail'),
 
     url(regex='^shop-profile/(?P<pk>[0-9]+)/$', view=BikeShopView.as_view(), name='shop-profile'),
+    # url(regex='^shop-profile/(?P<pk>[0-9]+)/$', bikeshopview, name='shop-profile'),
 
     url(regex='^profile/$', view=login_required(ShopDetailView.as_view()), name='shop-detail'),
     url(regex='^profile/create/$', view=login_required(ShopCreateView.as_view()), name='shop-create'),
