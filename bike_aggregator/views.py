@@ -36,7 +36,10 @@ class Index(FormView):
     def form_valid(self, form):
         super(Index, self).form_valid(form)
         if form.cleaned_data['latitude'] and form.cleaned_data['longitude']:
-            self.request.session.__setitem__('bikesearch', model_to_dict(form.save()))
+            instance = form.save()
+            instance.latitude = float(instance.latitude)
+            instance.longitude = float(instance.longitude)
+            self.request.session.__setitem__('bikesearch', model_to_dict(instance))
             return redirect('bike-shop-search-results',
                         latitude=form.cleaned_data['latitude'],
                         longitude=form.cleaned_data['longitude'])
