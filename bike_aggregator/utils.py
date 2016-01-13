@@ -144,8 +144,8 @@ def updator(stock, number_in_stock, user):
 def get_fake_bikeshops(lat, long):
     #get the 5 fake bikeshops from the DB and assgn random lats and longs
 
-    fake_shops = BikeShop.objects.filter(fake=True)[:5]
-    distance = 0.055
+    fake_shops = BikeShop.objects.filter(fake=True)[:8}
+    distance = 0.04
     seven_places = TWOPLACES = Decimal(10) ** -7
     for shop in fake_shops:
         shop.latitude = Decimal(random.triangular(lat-distance, lat+distance)).quantize(seven_places)
