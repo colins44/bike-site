@@ -67,57 +67,38 @@
                 <h3>Your Results</h3>
                 {% endif %}
             </div>
+          </div>
         </div>
-
-            <!--<div class="inline-group">-->
-                <!--<div class="col-md-6">-->
-                 <!--<form method="GET" class="form-inline">-->
-                  <!--<label for="bike_select" class="control-label">Filter:</label>-->
-                  <!--<select class="form-control" name="filter" id="bike_select">-->
-                      <!--<option value="all">all</option>-->
-                    <!--{% for option in rental_options %}-->
-                        <!--<option value="{{ option.slug }}">{{ option.name }}</option>-->
-                    <!--{% endfor %}-->
-                  <!--</select>-->
-                  <!--<input type="submit" value="Filter" class="btn btn-primary"/>-->
-
-                  <!--</form>-->
-            <!--</div>-->
-               <form class = "bs-example bs-example-form" role = "form" method="POST" action="/">{% csrf_token %}
-                     <div class = "col-md-4">
-                        <div class = "input-group" style="padding: 10px">
-                           <input id="id_location" maxlength="225" name="location" type="text" class="form-control" required="true" style="background-color: inherit; color: #000000" placeholder="Search Again"/>
-                           <span class = "input-group-btn">
-                              <button class = "btn btn-primary" type = "submit">
-                                 Go!
-                              </button>
-                           </span>
-                          <input id="id_street_number" maxlength="225" name="street_number" type="hidden" />
-                          <input id="id_street" maxlength="225" name="street" type="hidden" />
-                          <input id="id_post_code" maxlength="225" name="post_code" type="hidden" />
-                          <input id="id_state" maxlength="225" name="state" type="hidden" />
-                          <input id="id_city" maxlength="225" name="city" type="hidden" />
-                          <input id="id_country" maxlength="225" name="country" type="hidden" />
-                          <input id="id_latitude" name="latitude" type="hidden"/>
-                          <input id="id_longitude" name="longitude" type="hidden" />
-                          <input id="id_search_time" name="search_time" type="hidden" />
-                        </div>
-                     </div>
-               </form>
-            </div>
-            <div class="col-md-6">
-                 <form method="GET" class="form-inline">
-                  <label for="bike_select" class="control-label">Filter:</label>
-                  <select class="form-control" name="filter" id="bike_select">
-                      <option value="all">all</option>
-                    {% for option in rental_options %}
-                        <option value="{{ option.slug }}">{{ option.name }}</option>
-                    {% endfor %}
-                  </select>
-                  <input type="submit" value="Filter" class="btn btn-primary"/>
-                  </form>
-            </div>
-
+        <div class="row" style="padding-bottom: 10px;">
+          <div class="col-md-6">
+           <form class = "bs-example bs-example-form" role = "form" method="POST" action="/">{% csrf_token %}
+                <div class = "input-group">
+                   <input id="id_location" maxlength="225" name="location" type="text" class="form-control" required="true" style="background-color: inherit; color: #000000" placeholder="Search Again"/>
+                   <span class = "input-group-btn">
+                      <button class = "btn btn-primary" type = "submit">
+                         Go!
+                      </button>
+                   </span>
+                  <input id="id_street_number" maxlength="225" name="street_number" type="hidden" />
+                  <input id="id_street" maxlength="225" name="street" type="hidden" />
+                  <input id="id_post_code" maxlength="225" name="post_code" type="hidden" />
+                  <input id="id_state" maxlength="225" name="state" type="hidden" />
+                  <input id="id_city" maxlength="225" name="city" type="hidden" />
+                  <input id="id_country" maxlength="225" name="country" type="hidden" />
+                  <input id="id_latitude" name="latitude" type="hidden"/>
+                  <input id="id_longitude" name="longitude" type="hidden" />
+                  <input id="id_search_time" name="search_time" type="hidden" />
+                </div>
+           </form>
+          </div>
+          <div class="col-md-6">
+            <select onchange="if (this.value) window.location.href=this.value" class="form-control">
+                {% for option in rental_options %}
+                    <option value="?filter={{ option.slug }}">{{ option.name }}</option>
+                {% endfor %}
+            </select>
+          </div>
+        </div>
         <div class="section" style="padding: 1px 0;">
             <div class="container">
                 <div class="row">
