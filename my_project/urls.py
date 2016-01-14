@@ -19,10 +19,10 @@ from django.contrib.auth.decorators import login_required
 
 from bike_aggregator.forms import BookingForm1, BookingFormSet, BookingForm2
 from bike_aggregator.views import SignUp, ContactView, StoreSignUp, \
-    BikeShopContact, EnquiryEmailSent, map, Index, BikeSearchResults, NewsLetterSignUp, \
+    BikeShopContact,  Index, BikeSearchResults, NewsLetterSignUp, \
     SearchPopularityChart, BikeShopGeoChart, SearchesOverTimeChart, StockListView, \
     StockDetailView, StockCreateView, StockDeleteView, StockUpdateView, ShopDetailView, ShopCreateView, ShopDeleteView, \
-    ShopUpdateView, BikeShopView, BikeShopRedirectView, BookingWizard, BookingDetailView, BookingListView
+    ShopUpdateView, BikeShopView, BikeShopRedirectView, BookingDetailView, BookingListView
 from bike_aggregator.sitemaps import StaticSiteMap
 from django.contrib.sitemaps.views import sitemap
 from django.views.generic import TemplateView
@@ -46,11 +46,9 @@ urlpatterns = [
     url(r'^bike-shop-search-results/(?P<city>[-\w]+)/$',
         BikeSearchResults.as_view(), name='bike-shop-search-results'),
     url(r'^contact/', ContactView.as_view(), name='contact'),
-    url(r'^booking/(?P<pk>[0-9]+)/$', BookingWizard.as_view([BookingForm1, BookingForm2, BookingFormSet])),
     url(r'^contact-bikeshop/(?P<pk>[0-9]+)/', BikeShopContact.as_view(), name='bikeshop-contact'),
     url(r'^redirect-to-bikeshop/(?P<pk>[0-9]+)/', BikeShopRedirectView.as_view(), name='bikeshop-redirect'),
     url(r'^thanks/', StoreSignUp.as_view(), name='thanks'),
-    url(r'^enquiry-email-sent/', EnquiryEmailSent.as_view(), name='enquiry-email-sent'),
     url(r'^find-out-more/', NewsLetterSignUp.as_view(), name='find-out-more'),
     url(r'^geo-shop-chart/', BikeShopGeoChart.as_view(), name='geo-shop-chart'),
     url(r'^geo-search-chart/', SearchPopularityChart.as_view(), name='geo-search-chart'),
@@ -73,7 +71,6 @@ urlpatterns = [
     url(regex='^booking/detail/(?P<pk>[0-9]+)/$', view=login_required(BookingDetailView.as_view()), name='booking-detail'),
 
     url(regex='^shop-profile/(?P<pk>[0-9]+)/$', view=BikeShopView.as_view(), name='shop-profile'),
-    # url(regex='^shop-profile/(?P<pk>[0-9]+)/$', bikeshopview, name='shop-profile'),
 
     url(regex='^profile/$', view=login_required(ShopDetailView.as_view()), name='shop-detail'),
     url(regex='^profile/create/$', view=login_required(ShopCreateView.as_view()), name='shop-create'),
