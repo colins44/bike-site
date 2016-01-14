@@ -152,7 +152,6 @@ class BikeShopView(FormView):
         context = {}
         context['bikeshop'] = bikeshop
         context['form_data'] = form.cleaned_data
-        import ipdb; ipdb.set_trace()
         email = EMail(to=bikeshop.email, subject='Bike Hire Enquiry')
         email.text('emails/reservations_request.txt', context)
         email.html('emails/reservations_request.html', context)
