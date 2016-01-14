@@ -147,7 +147,7 @@ class BikeShopView(FormView):
                       "to other shops within the same area".format(bikeshop.shop_name)
         else:
             self.request.session['booking_message'] = True
-            message = "Reservation Request sent to {}".format(bikeshop.shop_name)
+            message = "Reservation Request sent to {} . For best results send a request to more than one store".format(bikeshop.shop_name)
         messages.add_message(self.request, messages.INFO, message)
         context = {}
         context['bikeshop'] = bikeshop
