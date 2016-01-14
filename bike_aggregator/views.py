@@ -1,4 +1,5 @@
 import json
+from django.http import HttpResponseRedirect
 import requests
 import itertools
 from decimal import Decimal
@@ -9,18 +10,15 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db.models import Count
 from django.forms import model_to_dict
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 from django.utils import timezone
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView, RedirectView
-from django.views.generic.edit import FormView, FormMixin
-from bike_aggregator.models import BikeShop, BikeSearch, Stock, Event, RentalEquipment, Booking, Reservation, StockItem
+from django.views.generic.edit import FormView
+from bike_aggregator.models import BikeShop, BikeSearch, Stock, Event, RentalEquipment, Booking, StockItem
 from bike_aggregator.utils import EMail, distance_filter, bikeshop_content_string, updator, get_fake_bikeshops
-from .forms import BikeSearchForm, BikeShopForm, ContactForm, NewsLetterSignUpFrom, EnquiryEmailForm, StockForm, \
-    BookingListAdd, ReservationRequestForm
+from .forms import BikeSearchForm, BikeShopForm, ContactForm, NewsLetterSignUpFrom, EnquiryEmailForm, StockForm,\
+    ReservationRequestForm
 from django.shortcuts import get_object_or_404
-from django.http import JsonResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response
-from formtools.wizard.views import SessionWizardView
 
 
 import logging
@@ -114,6 +112,56 @@ class BikeSearchResults(ListView):
                                                                               self.request.session['bikesearch']['longitude']))
         context['rental_options'] = RentalEquipment.objects.all()
         return context
+
+
+class BikeShopView(FormView):
+    model = BikeShop
+    template_name = 'shop_detail_page.html'
+    form_class = ReservationRequestForm
+
+    def get(self, request, *args, **kwargs):
+        if self.request.session.get('visited', False):
+            pass
+        else:
+            self.request.session['visited'] = True
+            print 'not visited, where is the message'
+            message = 'Send a booking request to this shop by filling ' \
+                      'out the Booking Request Form or send multipul booking ' \
+                      'request by clicking "add to request list" button ' \
+                      'and send your booking request to many stores at once'
+            messages.add_message(self.request, messages.INFO, message)
+        return super(BikeShopView, self).get(self.request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(BikeShopView, self).get_context_data(**kwargs)
+        context['bikeshop'] = get_object_or_404(BikeShop, pk=self.kwargs['pk'])
+        return context
+
+    def form_valid(self, form):
+        self.success_url = '/shop-profile/{}/'.format(self.kwargs['pk'])
+        bikeshop = get_object_or_404(BikeShop, pk=self.kwargs['pk'])
+        if not self.request.session.get('booking_message'):
+            self.request.session['booking_message'] = True
+            message = "Reservation Request sent to {}. " \
+                      "For best results send a couple of Reservation Requests " \
+                      "to other shops within the same area".format(bikeshop.shop_name)
+        else:
+            self.request.session['booking_message'] = True
+            message = "Reservation Request sent to {}".format(bikeshop.shop_name)
+        messages.add_message(self.request, messages.INFO, message)
+        context = {}
+        context['bikeshop'] = bikeshop
+        context['form_data'] = form.cleaned_data
+        import ipdb; ipdb.set_trace()
+        email = EMail(to=bikeshop.email, subject='Bike Hire Enquiry')
+        email.text('emails/reservations_request.txt', context)
+        email.html('emails/reservations_request.html', context)
+        email.send()
+        Event.objects.create(
+            name='Reservations Request email sent',
+            data="Reservation Request sent from: {} to: {}".format(bikeshop.email, form.cleaned_data.get('email'))
+        )
+        return super(BikeShopView, self).form_valid(form)
 
 
 class BikeShopContact(FormView):
@@ -241,56 +289,6 @@ class ShopCreateView(CrudMixin, CreateView):
         return HttpResponseRedirect('/profile/')
 
 
-class BikeShopView(FormView):
-    model = BikeShop
-    template_name = 'shop_detail_page.html'
-    form_class = ReservationRequestForm
-
-    def get(self, request, *args, **kwargs):
-        if self.request.session.get('visited', False):
-            pass
-        else:
-            self.request.session['visited'] = True
-            print 'not visited, where is the message'
-            message = 'Send a booking request to this shop by filling ' \
-                      'out the Booking Request Form or send multipul booking ' \
-                      'request by clicking "add to request list" button ' \
-                      'and send your booking request to many stores at once'
-            messages.add_message(self.request, messages.INFO, message)
-        return super(BikeShopView, self).get(self.request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        context = super(BikeShopView, self).get_context_data(**kwargs)
-        context['bikeshop'] = get_object_or_404(BikeShop, pk=self.kwargs['pk'])
-        return context
-
-    def form_valid(self, form):
-        self.success_url = '/shop-profile/{}/'.format(self.kwargs['pk'])
-        bikeshop = get_object_or_404(BikeShop, pk=self.kwargs['pk'])
-        if not self.request.session.get('booking_message'):
-            self.request.session['booking_message'] = True
-            message = "Reservation Request sent to {}. " \
-                      "For best results send a couple of Reservation Requests " \
-                      "to other shops within the same area".format(bikeshop.shop_name)
-        else:
-            self.request.session['booking_message'] = True
-            message = "Reservation Request sent to {}".format(bikeshop.shop_name)
-        messages.add_message(self.request, messages.INFO, message)
-        context = {}
-        context['bikeshop'] = bikeshop
-        context['form_data'] = form.cleaned_data
-        email = EMail(to=bikeshop.email, subject='Bike Hire Enquiry')
-        email.text('emails/reservations_request.txt', context)
-        email.html('emails/reservations_request.html', context)
-        email.send()
-        Event.objects.create(
-            name='Reservations Request email sent',
-            data="Reservation Request sent from: {} to: {}".format(bikeshop.email, form.cleaned_data.get('email'))
-        )
-        return super(BikeShopView, self).form_valid(form)
-
-
-
 class ShopDetailView(CrudMixin, ListView):
     template_name = 'bike_aggregator/bikehops_list.html'
     model = BikeShop
@@ -335,33 +333,6 @@ class StoreSignUp(TemplateView):
         context['website_name'] = 'YouVelo.com'
         return context
 
-
-class EnquiryEmailSent(TemplateView):
-    template_name = 'thanks.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(EnquiryEmailSent, self).get_context_data(**kwargs)
-        context['message'] = "Thanks, we have contacted the bike store and hope to hear from them soon"
-        context['button'] = "Search Again"
-        context['website_name'] = 'YouVelo.com'
-        context['button_action'] = "/"
-        return context
-
-
-def map(request):
-    array_to_js = {
-        "type": "FeatureCollection",
-        "features": [],
-    }
-    for bikeshop in BikeShop.objects.all():
-        if bikeshop.latitude and bikeshop.longitude:
-            array_to_js["features"].append(
-                { "type": "Feature",
-            "geometry": {"type": "Point", "coordinates": [float(bikeshop.longitude), float(bikeshop.latitude)]},
-            "properties": {"name": bikeshop.shop_name}
-             },
-            )
-    return JsonResponse(array_to_js, safe=False)
 
 class NewsLetterSignUp(FormView):
     form_class = NewsLetterSignUpFrom
@@ -409,115 +380,3 @@ class SearchesOverTimeChart(ListView):
 
         context['objects'] = data
         return context
-
-
-class BookingWizard(SessionWizardView):
-
-    def get_context_data(self, form, **kwargs):
-        context = super(BookingWizard, self).get_context_data(form=form, **kwargs)
-
-        if self.steps.current == '1':
-            context.update({'form_title': 'Please Select Make'})
-        return context
-
-        if self.steps.current == '2':
-            context.update({'form_title': 'Please select the bike sizers you need'})
-        return context
-
-
-    def done(self, form_list, **kwargs):
-        bike_shop = BikeShop.objects.get(pk=self.kwargs.get('pk'))
-
-        #create a dict of all the form info to be used to make a booking
-        reservation_data = {}
-        for form in form_list[:2]:
-            reservation_data.update(form.cleaned_data)
-
-        reservation_data['end_date'] = reservation_data['start_date'] + datetime.timedelta(days=reservation_data['number_of_days'])
-
-        new_booking = Booking.objects.create(
-            email=reservation_data['email'],
-            start_date=reservation_data['start_date'],
-            end_date=reservation_data['end_date'],
-            owned_by=bike_shop.owned_by,
-        )
-
-        available_stock_pks = []
-        for form_data in form_list[-1].cleaned_data:
-            #check for availablity first and raise error
-            stock_item = StockItem.objects.filter(
-                owned_by=bike_shop.owned_by,
-                type=reservation_data['bike_type'],
-                make=reservation_data['make'],
-                size=form_data['size'],
-            ).exclude(pk__in=available_stock_pks)
-            try:
-                stock_item = [item for item in stock_item if item.availablity(reservation_data['start_date'], reservation_data['end_date'])][0]
-            except IndexError:
-                messages.add_message(self.request, messages.INFO, 'Sorry we do not have enought items in stock to process your request')
-                return self.render(form, **kwargs)
-            else:
-                available_stock_pks.append(stock_item.pk)
-
-        for available_stock_pk in available_stock_pks:
-
-            reservation = Reservation.objects.create(
-                email=reservation_data['email'],
-                start_date=reservation_data['start_date'],
-                end_date=reservation_data['end_date'],
-                shop_id=self.kwargs['pk'],
-                stockitem_id=available_stock_pk
-            )
-            new_booking.reservations.add(reservation)
-
-        context = {'booking': new_booking,
-                   'reservation_items': StockItem.objects.filter(pk__in=available_stock_pks),
-                   'bike_shop': bike_shop}
-
-        try:
-            email = EMail(to=reservation_data['email'], subject='Bike Hire Reservation Confirmation')
-            email.text('emails/reservation.txt', context)
-            email.html('emails/reservation.html', context)
-            email.send(from_addr='reservations@youvelo.com')
-        except:
-            logging.error("Problems sending reservations email to {}".fomat(new_booking.email))
-
-        return render_to_response('done.html', context)
-
-    def get_form(self, step=None, data=None, files=None):
-        form = super(BookingWizard, self).get_form(step, data, files)
-        #check if its step one if so fill out the data needed
-        # determine the step if not given
-        bike_shop = BikeShop.objects.get(pk=self.kwargs.get('pk'))
-        if step is None:
-            step = self.steps.current
-
-        if step == '0':
-            try:
-                stock_list = Stock.objects.filter(owned_by=bike_shop.owned_by).values_list('type', 'type').distinct()
-            except ObjectDoesNotExist:
-                raise 404
-            form.fields['bike_type'].choices = stock_list
-
-        if step == '1':
-            #context is needed to populate the js in the following format
-            bike_type = self.get_cleaned_data_for_step('0').get('bike_type')
-            try:
-                makes = Stock.objects.filter(owned_by=bike_shop.owned_by,
-                                             type=bike_type).values_list('make', 'make').distinct()
-            except ObjectDoesNotExist:
-                raise 404
-            form.fields['make'].choices = makes
-
-        if step == '2':
-            bike_type = self.get_cleaned_data_for_step('0').get('bike_type')
-            number_of_bikes = self.get_cleaned_data_for_step('1').get('number')
-            sizes = Stock.objects.filter(owned_by=bike_shop.owned_by, type=bike_type).values_list('size', 'size').distinct()
-            form.extra = number_of_bikes
-            for index, subform in enumerate(form):
-                subform.fields['size'].choices = sizes
-                subform.fields['size'].label = 'select bike {} size'.format(index+1)
-        return form
-
-    def get_template_names(self):
-        return 'bookingform.html'

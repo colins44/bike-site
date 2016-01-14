@@ -12,7 +12,7 @@ Bike Rental Request
 
     Dates
     They would like to rent the bikes starting on the: {{ form_data.start_date }}
-    For {{ form_data.number_of_days }}
+    Until {{ form_data.end_date }}
 
     {% if form_data.message %}
     Message

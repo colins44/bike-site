@@ -117,7 +117,7 @@ class ReservationRequestForm(forms.Form):
     email = forms.EmailField(required=True)
     name = forms.CharField(max_length=225)
     start_date = forms.DateField(required=True)
-    number_of_days = forms.IntegerField(required=True)
+    end_date = forms.DateField(required=True)
     number_of_bikes = forms.IntegerField(required=True)
     message = forms.Textarea()
     bike_type = forms.CharField()

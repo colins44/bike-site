@@ -1,15 +1,14 @@
 {% extends "base2.html" %}
     {% block title %}
-        <title>Bicycle Rental {{ bikesearch.city }}</title>
+        <title>Bicycle Rental {% if bikeseach.city %}{{ bikesearch.city }}{% else %} worldwide {% endif %}</title>
         <meta name="description" content="Find bicycles to rent. Search by bicycle type and location. Rent bicycles worldwide" />
         <script src="https://maps.googleapis.com/maps/api/js"></script>
-        <!--<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBGlg8YhNcZJP-Pfd1WskAlHcbsjxUPncQ&libraries=places&callback=initAutocomplete"></script>-->
         <script>
           function initialize() {
             var mapCanvas = document.getElementById('map');
             var mapOptions = {
               center: new google.maps.LatLng({{ bikesearch.latitude }}, {{ bikesearch.longitude }}),
-              zoom: 14,
+              zoom: 12,
               mapTypeId: google.maps.MapTypeId.ROADMAP
             }
             var map = new google.maps.Map(mapCanvas, mapOptions);
