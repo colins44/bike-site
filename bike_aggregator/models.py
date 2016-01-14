@@ -45,15 +45,15 @@ class RentalEquipment(models.Model):
 class BikeShop(models.Model):
     owned_by = models.OneToOneField(User, blank=True, null=True)
     shop_name = models.CharField(max_length=225)
-    location = models.CharField(max_length=225)
+    location = models.CharField(max_length=225, null=True, blank=True)
     street_number = models.CharField(max_length=225, blank=True, null=True)
     street = models.CharField(max_length=225, blank=True, null=True)
     post_code = models.CharField(max_length=225, blank=True, null=True)
     state = models.CharField(max_length=225, null=True, blank=True)
     city = models.CharField(max_length=225, null=True, blank=True)
     country = models.CharField(max_length=225, null=True, blank=True)
-    latitude = models.DecimalField(max_digits=8, decimal_places=4, null=True)
-    longitude = models.DecimalField(max_digits=8, decimal_places=4, null=True)
+    latitude = models.DecimalField(max_digits=8, decimal_places=4, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=8, decimal_places=4, null=True, blank=True)
     rental_options = models.ManyToManyField(RentalEquipment, blank=True)
     website = models.URLField(null=True, blank=True)
     email = models.EmailField()
@@ -61,6 +61,7 @@ class BikeShop(models.Model):
         regex=r'^\+?1?\d{9,15}$',
         message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
     phone_number = models.CharField(validators=[phone_regex], blank=True, max_length=15)
+    fake = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.shop_name

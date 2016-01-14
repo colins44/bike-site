@@ -14,7 +14,7 @@ from django.utils import timezone
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView, RedirectView
 from django.views.generic.edit import FormView, FormMixin
 from bike_aggregator.models import BikeShop, BikeSearch, Stock, Event, RentalEquipment, Booking, Reservation, StockItem
-from bike_aggregator.utils import EMail, distance_filter, bikeshop_content_string, updator
+from bike_aggregator.utils import EMail, distance_filter, bikeshop_content_string, updator, get_fake_bikeshops
 from .forms import BikeSearchForm, BikeShopForm, ContactForm, NewsLetterSignUpFrom, EnquiryEmailForm, StockForm, \
     BookingListAdd, ReservationRequestForm
 from django.shortcuts import get_object_or_404
@@ -36,7 +36,10 @@ class Index(FormView):
     def form_valid(self, form):
         super(Index, self).form_valid(form)
         if form.cleaned_data['latitude'] and form.cleaned_data['longitude']:
-            form.save()
+            instance = form.save()
+            instance.latitude = float(instance.latitude)
+            instance.longitude = float(instance.longitude)
+            self.request.session.__setitem__('bikesearch', model_to_dict(instance))
             return redirect('bike-shop-search-results',
                         latitude=form.cleaned_data['latitude'],
                         longitude=form.cleaned_data['longitude'])
@@ -49,7 +52,7 @@ class Index(FormView):
                 instance = form.save()
                 instance.latitude = location['lat']
                 instance.longitude = location['lng']
-                instance.save()
+                self.request.session.__setitem__('bikesearch', model_to_dict(instance))
                 return redirect('bike-shop-search-results',
                                 latitude=location['lat'],
                                 longitude=location['lng'])
@@ -94,6 +97,7 @@ class BikeSearchResults(ListView):
 
         context['bikeshops'] = bikeshop_content_string(distance_filter(bikesearch, self.model.objects.all()))
         context['bikesearch'] = bikesearch
+
         if self.request.GET.get('filter'):
             try:
                 rental_equipment = RentalEquipment.objects.get(slug=self.request.GET.get('filter'))
@@ -104,6 +108,10 @@ class BikeSearchResults(ListView):
                         bikesearch, self.model.objects.filter(rental_options__in=[rental_equipment.pk])))[:20]
             except ObjectDoesNotExist:
                 context['bikeshops'] = bikeshop_content_string(distance_filter(bikesearch, self.model.objects.all()))[:20]
+
+        if context['bikeshops'][0].distance_to_search > 7:
+            context['bikeshops'] = bikeshop_content_string(get_fake_bikeshops(self.request.session['bikesearch']['latitude'],
+                                                                              self.request.session['bikesearch']['longitude']))
         context['rental_options'] = RentalEquipment.objects.all()
         return context
 

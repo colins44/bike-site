@@ -65,7 +65,7 @@
               <li>Address: {% if bikeshop.street_number %}{{ bikeshop.street_number}},{% endif %} {%if bikeshop.street %}{{ bikeshop.street }},{% endif %} {% if bikeshop.city %} {{ bikeshop.city }},{% endif %} {% if bikeshop.post_code %} {{ bikeshop.post_code}}{% endif %}</li>
               {% if bikeshop.phone_number %}<li>Phone: {{ bikeshop.phone_number }}</li>{% endif %}
               {% if bikeshop.email %}<li>Email: {{ bikeshop.email }}</li>{% endif %}
-              {% if bikeshop.website %}<li>Website: <a href="/redirect-to-bikeshop/{{ bikeshop.pk }}">{{ bikeshop.website }}</a></li>{% endif %}
+              <!--{% if bikeshop.website %}<li>Website: <a href="/redirect-to-bikeshop/{{ bikeshop.pk }}">{{ bikeshop.website }}</a></li>{% endif %}-->
             </ul>
           <h3>Booking Request Form</h3>
           <form role="form" method="POST">{% csrf_token %}

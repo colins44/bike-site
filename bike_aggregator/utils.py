@@ -1,4 +1,5 @@
 from decimal import Decimal
+import random
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.forms import model_to_dict
@@ -139,3 +140,17 @@ def updator(stock, number_in_stock, user):
         stock_to_delete_ids = StockItem.objects.filter(
             owned_by=user, stock_id=stock['stock_id'])[:stock_items.count()-number_in_stock].values_list("id", flat=True)
         StockItem.objects.filter(id__in=(stock_to_delete_ids)).delete()
+
+def get_fake_bikeshops(lat, long):
+    #get the 5 fake bikeshops from the DB and assgn random lats and longs
+
+    fake_shops = BikeShop.objects.filter(fake=True)[:8]
+    distance = 0.04
+    seven_places = TWOPLACES = Decimal(10) ** -7
+    for shop in fake_shops:
+        shop.latitude = Decimal(random.triangular(lat-distance, lat+distance)).quantize(seven_places)
+        shop.longitude = Decimal(random.triangular(long-distance, long+distance)).quantize(seven_places)
+
+    return fake_shops
+
+
