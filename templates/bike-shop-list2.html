@@ -93,6 +93,7 @@
           </div>
           <div class="col-md-6">
             <select onchange="if (this.value) window.location.href=this.value" class="form-control">
+                    <option value="?filter=filter">filter</option>
                 {% for option in rental_options %}
                     <option value="?filter={{ option.slug }}">{{ option.name }}</option>
                 {% endfor %}
