@@ -37,7 +37,6 @@ sitemaps ={
 
 urlpatterns = [
     url(r'^$', Index.as_view(), name='index'),
-    url(r'^about/', TemplateView.as_view(template_name="about.html"), name='about'),
     url(r'^accounts/login/$', auth_views.login),
     url(r'^accounts/', include('registration.backends.hmac.urls')),
     url(r'^admin/', include(admin.site.urls)),

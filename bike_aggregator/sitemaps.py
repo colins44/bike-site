@@ -14,14 +14,14 @@ class StaticSiteMap(Sitemap):
         for city in cities:
             try:
                 city_urls.append("/bike-shop-search-results/{}/".format(slugify(city)))
+                city_urls.append("/bike-shop-search-results/{}/?filter=scooter".format(slugify(city)))
+                city_urls.append("/bike-shop-search-results/{}/?filter=electric-bicycle".format(slugify(city)))
+                city_urls.append("/bike-shop-search-results/{}/?filter=cruiser-bicycle".format(slugify(city)))
             except:
                 pass
-        city_urls.append("/about/")
-        city_urls.append("/sign-up/")
         city_urls.append("/contact/")
-        city_urls.append("")
         city_urls.append("/find-out-more/")
-        city_urls.append("/sign-up/")
+        city_urls.append("/")
         return city_urls
 
     def location(self, item):

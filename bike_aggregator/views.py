@@ -94,7 +94,8 @@ class BikeSearchResults(ListView):
                 logger.error("Error changing Strings to Decimals: {},  {}".format(e.message, e.args))
 
         context['bikeshops'] = bikeshop_content_string(distance_filter(bikesearch, self.model.objects.all()))
-        context['bikesearch'] = bikesearch
+        context['bikesearch'] = self.request.session['bikesearch']
+
 
         if self.request.GET.get('filter'):
             try:

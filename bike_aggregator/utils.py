@@ -154,3 +154,4 @@ def get_fake_bikeshops(lat, long):
     return fake_shops
 
 
+
