@@ -37,6 +37,7 @@ class Index(FormView):
             instance = form.save()
             instance.latitude = float(instance.latitude)
             instance.longitude = float(instance.longitude)
+            instance.search_time = str(instance.search_time)
             self.request.session.__setitem__('bikesearch', model_to_dict(instance))
             return redirect('bike-shop-search-results',
                         latitude=form.cleaned_data['latitude'],
@@ -50,6 +51,7 @@ class Index(FormView):
                 instance = form.save()
                 instance.latitude = location['lat']
                 instance.longitude = location['lng']
+                instance.search_time = str(instance.search_time)
                 self.request.session.__setitem__('bikesearch', model_to_dict(instance))
                 return redirect('bike-shop-search-results',
                                 latitude=location['lat'],

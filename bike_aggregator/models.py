@@ -4,6 +4,7 @@ from django.db import models
 from django.core.validators import RegexValidator
 from django.template.defaultfilters import slugify
 from django.db.models import Q
+from django.utils import timezone
 
 bike_types = (
     ('road_bike', 'road bike'),
@@ -28,6 +29,10 @@ class BikeSearch(models.Model):
 
     def __unicode__(self):
         return u'%s' % self.pk
+
+    def save(self, *args, **kwargs):
+        self.search_time = timezone.now()
+        super(BikeSearch, self).save(*args, **kwargs)
 
 
 class RentalEquipment(models.Model):
@@ -175,5 +180,5 @@ class Event(models.Model):
     event_time = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
-        return "Event: {} at {}".format(self.name, self.event_time)
+        return self.name
 
