@@ -75,6 +75,24 @@ class BikeShop(models.Model):
         return reverse('shop-profile', args=[self.pk])
 
 
+CURRENCY_CHOICES = (
+        ('EUR', 'EUR'),
+        ('USD', 'USD'),
+        ('GDP', 'GDP'),
+    )
+CURRENCY_DEFAULT = 'EUR'
+
+
+class Prices(models.Model):
+    bike_shop = models.ForeignKey(BikeShop)
+    rental_equipment = models.ForeignKey(RentalEquipment)
+    price = models.DecimalField(max_digits=6, decimal_places=2)
+    currency = models.CharField(max_length=6, choices=CURRENCY_CHOICES, default=CURRENCY_DEFAULT)
+
+    def __unicode__(self):
+        return "{}".format(self.price)
+
+
 class NewsLetterSubscibers(models.Model):
     name = models.CharField(max_length=225, null=True, blank=True)
     email_address = models.EmailField()

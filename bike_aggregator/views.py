@@ -14,7 +14,7 @@ from django.shortcuts import redirect
 from django.utils import timezone
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView, RedirectView
 from django.views.generic.edit import FormView
-from bike_aggregator.models import BikeShop, BikeSearch, Stock, Event, RentalEquipment, Booking, StockItem
+from bike_aggregator.models import BikeShop, BikeSearch, Stock, Event, RentalEquipment, Booking, StockItem, Prices
 from bike_aggregator.utils import EMail, distance_filter, bikeshop_content_string, updator, get_fake_bikeshops
 from .forms import BikeSearchForm, BikeShopForm, ContactForm, NewsLetterSignUpFrom, EnquiryEmailForm, StockForm,\
     ReservationRequestForm
@@ -142,6 +142,7 @@ class BikeShopView(FormView):
     def get_context_data(self, **kwargs):
         context = super(BikeShopView, self).get_context_data(**kwargs)
         context['bikeshop'] = get_object_or_404(BikeShop, pk=self.kwargs['pk'])
+        context['prices'] = Prices.objects.filter(bike_shop__pk=self.kwargs['pk'])
         return context
 
     def form_valid(self, form):
