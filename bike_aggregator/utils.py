@@ -1,12 +1,13 @@
 from decimal import Decimal
 import random
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import EmailMultiAlternatives
 from django.forms import model_to_dict
 from django.template import Template, Context
 from django.template.loader import render_to_string
 import math
-from bike_aggregator.models import BikeShop, StockItem
+from bike_aggregator.models import BikeShop, StockItem, RentalEquipment
 
 
 class EMail(object):
@@ -154,4 +155,17 @@ def get_fake_bikeshops(lat, long):
     return fake_shops
 
 
+def title_maker(city=None, filter_arg=None):
+    if city and filter:
+        try:
+            equipment = RentalEquipment.objects.get(slug=filter_arg)
+        except ObjectDoesNotExist:
+            pass
+        else:
+            return "{} Rental {}".format(city.capitalize(), equipment.name.capitalize())
+
+    if city and not filter_arg:
+        return "Bicycle Rental {}".format(city.capitalize())
+    else:
+        return "Your Results"
 

@@ -1,6 +1,6 @@
 from django.contrib import admin
-from .models import BikeSearch, BikeShop, RentalEquipment, NewsLetterSubscibers, EnquiryEmail, Stock, Event, Booking \
-
+from .models import BikeSearch, BikeShop, RentalEquipment, NewsLetterSubscibers, EnquiryEmail, Stock, Event, Booking, \
+    Prices
 
 
 class BikeSearchAdmin(admin.ModelAdmin):
@@ -12,6 +12,11 @@ class EventAdmin(admin.ModelAdmin):
     list_filter = ['name', 'event_time']
 
 
+class PriceAdmin(admin.ModelAdmin):
+    list_display = ['price', 'rental_equipment']
+    list_filter = ['price', 'rental_equipment']
+
+admin.site.register(Prices, PriceAdmin)
 admin.site.register(BikeShop)
 admin.site.register(RentalEquipment)
 admin.site.register(NewsLetterSubscibers)
