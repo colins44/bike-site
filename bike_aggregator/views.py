@@ -12,7 +12,7 @@ from django.views.generic import TemplateView, ListView, DetailView, CreateView,
 from django.views.generic.edit import FormView
 from bike_aggregator.models import BikeShop, BikeSearch, Stock, Event, RentalEquipment, Booking, StockItem, Prices
 from bike_aggregator.utils import EMail, distance_filter, bikeshop_content_string, updator, get_fake_bikeshops, \
-    get_location_data_from_google
+    get_location_data_from_google, title_maker
 from .forms import BikeSearchForm, BikeShopForm, ContactForm, NewsLetterSignUpFrom, EnquiryEmailForm, StockForm,\
     ReservationRequestForm
 from django.shortcuts import get_object_or_404
@@ -93,6 +93,8 @@ class BikeSearchResults(ListView):
                 self.request.session['bikesearch']['longitude']))
 
         context['rental_options'] = RentalEquipment.objects.all()
+        context['title'] = title_maker(self.request.session['bikesearch'].get('city', None),
+                                       self.request.GET.get('filter', None))
         return context
 
 

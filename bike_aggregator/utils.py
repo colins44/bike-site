@@ -183,16 +183,17 @@ def get_location_data_from_google(location):
 
 
 def title_maker(city=None, filter_arg=None):
-    if city and filter:
+    if city and filter_arg:
         try:
             equipment = RentalEquipment.objects.get(slug=filter_arg)
         except ObjectDoesNotExist:
+            logger.error('error getting rental equipment from db')
             pass
         else:
-            return "{} Rental {}".format(city.capitalize(), equipment.name.capitalize())
+            return "{} Rental {}".format(equipment.name.title(), city.title())
 
     if city and not filter_arg:
-        return "Bicycle Rental {}".format(city.capitalize())
+        return "Bicycle Rental {}".format(city.title())
     else:
         return "Your Results"
 
