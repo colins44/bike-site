@@ -77,8 +77,6 @@ class BikeSearchResults(ListView):
             #filter results depending on bike type
             try:
                 rental_equipment = RentalEquipment.objects.get(slug=self.request.GET.get('filter'))
-                message = 'Search results filtered on {}'.format(self.request.GET.get('filter'))
-                messages.add_message(self.request, messages.INFO, message)
                 context['bikeshops'] = bikeshop_content_string(
                     distance_filter(
                         context['bikesearch'], self.model.objects.filter(
