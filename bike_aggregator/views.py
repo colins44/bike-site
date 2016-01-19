@@ -1,10 +1,6 @@
 import json
 from django.http import HttpResponseRedirect
-import requests
 import itertools
-from decimal import Decimal
-import datetime
-import requests
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse

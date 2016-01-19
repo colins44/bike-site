@@ -17,7 +17,6 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 
-from bike_aggregator.forms import BookingForm1, BookingFormSet, BookingForm2
 from bike_aggregator.views import SignUp, ContactView, StoreSignUp, \
     BikeShopContact,  Index, BikeSearchResults, NewsLetterSignUp, \
     SearchPopularityChart, BikeShopGeoChart, SearchesOverTimeChart, StockListView, \
