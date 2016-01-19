@@ -1,10 +1,6 @@
 import json
 from django.http import HttpResponseRedirect
-import requests
 import itertools
-from decimal import Decimal
-import datetime
-import requests
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
@@ -15,7 +11,8 @@ from django.utils import timezone
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView, RedirectView
 from django.views.generic.edit import FormView
 from bike_aggregator.models import BikeShop, BikeSearch, Stock, Event, RentalEquipment, Booking, StockItem, Prices
-from bike_aggregator.utils import EMail, distance_filter, bikeshop_content_string, updator, get_fake_bikeshops
+from bike_aggregator.utils import EMail, distance_filter, bikeshop_content_string, updator, get_fake_bikeshops, \
+    get_location_data_from_google, title_maker
 from .forms import BikeSearchForm, BikeShopForm, ContactForm, NewsLetterSignUpFrom, EnquiryEmailForm, StockForm,\
     ReservationRequestForm
 from django.shortcuts import get_object_or_404
@@ -33,34 +30,20 @@ class Index(FormView):
 
     def form_valid(self, form):
         super(Index, self).form_valid(form)
-        if form.cleaned_data['latitude'] and form.cleaned_data['longitude']:
-            instance = form.save()
-            instance.latitude = float(instance.latitude)
-            instance.longitude = float(instance.longitude)
-            instance.search_time = str(instance.search_time)
-            self.request.session.__setitem__('bikesearch', model_to_dict(instance))
-            return redirect('bike-shop-search-results',
-                        latitude=form.cleaned_data['latitude'],
-                        longitude=form.cleaned_data['longitude'])
-        else:
-            try:
-                base_url = 'https://maps.googleapis.com/maps/api/geocode/json?address={}'.format(form.cleaned_data.get('location'))
-                req = requests.get(base_url)
-                data = json.loads(req.content)
-                location = data['results'][0]['geometry']['location']
-                instance = form.save()
-                instance.latitude = location['lat']
-                instance.longitude = location['lng']
-                instance.search_time = str(instance.search_time)
-                self.request.session.__setitem__('bikesearch', model_to_dict(instance))
-                return redirect('bike-shop-search-results',
-                                latitude=location['lat'],
-                                longitude=location['lng'])
-            except Exception as e:
-                logger.error("error getting lat and long, message:{}".format(e.message))
-                return redirect('bike-shop-search-results',
-                        latitude=form.cleaned_data['latitude'],
-                        longitude=form.cleaned_data['longitude'])
+
+        instance = form.save()
+        if not form.cleaned_data['latitude'] and not form.cleaned_data['longitude']:
+            location = get_location_data_from_google(form.cleaned_data.get('location'))
+            instance.latitude = location.get('latitude')
+            instance.longitude = location.get('longitude')
+            instance.city = location.get('city')
+        instance.latitude = float(instance.latitude)
+        instance.longitude = float(instance.longitude)
+        instance.search_time = str(instance.search_time)
+        self.request.session.__setitem__('bikesearch', model_to_dict(instance))
+        return redirect('bike-shop-search-results',
+                        latitude=instance.latitude,
+                        longitude=instance.longitude)
 
 
 class BikeSearchResults(ListView):
@@ -75,49 +58,43 @@ class BikeSearchResults(ListView):
             pass
         else:
             request.session['visited'] = True
-            message = 'You can find bike shops that rent out the type of bikes you are looking for with the filter button'
+            message = 'Hint: Use the filter button to find the types of bikes you want'
             messages.add_message(request, messages.INFO, message)
         return super(BikeSearchResults, self).get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(BikeSearchResults, self).get_context_data(**kwargs)
-        bikesearch = {}
+        context['bikesearch'] = self.request.session.get('bikesearch')
+
         if self.kwargs.get('city'):
+            #if city is in url args return shops by city
+            context['bikesearch'] = get_location_data_from_google(self.kwargs.get('city'))
             context['bikeshops'] = BikeShop.objects.filter(city__iexact=self.kwargs['city'])[:1]
-            if context['bikeshops']:
-                bikesearch['latitude'] = context['bikeshops'][0].latitude
-                bikesearch['longitude'] = context['bikeshops'][0].longitude
-        else:
-            try:
-                bikesearch['latitude'] = Decimal(self.kwargs['latitude'])
-                bikesearch['longitude'] = Decimal(self.kwargs['longitude'])
-            except Exception as e:
-                #some sort of error so we log it
-                logger.error("Error changing Strings to Decimals: {},  {}".format(e.message, e.args))
 
-        context['bikeshops'] = bikeshop_content_string(distance_filter(bikesearch, self.model.objects.all()))
-
-        if bikesearch:
-            context['bikesearch'] = bikesearch
-        else:
-            context['bikesearch'] = self.request.session['bikesearch']
-
+        context['bikeshops'] = bikeshop_content_string(distance_filter(context['bikesearch'], self.model.objects.all()))
 
         if self.request.GET.get('filter'):
+            #filter results depending on bike type
             try:
                 rental_equipment = RentalEquipment.objects.get(slug=self.request.GET.get('filter'))
                 message = 'Search results filtered on {}'.format(self.request.GET.get('filter'))
                 messages.add_message(self.request, messages.INFO, message)
                 context['bikeshops'] = bikeshop_content_string(
                     distance_filter(
-                        bikesearch, self.model.objects.filter(rental_options__in=[rental_equipment.pk])))[:20]
+                        context['bikesearch'], self.model.objects.filter(
+                            rental_options__in=[rental_equipment.pk])))[:20]
             except ObjectDoesNotExist:
-                context['bikeshops'] = bikeshop_content_string(distance_filter(bikesearch, self.model.objects.all()))[:20]
+                context['bikeshops'] = bikeshop_content_string(distance_filter
+                                                               (context['bikesearch'], self.model.objects.all()))[:20]
 
         if context['bikeshops'][0].distance_to_search > 7:
-            context['bikeshops'] = bikeshop_content_string(get_fake_bikeshops(self.request.session['bikesearch']['latitude'],
-                                                                              self.request.session['bikesearch']['longitude']))
+            context['bikeshops'] = bikeshop_content_string(get_fake_bikeshops(
+                self.request.session['bikesearch']['latitude'],
+                self.request.session['bikesearch']['longitude']))
+
         context['rental_options'] = RentalEquipment.objects.all()
+        context['title'] = title_maker(self.request.session['bikesearch'].get('city', None),
+                                       self.request.GET.get('filter', None))
         return context
 
 
@@ -131,7 +108,6 @@ class BikeShopView(FormView):
             pass
         else:
             self.request.session['visited'] = True
-            print 'not visited, where is the message'
             message = 'Send a booking request to this shop by filling ' \
                       'out the Booking Request Form or send multipul booking ' \
                       'request by clicking "add to request list" button ' \

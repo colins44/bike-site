@@ -7,8 +7,12 @@ from django.forms import model_to_dict
 from django.template import Template, Context
 from django.template.loader import render_to_string
 import math
+import requests
+import json
 from bike_aggregator.models import BikeShop, StockItem, RentalEquipment
 
+import logging
+logger = logging.getLogger(__name__)
 
 class EMail(object):
     """
@@ -56,7 +60,7 @@ class EMail(object):
 
 def pythagoris(longs, lats):
     """
-    this should take two itoradors sort them then subtract them
+    this should take two iterators sort them then subtract them
     :param tuple:
     :param tuple:
     :return: distance in straight line
@@ -96,8 +100,8 @@ def distance_filter(bike_search, bike_shop_queryset, distance=Decimal(0.025), am
     bike_shops = []
     for bike_shop in queryset:
         if bike_shop.latitude and bike_shop.longitude:
-            distance = pythagoris((bike_search['latitude'], bike_shop.latitude),
-                                  (bike_search['longitude'], bike_shop.longitude))
+            distance = pythagoris((bike_search['latitude'], float(bike_shop.latitude)),
+                                  (bike_search['longitude'], float(bike_shop.longitude)))
             #change the distance from radians back to Km
             bike_shop.distance_to_search = round(distance/conversion, 2)
             bike_shops.append(bike_shop)
@@ -155,17 +159,41 @@ def get_fake_bikeshops(lat, long):
     return fake_shops
 
 
+def get_location_data_from_google(location):
+    base_url = 'https://maps.googleapis.com/maps/api/geocode/json?address={}'.format(location)
+    req = requests.get(base_url)
+    try:
+        data = json.loads(req.content)['results'][0]
+    except IndexError as e:
+        logger.error(e.message)
+    location = {}
+    location['latitude'] = data['geometry']['location']['lat']
+    location['longitude'] = data['geometry']['location']['lng']
+    location['location'] = data['formatted_address']
+    for component in data['address_components']:
+        if 'locality' in component['types']:
+            location['city'] = component['long_name']
+    for component in data['address_components']:
+        if 'country' in component['types']:
+            location['country'] = component['long_name']
+    try:
+        return location
+    except IndexError:
+        logger.error("error getting data from google maps api")
+
+
 def title_maker(city=None, filter_arg=None):
-    if city and filter:
+    if city and filter_arg:
         try:
             equipment = RentalEquipment.objects.get(slug=filter_arg)
         except ObjectDoesNotExist:
+            logger.error('error getting rental equipment from db')
             pass
         else:
-            return "{} Rental {}".format(city.capitalize(), equipment.name.capitalize())
+            return "{} Rental {}".format(equipment.name.title(), city.title())
 
     if city and not filter_arg:
-        return "Bicycle Rental {}".format(city.capitalize())
+        return "Bicycle Rental {}".format(city.title())
     else:
         return "Your Results"
 
