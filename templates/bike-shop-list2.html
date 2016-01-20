@@ -32,7 +32,30 @@
             });
 
             marker{{ bikeshop.pk }}.addListener('click', function() {
-            infowindow{{ bikeshop.pk }}.open(map, marker{{ bikeshop.pk }});
+                $("#myModal").modal(
+                        $('#myModal').on('show.bs.modal', function (event) {
+                              var requestUrl = "/bikeshop-details/" + {{ bikeshop.pk }};
+                              var xhttp = new XMLHttpRequest();
+                              xhttp.onreadystatechange = function() {
+                                if (xhttp.readyState == 4 && xhttp.status == 200) {
+                                  var returnedData = JSON.parse(xhttp.responseText);
+
+
+                                  modal.find('.modal-title').text(returnedData.shop_name)
+                                  document.getElementById("location").innerHTML = returnedData.location;
+                                  document.getElementById("phone_number").innerHTML = returnedData.phone_number;
+                                  document.getElementById("more-info").href = "/shop-profile/" + returnedData.id;
+                                }
+                              };
+                              xhttp.open("GET", requestUrl, true);
+                              xhttp.send();
+                              var button = $(event.relatedTarget) // Button that triggered the modal
+                              var recipient = button.data('whatever') // Extract info from data-* attributes
+                              // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+                              // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+                              var modal = $(this)
+                            })
+                );
             });
 
             {%  endfor %}
@@ -103,6 +126,29 @@
                  </div>
             </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="myModal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title" id="modal-title"></h4>
+          </div>
+          <div class="modal-body">
+            <li id="location"></li>
+            <li id="phone_number"></li>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+            <a type="button" class="btn btn-primary pull-right" id="more-info">More Info</a>
+          </div>
+        </div>
+
       </div>
     </div>
 {% endblock %}
