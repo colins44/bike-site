@@ -1,6 +1,7 @@
 import json
 from django.http import HttpResponseRedirect
 import itertools
+from django.http import JsonResponse
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
@@ -94,6 +95,22 @@ class BikeSearchResults(ListView):
         context['title'] = title_maker(self.request.session['bikesearch'].get('city', None),
                                        self.request.GET.get('filter', None))
         return context
+
+
+def bikeshopdetail(request, pk):
+
+    bikeshop = get_object_or_404(BikeShop, pk=pk)
+    rental_equipment = []
+    prices = Prices.objects.filter(bike_shop__pk=pk)
+    for price in prices:
+        rental_equipment_data = model_to_dict(price)
+        rental_equipment_data['bike_type'] = price.rental_equipment.name
+        rental_equipment.append(rental_equipment_data)
+
+    data = model_to_dict(bikeshop, exclude=['website', 'rental_options', 'fake', 'owned_by'])
+    data['rental_equipment'] = rental_equipment
+
+    return JsonResponse(data)
 
 
 class BikeShopView(FormView):
