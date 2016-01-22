@@ -34,11 +34,11 @@
                 $("#myModal").modal(
                         $('#myModal').on('show.bs.modal', function (event) {
                               var requestUrl = "/bikeshop-details/" + {{ bikeshop.pk }};
+                              var text = ""
                               var xhttp = new XMLHttpRequest();
                               xhttp.onreadystatechange = function() {
                                 if (xhttp.readyState == 4 && xhttp.status == 200) {
                                   var returnedData = JSON.parse(xhttp.responseText);
-
 
                                   modal.find('.modal-title').text(returnedData.shop_name)
                                   document.getElementById("more-info").href = "/shop-profile/" + returnedData.id;
@@ -50,8 +50,6 @@
                                     text += "</ul>";
                                     console.log(text)
                                   document.getElementById("modal-body").innerHTML = text;
-
-
                                 }
                               };
                               xhttp.open("GET", requestUrl, true);
@@ -147,7 +145,6 @@
             <h4 class="modal-title" id="modal-title"></h4>
           </div>
           <div class="modal-body">
-            <h3>Shop Details</h3>
             <h3>Prices</h3>
             <div id="modal-body"></div>
           </div>
