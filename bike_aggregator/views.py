@@ -103,9 +103,12 @@ def bikeshopdetail(request, pk):
     rental_equipment = []
     prices = Prices.objects.filter(bike_shop__pk=pk)
     for price in prices:
-        rental_equipment_data = model_to_dict(price)
-        rental_equipment_data['bike_type'] = price.rental_equipment.name
-        rental_equipment.append(rental_equipment_data)
+        rental_equipment.append("{} rental {} {} / day".format(price.rental_equipment.name,
+                                                               price.currency,
+                                                               price.price))
+        # rental_equipment_data = model_to_dict(price)
+        # rental_equipment_data['bike_type'] = price.rental_equipment.name
+        # rental_equipment.append(rental_equipment_data)
 
     data = model_to_dict(bikeshop, exclude=['website', 'rental_options', 'fake', 'owned_by'])
     data['rental_equipment'] = rental_equipment

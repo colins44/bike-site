@@ -30,7 +30,6 @@
             title: '{{ bikeshop.shop_name }}',
             icon: '/static/images/bike_marker.png'
             });
-
             marker{{ bikeshop.pk }}.addListener('click', function() {
                 $("#myModal").modal(
                         $('#myModal').on('show.bs.modal', function (event) {
@@ -42,9 +41,17 @@
 
 
                                   modal.find('.modal-title').text(returnedData.shop_name)
-                                  document.getElementById("location").innerHTML = returnedData.location;
-                                  document.getElementById("phone_number").innerHTML = returnedData.phone_number;
                                   document.getElementById("more-info").href = "/shop-profile/" + returnedData.id;
+                                  var text = "<ul>";
+                                    var fruits = returnedData.rental_equipment;
+                                    for (index = 0; index < fruits.length; index++) {
+                                        text += "<li>" + fruits[index] + "</li>";
+                                    }
+                                    text += "</ul>";
+                                    console.log(text)
+                                  document.getElementById("modal-body").innerHTML = text;
+
+
                                 }
                               };
                               xhttp.open("GET", requestUrl, true);
@@ -140,12 +147,13 @@
             <h4 class="modal-title" id="modal-title"></h4>
           </div>
           <div class="modal-body">
-            <li id="location"></li>
-            <li id="phone_number"></li>
+            <h3>Shop Details</h3>
+            <h3>Prices</h3>
+            <div id="modal-body"></div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
-            <a type="button" class="btn btn-primary pull-right" id="more-info">More Info</a>
+            <a type="button" class="btn btn-primary pull-right" id="more-info">Make a Booking</a>
           </div>
         </div>
 
