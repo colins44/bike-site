@@ -18,13 +18,11 @@ from django.contrib import admin
 from django.contrib.auth.decorators import login_required
 
 from bike_aggregator.views import SignUp, ContactView, StoreSignUp, \
-    BikeShopContact,  Index, BikeSearchResults, NewsLetterSignUp, \
-    SearchPopularityChart, BikeShopGeoChart, SearchesOverTimeChart, StockListView, \
+    BikeShopContact,  Index, BikeSearchResults, StockListView, \
     StockDetailView, StockCreateView, StockDeleteView, StockUpdateView, ShopDetailView, ShopCreateView, ShopDeleteView, \
-    ShopUpdateView, BikeShopView, BikeShopRedirectView, BookingDetailView, BookingListView, bikeshopdetail
+    ShopUpdateView, BikeShopView, BookingDetailView, BookingListView, bikeshopdetail
 from bike_aggregator.sitemaps import StaticSiteMap
 from django.contrib.sitemaps.views import sitemap
-from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
 
 import brillixy.site
@@ -46,17 +44,8 @@ urlpatterns = [
     url(r'^contact/', ContactView.as_view(), name='contact'),
     url(r'^contact-bikeshop/(?P<pk>[0-9]+)/', BikeShopContact.as_view(), name='bikeshop-contact'),
     url(r'^bikeshop-details/(?P<pk>[0-9]+)/', bikeshopdetail, name='bikeshop-contact'),
-    url(r'^redirect-to-bikeshop/(?P<pk>[0-9]+)/', BikeShopRedirectView.as_view(), name='bikeshop-redirect'),
     url(r'^thanks/', StoreSignUp.as_view(), name='thanks'),
-    url(r'^find-out-more/', NewsLetterSignUp.as_view(), name='find-out-more'),
-    url(r'^geo-shop-chart/', BikeShopGeoChart.as_view(), name='geo-shop-chart'),
-    url(r'^geo-search-chart/', SearchPopularityChart.as_view(), name='geo-search-chart'),
-    url(r'^geo-shop-chart/', BikeShopGeoChart.as_view(), name='geo-shop-chart'),
-    url(r'^map/', TemplateView.as_view(template_name="bike-shop-list-map-view.html")),
-    url(r'^map-points.json', map, name='map'),
     url(r'^robots\.txt', include('robots.urls'), name='robots'),
-    url(r'^route-plot/', TemplateView.as_view(template_name="route-plot.html")),
-    url(r'^search-over-time-chart/', SearchesOverTimeChart.as_view(), name='geo-shop-chart'),
     url(r'^sign-up/', SignUp.as_view(), name='sign-up'),
     url(r'^sitemap\.xml$', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
 

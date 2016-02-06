@@ -93,15 +93,6 @@ class Prices(models.Model):
         return "{}".format(self.price)
 
 
-class NewsLetterSubscibers(models.Model):
-    name = models.CharField(max_length=225, null=True, blank=True)
-    email_address = models.EmailField()
-    subscribed = models.BooleanField(default=True)
-
-    def __unicode__(self):
-        return self.email_address
-
-
 class EnquiryEmail(models.Model):
     from_address = models.EmailField(null=True, blank=True)
     bike_shop = models.ForeignKey(BikeShop, blank=True)

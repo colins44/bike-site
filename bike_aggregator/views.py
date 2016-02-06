@@ -1,11 +1,9 @@
 import json
 from django.http import HttpResponseRedirect
-import itertools
 from django.http import JsonResponse
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
-from django.db.models import Count
 from django.forms import model_to_dict
 from django.shortcuts import redirect
 from django.utils import timezone
@@ -14,7 +12,7 @@ from django.views.generic.edit import FormView
 from bike_aggregator.models import BikeShop, BikeSearch, Stock, Event, RentalEquipment, Booking, StockItem, Prices
 from bike_aggregator.utils import EMail, distance_filter, bikeshop_content_string, updator, get_fake_bikeshops, \
     get_location_data_from_google, title_maker
-from .forms import BikeSearchForm, BikeShopForm, ContactForm, NewsLetterSignUpFrom, EnquiryEmailForm, StockForm,\
+from .forms import BikeSearchForm, BikeShopForm, ContactForm, EnquiryEmailForm, StockForm,\
     ReservationRequestForm
 from django.shortcuts import get_object_or_404
 
@@ -198,16 +196,6 @@ class BikeShopContact(FormView):
         return context
 
 
-class BikeShopRedirectView(RedirectView):
-
-    def get_redirect_url(self, *args, **kwargs):
-        bike_shop = model_to_dict(get_object_or_404(BikeShop, pk=self.kwargs['pk']), exclude=['latitude', 'longitude'])
-        Event.objects.create(
-            name="Customer redirected to bike shop website",
-            data=json.dumps(bike_shop)
-        )
-        return bike_shop['website']
-
 class SignUp(FormView):
     template_name = 'sign-up.html'
     form_class = BikeShopForm
@@ -334,50 +322,3 @@ class StoreSignUp(TemplateView):
         context['website_name'] = 'YouVelo.com'
         return context
 
-
-class NewsLetterSignUp(FormView):
-    form_class = NewsLetterSignUpFrom
-    success_url = '/thanks/'
-    template_name = 'find-out-more.html'
-
-    def form_valid(self, form):
-        form.save()
-        return super(NewsLetterSignUp, self).form_valid(form)
-
-class SearchPopularityChart(ListView):
-    model = BikeSearch
-    template_name = 'geo-chart.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(SearchPopularityChart, self).get_context_data(**kwargs)
-        bikesearches = self.model.objects.values('country').annotate(count=Count('country'))
-        context['objects'] = [x for x in bikesearches if x['country']]
-        return context
-
-class BikeShopGeoChart(ListView):
-    model = BikeShop
-    template_name = 'geo-chart.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(BikeShopGeoChart, self).get_context_data(**kwargs)
-        bikeshops = self.model.objects.values('country').annotate(count=Count('country'))
-        context['objects'] = [x for x in bikeshops if x['country']]
-        return context
-
-class SearchesOverTimeChart(ListView):
-    model = BikeSearch
-    template_name = 'line-chart.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(SearchesOverTimeChart, self).get_context_data(**kwargs)
-        searchers = BikeSearch.objects.filter(search_time__isnull=False)
-        searchers = itertools.groupby(searchers, lambda x: x.search_time.date())
-        data = []
-        for x in searchers:
-            we = {}
-            we['date'] = x[0]
-            we['count'] = len(list(x[1]))
-            data.append(we)
-
-        context['objects'] = data
-        return context

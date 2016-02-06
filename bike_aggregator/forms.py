@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 from django.forms import ModelForm, formset_factory
 from django.utils import timezone
 from django.utils.datetime_safe import datetime
-from bike_aggregator.models import BikeShop, BikeSearch, NewsLetterSubscibers, EnquiryEmail, Stock
+from bike_aggregator.models import BikeShop, BikeSearch, EnquiryEmail, Stock
 from django import forms
 
 
@@ -52,13 +52,6 @@ class ContactForm(forms.Form):
     name = forms.CharField(required=True)
     email = forms.EmailField(required=True)
     message = forms.CharField(widget=forms.Textarea, required=True)
-
-
-class NewsLetterSignUpFrom(ModelForm):
-
-    class Meta:
-        model = NewsLetterSubscibers
-        exclude = ('pk', 'subscribed',)
 
 
 class EnquiryEmailForm(ModelForm):
