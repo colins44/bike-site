@@ -96,7 +96,10 @@ class BikeSearchResults(ListView):
 
 
 def bikeshopdetail(request, pk):
-
+    Event.objects.create(
+        name='bike shop modal opened, session_key: {}'.format(request.session.session_key),
+        data=json.dumps(request.session.get('bikesearch'))
+    )
     bikeshop = get_object_or_404(BikeShop, pk=pk)
     rental_equipment = []
     prices = Prices.objects.filter(bike_shop__pk=pk)
@@ -104,9 +107,6 @@ def bikeshopdetail(request, pk):
         rental_equipment.append("{} rental {} {} / day".format(price.rental_equipment.name,
                                                                price.currency,
                                                                price.price))
-        # rental_equipment_data = model_to_dict(price)
-        # rental_equipment_data['bike_type'] = price.rental_equipment.name
-        # rental_equipment.append(rental_equipment_data)
 
     data = model_to_dict(bikeshop, exclude=['website', 'rental_options', 'fake', 'owned_by'])
     data['rental_equipment'] = rental_equipment
@@ -120,6 +120,10 @@ class BikeShopView(FormView):
     form_class = ReservationRequestForm
 
     def get(self, request, *args, **kwargs):
+        Event.objects.create(
+        name='Shop detail page visited, session_key: {}'.format(request.session.session_key),
+        data=json.dumps(request.session.get('bikesearch'))
+            )
         if self.request.session.get('visited', False):
             pass
         else:
