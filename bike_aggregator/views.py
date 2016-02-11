@@ -29,6 +29,10 @@ class Index(FormView):
 
     def form_valid(self, form):
         super(Index, self).form_valid(form)
+        Event.objects.create(
+        name='bike search, session_key: {}'.format(self.request.session.session_key),
+        data=self.request.session.session_key
+        )
 
         instance = form.save()
         if not form.cleaned_data['latitude'] and not form.cleaned_data['longitude']:
