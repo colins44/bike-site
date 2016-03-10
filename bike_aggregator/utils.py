@@ -190,10 +190,10 @@ def title_maker(city=None, filter_arg=None):
             logger.error('error getting rental equipment from db')
             pass
         else:
-            return "{} Rental {}".format(equipment.name.title(), city.title())
+            return "{} Rental {}".format(equipment.name.title(), city.title().encode('utf-8'))
 
     if city and not filter_arg:
-        return "Bicycle Rental {}".format(city.title())
+        return "Bicycle Rental {}".format(city.title().encode('utf-8'))
     else:
         return "Your Results"
 
