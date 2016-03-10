@@ -12,13 +12,14 @@ class StaticSiteMap(Sitemap):
         cities = BikeShop.objects.all().values_list('city', flat=True).distinct()
         city_urls = []
         for city in cities:
-            try:
-                city_urls.append("/bike-shop-search-results/{}/".format(slugify(city)))
-                city_urls.append("/bike-shop-search-results/{}/?filter=scooter".format(slugify(city)))
-                city_urls.append("/bike-shop-search-results/{}/?filter=electric-bicycle".format(slugify(city)))
-                city_urls.append("/bike-shop-search-results/{}/?filter=cruiser-bicycle".format(slugify(city)))
-            except:
-                pass
+            if city:
+                try:
+                    city_urls.append("/bike-shop-search-results/{}/".format(slugify(city)))
+                    city_urls.append("/bike-shop-search-results/{}/?filter=scooter".format(slugify(city)))
+                    city_urls.append("/bike-shop-search-results/{}/?filter=electric-bicycle".format(slugify(city)))
+                    city_urls.append("/bike-shop-search-results/{}/?filter=cruiser-bicycle".format(slugify(city)))
+                except:
+                    pass
         city_urls.append("/contact/")
         return city_urls
 
