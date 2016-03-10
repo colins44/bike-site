@@ -59,6 +59,7 @@ INSTALLED_APPS = (
     "shell_plus",
     'django_extensions',
     'formtools',
+    'analytical',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -92,6 +93,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'my_project.wsgi.application'
+
+OPTIMIZELY_ACCOUNT_NUMBER = '5271911057'
 
 STATIC_URL = '/static/'
 

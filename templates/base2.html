@@ -1,6 +1,8 @@
 <html>
    <head>
+    {% analytical_head_top %}
     {% load staticfiles %}
+    {% load optimizely %}
     {%  block title %}
     {%  endblock %}
     <meta charset="utf-8">
@@ -20,8 +22,11 @@
     <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <link href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <link href="http://pingendo.github.io/pingendo-bootstrap/themes/default/bootstrap.css" rel="stylesheet" type="text/css">
+    {% analytical_head_bottom %}
   </head>
    <body>
+   {% analytical_body_top %}
+   {% optimizely %}
     <div class="navbar navbar-default navbar-static-top">
       <div class="container">
         <div class="navbar-header">
@@ -82,7 +87,7 @@
         </div>
       </div>
     </footer>
-
+    {% analytical_body_bottom %}
 </body>
 <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
 <script src="{% static  "js/places_autocomplete.js" %}"></script>
