@@ -20,8 +20,6 @@ class StaticSiteMap(Sitemap):
             except:
                 pass
         city_urls.append("/contact/")
-        city_urls.append("/find-out-more/")
-        city_urls.append("/")
         return city_urls
 
     def location(self, item):
