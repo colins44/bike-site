@@ -177,6 +177,7 @@ def get_location_data_from_google(location):
         if 'country' in component['types']:
             location['country'] = component['long_name']
     try:
+        logger.error(location)
         return location
     except IndexError:
         logger.error("error getting data from google maps api")
