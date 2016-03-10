@@ -72,6 +72,7 @@ class BikeSearchResults(ListView):
         if self.kwargs.get('city'):
             #if city is in url args return shops by city
             context['bikesearch'] = get_location_data_from_google(self.kwargs.get('city'))
+            self.request.session.__setitem__('bikesearch', context['bikesearch'])
             context['bikeshops'] = BikeShop.objects.filter(city__iexact=self.kwargs['city'])[:1]
 
         context['bikeshops'] = bikeshop_content_string(distance_filter(context['bikesearch'], self.model.objects.all()))
